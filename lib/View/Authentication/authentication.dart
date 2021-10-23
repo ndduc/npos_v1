@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:npos/Bloc/UserBloc.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiSize.dart' as UISize;
 import 'package:npos/Constant/UI/uiText.dart';
@@ -25,6 +26,9 @@ class _Authentication extends State<Authentication> {
   @override
   void initState() {
     super.initState();
+
+    UserBLoC userBLoC = new UserBLoC();
+    userBLoC.usersList;
   }
 
   @override

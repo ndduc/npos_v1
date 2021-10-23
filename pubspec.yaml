@@ -35,6 +35,7 @@ dependencies:
   flutter_bloc: ^7.2.0
   rxdart: ^0.27.0
   easy_mask: any
+  http: any
 
 
 
