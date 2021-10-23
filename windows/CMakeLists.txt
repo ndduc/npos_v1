@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(npos LANGUAGES CXX)
+project(npos_v1 LANGUAGES CXX)
 
-set(BINARY_NAME "npos")
+set(BINARY_NAME "npos_v1")
 
 cmake_policy(SET CMP0063 NEW)
 
