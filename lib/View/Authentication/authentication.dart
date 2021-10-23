@@ -3,12 +3,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:npos/Bloc/UserBloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:npos/Bloc/Block/users_block.dart';
+import 'package:npos/Bloc/Event/users_state.dart';
+import 'package:npos/Bloc/State/users_event.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiSize.dart' as UISize;
 import 'package:npos/Constant/UI/uiText.dart';
+import 'package:npos/Model/user.dart';
 import 'package:npos/View/Component/Stateful/customDialog.dart';
 import 'package:npos/View/Home/homeMenu.dart';
+import 'package:provider/src/provider.dart';
 
 class Authentication extends StatefulWidget {
   @override
@@ -26,11 +31,13 @@ class _Authentication extends State<Authentication> {
   @override
   void initState() {
     super.initState();
-
-    UserBLoC userBLoC = new UserBLoC();
-    userBLoC.usersList;
+    loadAlbums();
   }
 
+  loadAlbums() async
+  {
+    context.read<AlbumsBloc>().add(AlbumEvents.fetchAlbums);
+  }
   @override
   dispose() {
     super.dispose();
@@ -52,17 +59,23 @@ class _Authentication extends State<Authentication> {
     //     onWillPop: () async => false,
     //     child: Scaffold(body: mainBody()))
     // );
+
+
+
     return WillPopScope(
       onWillPop: () async => false,
-      child: Scaffold(
-          body: Container(
+      child:
+      Scaffold(
+          body:
+          Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(uImage.mapImage['bg-3']),
                   fit: BoxFit.cover,
                 ),
               ),
-              child: mainBody())),
+              child: mainBody())
+      ),
     );
   }
 
