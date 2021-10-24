@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:npos/Bloc/Event/users_state.dart';
-import 'package:npos/Bloc/State/users_event.dart';
+import 'package:npos/Bloc/State/users_state.dart';
+import 'package:npos/Bloc/Event/users_event.dart';
 import 'package:npos/Model/user.dart';
 import 'package:npos/Repository/user_repos.dart';
 

@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/Block/users_block.dart';
-import 'package:npos/Bloc/Event/users_state.dart';
-import 'package:npos/Bloc/State/users_event.dart';
+import 'package:npos/Bloc/Event/users_event.dart';
+import 'package:npos/Bloc/State/users_state.dart';
+
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiSize.dart' as UISize;
 import 'package:npos/Constant/UI/uiText.dart';
@@ -38,6 +39,7 @@ class _Authentication extends State<Authentication> {
   {
     context.read<AlbumsBloc>().add(AlbumEvents.fetchAlbums);
   }
+
   @override
   dispose() {
     super.dispose();
@@ -66,7 +68,34 @@ class _Authentication extends State<Authentication> {
       onWillPop: () async => false,
       child:
       Scaffold(
-          body:
+          // body:
+          // Container(
+          //     decoration: BoxDecoration(
+          //       image: DecorationImage(
+          //         image: AssetImage(uImage.mapImage['bg-3']),
+          //         fit: BoxFit.cover,
+          //       ),
+          //     ),
+          //     child: mainBody())
+
+        body: BlocBuilder<AlbumsBloc,AlbumsState>(builder: (BuildContext context,AlbumsState state){
+
+          if (state is AlbumListErrorstate) {
+            final error = state.error;
+            String message = '${error.message}\nTap to Retry.';
+            return Text(
+              message,
+
+            );
+          }
+          if (state is AlbumLoadedState) {
+            print("TEAD");
+            List<Albums> albums = state.albums;
+            // ignore: avoid_print
+            print(albums.length);
+           // return _list(albums);
+          }
+          return
           Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -74,7 +103,11 @@ class _Authentication extends State<Authentication> {
                   fit: BoxFit.cover,
                 ),
               ),
-              child: mainBody())
+              child: mainBody());
+
+
+
+        }),
       ),
     );
   }
