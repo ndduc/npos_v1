@@ -3,7 +3,6 @@
 class uiText {
   String homeTxtIntro = "Log in to your account";
   String homeBtnLogin = "Login";
-  String homeTxtLocaionId = "Location Id";
   String homeTxtUserName = "Username";
   String homeTxtPassword = "Password";
   String homeTxtForget = "Forget Your Credential?";

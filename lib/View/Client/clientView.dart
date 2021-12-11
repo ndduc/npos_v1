@@ -8,7 +8,7 @@ import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/View/Authentication/authentication.dart';
 import 'package:npos/View/Component/Stateful/Menu/mainClientBody.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainMenuBody.dart';
+import '../Home/Component/mainMenuBody.dart';
 
 class ClientView extends StatefulWidget {
   @override

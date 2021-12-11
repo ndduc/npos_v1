@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 // ignore: camel_case_types
 class Custom_ListTile_TextField extends StatelessWidget {
   TextEditingController? controller;
-  //String Function(String) validations;
+  FormFieldValidator? validations;
   bool read;
   bool isMask;
   var mask;
@@ -19,7 +19,7 @@ class Custom_ListTile_TextField extends StatelessWidget {
         this.mask,
         required this.read,
         this.controller,
-       //required this.validations,
+        this.validations,
         this.labelText,
         this.hintText,
       //  required this.textInput
@@ -30,19 +30,19 @@ class Custom_ListTile_TextField extends StatelessWidget {
     return ListTile(
       title: TextFormField(
         inputFormatters:
-        isMask ? [TextInputMask(mask: this.mask, reverse: false)] : null,
-        readOnly: this.read,
+        isMask ? [TextInputMask(mask: mask, reverse: false)] : null,
+        readOnly: read,
        // keyboardType: textInput == null ? TextInputType.text : textInput,
         textCapitalization: TextCapitalization.sentences,
         decoration: InputDecoration(
-            labelText: this.labelText,
-            hintText: this.hintText,
+            labelText: labelText,
+            hintText: hintText,
             border:
             OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
            // fillColor: ThemeColors.confidenceBlue,
             filled: read ? true : false),
-        controller: this.controller,
-       // validator: this.validations,
+        controller: controller,
+        validator: validations,
       ),
     );
   }
