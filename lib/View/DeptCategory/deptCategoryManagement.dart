@@ -9,8 +9,8 @@ import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/View/Authentication/authentication.dart';
 import 'package:npos/View/Component/Stateful/Menu/mainClientBody.dart';
 import 'package:npos/View/Component/Stateful/Menu/mainDepartmentCategory.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainMenuBody.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainProductManagementBody.dart';
+import '../Home/Component/mainMenuBody.dart';
+import '../ProductManagement/Component/mainProductManagementBody.dart';
 
 class DeptCateManagement extends StatefulWidget {
   @override

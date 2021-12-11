@@ -3,16 +3,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:npos/Bloc/MainBloc/MainBloc.dart';
+import 'package:npos/Bloc/MainBloc/MainEvent.dart';
+import 'package:npos/Bloc/MainBloc/MainState.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
-import 'package:npos/View/Authentication/authentication.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainClientBody.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainDepartmentCategory.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainMenuBody.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainProductManagementBody.dart';
+import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/UserModel.dart';
+import 'Component/mainMenuBody.dart';
+import 'Component/menuEvent.dart';
 
 class HomeMenu extends StatefulWidget {
+  UserModel? userData;
+  HomeMenu({Key? key, this.userData}) : super(key: key);
   @override
   _HomeMenu createState() => _HomeMenu();
 }
@@ -32,6 +37,22 @@ class _HomeMenu extends State<HomeMenu> {
     super.dispose();
   }
 
+  void appBaseEvent(MainState state) {
+    // Executing Generic State
+    if (state is GenericInitialState) {
+      isLoading = false;
+    } else if (state is GenericLoadingState) {
+      isLoading = true;
+    } else if (state is GenericErrorState) {
+      isLoading = false;
+      context.read<MainBloc>().add(MainParam.showSnackBar(eventStatus: MainEvent.Show_SnackBar, context: context, snackBarContent: state.error.toString()));
+    }
+  }
+
+  void appSpecificEvent(MainState state) {
+    // Executing Specific State
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -43,16 +64,27 @@ class _HomeMenu extends State<HomeMenu> {
     return WillPopScope(
       onWillPop: () async => false,
         child: Scaffold(
-        body: Container(
-        decoration: BoxDecoration(
-        image: DecorationImage(
-        image: AssetImage(uImage.mapImage['bg-3']),
-
+        body: BlocBuilder<MainBloc,MainState>(builder: (BuildContext context,MainState state) {
+          /**
+           * BLoc Action Note
+           * START
+           * */
+          appBaseEvent(state);
+          appSpecificEvent(state);
+          /**
+           * Bloc Action Note
+           * END
+           * */
+          return Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(uImage.mapImage['bg-3']),
                   fit: BoxFit.cover,
                 ),
               ),
-              child: mainBody())),
-    );
+              child: mainBody());
+        }),
+    ));
   }
 
   Widget mainBody() {
@@ -74,12 +106,41 @@ class _HomeMenu extends State<HomeMenu> {
   }
 
   Widget bodyContentEvent() {
-    bodyContent = MainMenuBody();
-    //MainClientBody
-    //MainMenuBody
-    //MainProductMannagementBody
-    //MainDeptCateBody
+    bodyContent = MainMenuBody(userData: widget.userData!, gridViewItem: gridViewItem());
     return bodyContent;
+  }
+
+  Widget gridViewItem() {
+    return GridView.count(
+      childAspectRatio: 1.5,
+      scrollDirection: Axis.vertical,
+      crossAxisCount: 4 ,
+      children:
+      List.generate(UIItem.menuItem.length, (index) {
+        return InkWell(
+          onTap: menuClickEvent(index, context, widget.userData!),
+          child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                border: Border.all(color: Colors.blueAccent),
+              ),
+              padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.all(8),
+              child: Center(
+                  child: Text(
+                    UIItem.menuItem[index]['name'],
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold
+                    ),
+                  )
+              )
+          ),
+        ) ;
+      }),
+    );
   }
 
 

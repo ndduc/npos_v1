@@ -8,9 +8,9 @@ import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/View/Authentication/authentication.dart';
 import 'package:npos/View/Component/Stateful/Menu/mainClientBody.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainMenuBody.dart';
+import '../Home/Component/mainMenuBody.dart';
 import 'package:npos/View/Component/Stateful/Menu/mainNotify.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainProductManagementBody.dart';
+import '../ProductManagement/Component/mainProductManagementBody.dart';
 
 class NotifyManagement extends StatefulWidget {
   @override
