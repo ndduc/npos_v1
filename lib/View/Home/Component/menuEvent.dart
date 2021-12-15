@@ -37,60 +37,46 @@ GestureTapCallback menuClickEvent(int index, BuildContext context, UserModel use
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Dept, context: context, userData: userData));
         break;
       case MENU_MAN_SEC:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => SectionManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Sec, context: context, userData: userData));
         break;
       case MENU_MAN_DISTAX:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => DisTaxManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Disc, context: context, userData: userData));
         break;
       case MENU_MAN_VEN:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => VendorManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Ven, context: context, userData: userData));
         break;
       case MENU_REPORT_INV:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => InventoryReport()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Report_Inv, context: context, userData: userData));
         break;
       case MENU_REPORT_DE:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => DetailReport()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Report_Detail, context: context, userData: userData));
         break;
       case MENU_REPORT_DAI:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => DailyReport()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Report_Daily, context: context, userData: userData));
         break;
       case MENU_REPORT_ANA:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PerformReport()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Report_Analysis, context: context, userData: userData));
         break;
       case MENU_MAN_CUS_ROYAL:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => RoyalManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Royal, context: context, userData: userData));
         break;
       case MENU_MAN_POINT:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => PointManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Point, context: context, userData: userData));
         break;
       case MENU_MAN_CUS_NOTI:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => NotifyManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Customer_Notification, context: context, userData: userData));
         break;
       case MENU_MAN_SOC:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => SocialManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Social, context: context, userData: userData));
         break;
       case MENU_MAN_EMP:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => EmployeeManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_ManEmp, context: context, userData: userData));
         break;
       case MENU_MAN_LOC:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => LocationManagement()));
+
         break;
       case MENU_SETUP:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => SystemManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Setup, context: context, userData: userData));
         break;
       default:
         break;

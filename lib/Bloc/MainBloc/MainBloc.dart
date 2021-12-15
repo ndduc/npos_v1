@@ -10,8 +10,11 @@ import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
+import 'package:npos/View/DiscTaxManagement/disTaxManagement.dart';
 import 'package:npos/View/Home/homeMenu.dart';
 import 'package:npos/View/ProductManagement/productManagement.dart';
+import 'package:npos/View/SectionManagement/sectionManagement.dart';
+import 'package:npos/View/VenSupManagement/venSupManagement.dart';
 import 'MainEvent.dart';
 import 'package:npos/Repository/MainRepos.dart';
 
@@ -123,6 +126,30 @@ class MainBloc extends Bloc<MainParam,MainState>
             MaterialPageRoute(builder: (context) {
               return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
                   child:DeptCateManagement(userData: event.userData));
+            }));
+        break;
+      case MainEvent.Nav_Man_Sec:
+        Navigator.push(
+            event.context as BuildContext,
+            MaterialPageRoute(builder: (context) {
+              return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                  child:SectionManagement(userData: event.userData));
+            }));
+        break;
+      case MainEvent.Nav_Man_Disc:
+        Navigator.push(
+            event.context as BuildContext,
+            MaterialPageRoute(builder: (context) {
+              return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                  child:DisTaxManagement(userData: event.userData));
+            }));
+        break;
+      case MainEvent.Nav_Man_Ven:
+        Navigator.push(
+            event.context as BuildContext,
+            MaterialPageRoute(builder: (context) {
+              return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                  child:VendorManagement(userData: event.userData));
             }));
         break;
       case MainEvent.Nav_MainMenu:
