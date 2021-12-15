@@ -10,7 +10,7 @@ import 'package:npos/View/Authentication/authentication.dart';
 import 'package:npos/View/Component/Stateful/Menu/mainClientBody.dart';
 import '../Home/Component/mainMenuBody.dart';
 import '../ProductManagement/Component/mainProductManagementBody.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainSection.dart';
+import 'Component/mainSection.dart';
 
 class SectionManagement extends StatefulWidget {
   @override

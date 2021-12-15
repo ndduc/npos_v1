@@ -11,7 +11,7 @@ import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
 import 'package:npos/View/ProductManagement/productManagement.dart';
 
 import 'mainClientBody.dart';
-import 'mainDepartmentCategory.dart';
+import '../../../DeptCategory/Component/mainDepartmentCategory.dart';
 
 class NotifyBody extends StatefulWidget {
   // Widget? bodyContent = MainMenuBody();

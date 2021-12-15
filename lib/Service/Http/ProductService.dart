@@ -34,6 +34,7 @@ class ProductService extends Service{
         Map<String, dynamic> mapRes = jsonDecode(json["body"]);
         ConsolePrint("RES", mapRes);
         model = ProductModel.map(mapRes);
+        model.print();
         return model;
       }
     } catch(e) {

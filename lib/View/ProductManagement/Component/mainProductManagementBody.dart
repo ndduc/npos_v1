@@ -2,6 +2,7 @@
 // ignore_for_file: library_prefixes
 // ignore_for_file: must_be_immutable
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +18,6 @@ import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
-import 'package:npos/View/Home/homeMenu.dart';
 import 'package:provider/src/provider.dart';
 
 
@@ -841,51 +841,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   }
 
   Widget prodManRightPanel() {
-    return DataTable(
-      columns: const <DataColumn>[
-        DataColumn(
-          label: Text(
-            'Name',
-            style: TextStyle(fontStyle: FontStyle.italic),
-          ),
-        ),
-        DataColumn(
-          label: Text(
-            'Age',
-            style: TextStyle(fontStyle: FontStyle.italic),
-          ),
-        ),
-        DataColumn(
-          label: Text(
-            'Role',
-            style: TextStyle(fontStyle: FontStyle.italic),
-          ),
-        ),
-      ],
-      rows: const <DataRow>[
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('Sarah')),
-            DataCell(Text('19')),
-            DataCell(Text('Student')),
-          ],
-        ),
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('Janine')),
-            DataCell(Text('43')),
-            DataCell(Text('Professor')),
-          ],
-        ),
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('William')),
-            DataCell(Text('27')),
-            DataCell(Text('Associate Professor')),
-          ],
-        ),
-      ],
-    );
+    return paginateTable();
   }
 
   Widget solidButton(String text, String event) {
@@ -990,5 +946,50 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     model.added_by = widget.userData?.uid;
 
     ConsolePrint("ADD MODEL", model.added_by);
+  }
+
+  DataTableSource _data = TableData();
+
+  Widget paginateTable() {
+
+    return SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+      child: PaginatedDataTable(
+        source: _data,
+        header: Text('My Products'),
+        columns: [
+          DataColumn(label: Text('ID')),
+          DataColumn(label: Text('Name')),
+          DataColumn(label: Text('Price'))
+        ],
+        columnSpacing: 100,
+        horizontalMargin: 10,
+        rowsPerPage: 15,
+        showCheckboxColumn: false,
+      )
+    );
+  }
+}
+
+
+class TableData extends DataTableSource {
+  // Generate some made-up data
+  final List<Map<String, dynamic>> _data = List.generate(
+      200,
+          (index) => {
+        "id": index,
+        "title": "Item $index",
+        "price": Random().nextInt(10000)
+      });
+
+  bool get isRowCountApproximate => false;
+  int get rowCount => _data.length;
+  int get selectedRowCount => 0;
+  DataRow getRow(int index) {
+    return DataRow(cells: [
+      DataCell(Text(_data[index]['id'].toString())),
+      DataCell(Text(_data[index]["title"])),
+      DataCell(Text(_data[index]["price"].toString())),
+    ]);
   }
 }

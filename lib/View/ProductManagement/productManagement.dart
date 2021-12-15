@@ -8,13 +8,8 @@ import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
-import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
-import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/UserModel.dart';
-import 'package:npos/View/Authentication/authentication.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainClientBody.dart';
-import '../Home/Component/mainMenuBody.dart';
 import 'Component/mainProductManagementBody.dart';
 
 class ProductManagement extends StatefulWidget {

@@ -1,9 +1,11 @@
 // ignore_for_file: file_names
 // ignore_for_file: library_prefixes
+// ignore_for_file: camel_case_types, must_be_immutable
+// ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:easy_mask/easy_mask.dart';
 import 'package:flutter/material.dart';
 
-// ignore: camel_case_types
+
 class Custom_ListTile_TextField extends StatelessWidget {
   TextEditingController? controller;
   FormFieldValidator? validations;
@@ -12,23 +14,25 @@ class Custom_ListTile_TextField extends StatelessWidget {
   var mask;
   var labelText;
   var hintText;
-  // TextInputType textInput;
+  int? maxLines;
 
   Custom_ListTile_TextField(
-      {required this.isMask,
+      {Key? key, required this.isMask,
         this.mask,
         required this.read,
         this.controller,
         this.validations,
         this.labelText,
         this.hintText,
+        this.maxLines
       //  required this.textInput
-      });
+      }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: TextFormField(
+        maxLines: maxLines ?? 1,
         inputFormatters:
         isMask ? [TextInputMask(mask: mask, reverse: false)] : null,
         readOnly: read,

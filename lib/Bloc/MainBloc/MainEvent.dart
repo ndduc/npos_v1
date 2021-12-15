@@ -16,6 +16,7 @@ enum MainEvent{
   Local_Event_Set_DefaultLocation,
   Local_Event_DropDown_SearchBy,
   Local_Event_Product_Mode,
+  Local_Event_Switch_Screen,
   Nav_MainMenu, //Screen After Login
   Nav_Man_Product,
   Nav_Man_Dept,
@@ -51,6 +52,8 @@ class MainParam {
   String? dropDownType;
   int? dropDownValue;
 
+  String? toWhere;
+
   MainParam.GetProductByParam({this.eventStatus, this.productParameter, this.userData});
   MainParam.GetAuthorization({this.eventStatus, this.userData});
   MainParam.SetDefaultLocation({this.eventStatus, this.userData, this.index});
@@ -62,4 +65,6 @@ class MainParam {
   // Can be use on event of dropdown which take Map<int, string> as argument
   // Can also use for state management where Map<int, string> is being used. EX, Product Mode
   MainParam.DropDown({this.eventStatus, this.dropDownType, this.dropDownValue});
+
+  MainParam.SwitchScreen({this.eventStatus, this.toWhere, this.userData});
 }

@@ -9,6 +9,7 @@ import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
 import 'package:npos/View/Home/homeMenu.dart';
 import 'package:npos/View/ProductManagement/productManagement.dart';
 import 'MainEvent.dart';
@@ -84,6 +85,15 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield GenericErrorState(error: e);
         }
         break;
+      case MainEvent.Local_Event_Switch_Screen:
+        yield GenericInitialState();
+        try {
+          yield GenericLoadingState();
+          yield SwitchScreenLoadedState(toWhere: event.toWhere as String, userModel: event.userData as UserModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
       case MainEvent.Check_Authorization:
         try {
           yield GenericInitialState();
@@ -105,6 +115,14 @@ class MainBloc extends Bloc<MainParam,MainState>
             MaterialPageRoute(builder: (context) {
               return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
                   child:ProductManagement(userData: event.userData));
+            }));
+        break;
+      case MainEvent.Nav_Man_Dept:
+        Navigator.push(
+            event.context as BuildContext,
+            MaterialPageRoute(builder: (context) {
+              return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                  child:DeptCateManagement(userData: event.userData));
             }));
         break;
       case MainEvent.Nav_MainMenu:

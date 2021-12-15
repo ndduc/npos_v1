@@ -58,3 +58,9 @@ class DropDownLoadedState extends MainState {
   DropDownLoadedState({required this.dropDownValue, required this.dropDownType});
 }
 
+class SwitchScreenLoadedState extends MainState {
+  String toWhere;
+  UserModel userModel;
+  SwitchScreenLoadedState({required this.toWhere, required this.userModel});
+}
+

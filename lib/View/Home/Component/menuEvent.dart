@@ -34,8 +34,7 @@ GestureTapCallback menuClickEvent(int index, BuildContext context, UserModel use
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Product, context: context, userData: userData));
         break;
       case MENU_MAN_DEPTCATE:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => DeptCateManagement()));
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Dept, context: context, userData: userData));
         break;
       case MENU_MAN_SEC:
         Navigator.of(context)

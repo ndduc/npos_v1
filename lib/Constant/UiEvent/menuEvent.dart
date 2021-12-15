@@ -23,3 +23,6 @@ const String MENU_POS_CLIENT = "PC";
 const String MENU_EOD = "CS";
 const String MENU_LOGOUT = "LO";
 const String MENU_POS_MENU = "POS_MENU";
+
+const String OPTION_DEPARTMENT = "DEPARTMENT";
+const String OPTION_CATEGORY = "CATEGORY";
