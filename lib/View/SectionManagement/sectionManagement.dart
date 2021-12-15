@@ -7,7 +7,7 @@ import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/View/Authentication/authentication.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainClientBody.dart';
+import '../Client/Component/mainClientBody.dart';
 import '../Home/Component/mainMenuBody.dart';
 import '../ProductManagement/Component/mainProductManagementBody.dart';
 import 'Component/mainSection.dart';

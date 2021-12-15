@@ -10,21 +10,21 @@ import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
 import 'package:npos/View/ProductManagement/productManagement.dart';
 
-import 'mainClientBody.dart';
-import '../../../DeptCategory/Component/mainDepartmentCategory.dart';
+import '../../Client/Component/mainClientBody.dart';
+import '../../DeptCategory/Component/mainDepartmentCategory.dart';
 
-class SocialBody extends StatefulWidget {
+class RoyalBody extends StatefulWidget {
   // Widget? bodyContent = MainMenuBody();
  // MainMenuBody();
  // MainMenuBody.withData(this.bodyContent);
   @override
-  _SocialBody createState() => _SocialBody();
+  _RoyalBody createState() => _RoyalBody();
 }
 
-class _SocialBody extends State<SocialBody> {
+class _RoyalBody extends State<RoyalBody> {
   uiText uIText = uiText();
   uiImage uImage = uiImage();
-  Widget bodyContent = SocialBody();
+  Widget bodyContent = RoyalBody();
   @override
   void initState() {
     super.initState();

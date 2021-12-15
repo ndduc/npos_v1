@@ -10,20 +10,20 @@ import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/Home/homeMenu.dart';
 
-import 'mainClientBody.dart';
+import '../../Client/Component/mainClientBody.dart';
 
-class LocationBody extends StatefulWidget {
+class ReportDaily extends StatefulWidget {
   // Widget? bodyContent = MainMenuBody();
   // MainMenuBody();
   // MainMenuBody.withData(this.bodyContent);
   @override
-  _LocationBody createState() => _LocationBody();
+  _ReportDaily createState() => _ReportDaily();
 }
 
-class _LocationBody extends State<LocationBody> {
+class _ReportDaily extends State<ReportDaily> {
   uiText uIText = uiText();
   uiImage uImage = uiImage();
-  Widget bodyContent = LocationBody();
+  Widget bodyContent = ReportDaily();
   @override
   void initState() {
     super.initState();

@@ -10,7 +10,7 @@ import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/Home/homeMenu.dart';
 
-import '../../Component/Stateful/Menu/mainClientBody.dart';
+import '../../Client/Component/mainClientBody.dart';
 
 class SectionBody extends StatefulWidget {
   // Widget? bodyContent = MainMenuBody();
