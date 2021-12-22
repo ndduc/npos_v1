@@ -8,15 +8,95 @@ import 'package:npos/Model/UserModel.dart';
 
 enum MainEvent{
   fetchAlbums,
+
+  //region USER REQUEST
   Event_VerifyUser,
-  Event_GetLocationByUser,
-  Event_GetProductByParamMap,
-  Show_SnackBar,
   Check_Authorization,
+  //endregion
+
+  //region LOCATION REQUEST
+  Event_GetLocationByUser,
+  //endregion
+
+  //region PRODUCT REQUEST
+  Event_GetProductByParamMap,
+  Event_GetProductPaginateCount,
+  Event_GetProductPaginate,
+  //endregion
+
+  //region DEPARTMENT REQUEST
+  Event_GetDepartments,
+  Event_GetDepartmentPaginateCount,
+  Event_GetDepartmentPaginate,
+  Event_GetDepartmentById,
+  Event_GetDepartmentByDescription,
+  Event_AddDepartment,
+  Event_UpdateDepartment,
+  //endregion
+
+  //region CATEGORY REQUEST
+  Event_GetCategory,
+  Event_GetCategoryPaginateCount,
+  Event_GetCategoryPaginate,
+  Event_GetCategoryById,
+  Event_GetCategoryByDescription,
+  Event_AddCategory,
+  Event_UpdateCategory,
+  //endregion
+
+  //region VENDOR REQUEST
+  Event_GetVendors,
+  Event_GetVendorPaginateCount,
+  Event_GetVendorPaginate,
+  Event_GetVendorById,
+  Event_GetVendorByDescription,
+  Event_AddVendor,
+  Event_UpdateVendor,
+  //endregion
+
+  //region SECTION REQUEST
+  Event_GetSections,
+  Event_GetSectionPaginateCount,
+  Event_GetSectionPaginate,
+  Event_GetSectionById,
+  Event_GetSectionByDescription,
+  Event_AddSection,
+  Event_UpdateSection,
+  //endregion
+
+  //region DISCOUNT REQUEST
+  Event_GetDiscounts,
+  Event_GetDiscountPaginateCount,
+  Event_GetDiscountPaginate,
+  Event_GetDiscountById,
+  Event_GetDiscountByDescription,
+  Event_AddDiscount,
+  Event_UpdateDiscount,
+  //endregion
+
+  //region TAX REQUEST
+  Event_GetTax,
+  Event_GetTaxPaginateCount,
+  Event_GetTaxPaginate,
+  Event_GetTaxById,
+  Event_GetTaxByDescription,
+  Event_AddTax,
+  Event_UpdateTax,
+  //endregion
+
+  //region SNACK BAR
+  Show_SnackBar,
+  //endregion
+
+  //region LOCAL EVENT
   Local_Event_Set_DefaultLocation,
   Local_Event_DropDown_SearchBy,
   Local_Event_Product_Mode,
   Local_Event_Switch_Screen,
+  Local_Event_NewItem_Mode,     //use to toggle on and off the add button
+  //endregion
+
+  //region NAVIGATION
   Nav_MainMenu, //Screen After Login
   Nav_Man_Product,
   Nav_Man_Dept,
@@ -36,6 +116,7 @@ enum MainEvent{
   Nav_POS_Client,
   Nav_Logout,
   Nav_EOD
+  //endregion
 }
 
 class MainParam {
@@ -47,18 +128,45 @@ class MainParam {
   dynamic snackBarContent;
   UserModel? userData;
   int? index;
-  Map<String, String>? productParameter;
-
+  Map<String, dynamic>? productParameter;
+  Map<String, dynamic>? departmentParameter;
+  Map<String, dynamic>? categoryParameter;
+  Map<String, dynamic>? vendorParameter;
+  Map<String, dynamic>? sectionParameter;
+  Map<String, dynamic>? discountParameter;
+  Map<String, dynamic>? taxParameter;
   String? dropDownType;
   int? dropDownValue;
-
   String? toWhere;
+  bool? isAdded;
 
+  /// PRODUCT
   MainParam.GetProductByParam({this.eventStatus, this.productParameter, this.userData});
+
+  /// DEPARTMENT
+  MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
+
+  /// CATEGORY
+  MainParam.GetCategoryByParam({this.eventStatus, this.categoryParameter, this.userData});
+
+  /// VENDOR
+  MainParam.GetVendorByParam({this.eventStatus, this.vendorParameter, this.userData});
+
+  /// SECTION
+  MainParam.GetSectionByParam({this.eventStatus, this.sectionParameter, this.userData});
+
+  /// DISCOUNT
+  MainParam.GetDiscountByParam({this.eventStatus, this.discountParameter, this.userData});
+
+  /// TAX
+  MainParam.GetTaxByParam({this.eventStatus, this.taxParameter, this.userData});
+
+  /// AUTHORIZATION
   MainParam.GetAuthorization({this.eventStatus, this.userData});
   MainParam.SetDefaultLocation({this.eventStatus, this.userData, this.index});
   MainParam.VerifyUser({this.userName, this.password, this.eventStatus});
   MainParam.GetLocationByUser({this.userUid, this.eventStatus});
+
   MainParam.showSnackBar({this.context, this.snackBarContent, this.eventStatus});
   MainParam.GenericNavigator({this.context, this.eventStatus, this.userData});
 
@@ -67,4 +175,8 @@ class MainParam {
   MainParam.DropDown({this.eventStatus, this.dropDownType, this.dropDownValue});
 
   MainParam.SwitchScreen({this.eventStatus, this.toWhere, this.userData});
+
+  MainParam.AddItemMode({this.eventStatus, this.isAdded});
+
+  MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});
 }

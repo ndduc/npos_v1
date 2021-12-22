@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
@@ -16,6 +17,7 @@ import 'package:npos/Constant/UiEvent/menuEvent.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:provider/src/provider.dart';
@@ -32,6 +34,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   uiText uIText = uiText();
   uiImage uImage = uiImage();
   bool isLoading = false;
+  bool isLoadingTable = false;
   String dropdownValue = 'Search By Product Id';
   bool isChecked = false;
 
@@ -54,7 +57,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   Map<int, String> searchOptionByParam = <int, String>{
     0:"Search By Product Id",
     1:"Search By Item Code",
-    2:"Search By Upc"
+    2:"Search By Upc",
+    3:"Search By Description"
   };
 
   bool perReadOnly = true;
@@ -69,14 +73,34 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   String? itemCodeDefault;
   List<String>? itemCodeList = ["No Item Found"];
 
+  String? discountDefault;
+  List<String> discountList = ["Discount Not Found"];
+
+  String? taxDefault;
+  List<String> taxList = ["Tax Not Found"];
+
+  String? departmentDefault;
+  List<String> departmentList = ["Department Not Found"];
+
+  String? sectionDefault;
+  List<String> sectionList = ["Section Not Found"];
+
+  String? categoryDefault;
+  List<String> categoryList = ["Category Not Found"];
+
+  String? vendorDefault;
+  List<String> vendorList = ["Vendor Not Found"];
+
   bool isValidateOn = true;
 
+  List<ProductModel> listProductPaginate = [];
   @override
   void initState() {
     super.initState();
     if(defaultProductMode != 0) {
       readOnlyMode = true;
     }
+    loadOnInit();
   }
 
   var formKey = GlobalKey<FormState>();
@@ -85,6 +109,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   dispose() {
     super.dispose();
 
+  }
+
+  loadOnInit() {
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
   }
 
   void appBaseEvent(MainState state) {
@@ -125,14 +153,28 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
         } else {
           ConsolePrint("TICK MODEL NULL", "PRODUCT-MODE-UPDATE-ITEM");
         }
-
         defaultProductMode = state.dropDownValue;
-        // isValidateOn = false;
       }
-
-      print("CHECK IS VALIDATE\t\t" + isValidateOn.toString());
+    }  else if (state is ProductPaginateLoadingState) {
+      isLoadingTable = true;
+    } else if (state is ProductPaginateLoadedState) {
+      isLoadingTable = false;
+      listProductPaginate = state.listProductModel!;
+      ConsolePrint("LIST PRODUCT MODEL", state.listProductModel);
+    } else if (state is ProductPaginateCountLoadedState) {
+      isLoadingTable = false;
+      // Invoke Load Paginate Product After Count is Completed
+      DataCount = state.count!;
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginate, userData: widget.userData, productParameter: {
+        "searchType": "test",
+        "startIdx": 1,
+        "endIdx": 10
+      }));
+      print("LOADING\t\t" + isLoading.toString());
     }
   }
+
+  int DataCount = 0;
 
   void clearProductDataUI() {
     String blank = "";
@@ -145,6 +187,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     etMargin.text = blank;
     etMarkup.text = blank;
     itemCodeList = ["No Item Found"];
+    discountList = ["Discount Not Found"];
+    taxList = ["Tax Not Found"];
     readOnlyMode = false;
     mainProductModel = null;
   }
@@ -161,7 +205,18 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     etMargin.text = margin.toString();
     double? markup = markupCalculation(productModel.price!, productModel.cost!);
     etMarkup.text = markup.toString();
-    itemCodeList = productModel.itemCodeList!;
+
+    if ( productModel.itemCodeList.isNotEmpty) {
+      itemCodeList = productModel.itemCodeList;
+    } else {
+      itemCodeList =  ["No Item Found"];
+    }
+
+    //Set Tax List Here
+    taxList = ["Tax Not Found"];
+
+    //Set Discount List Here
+    discountList = ["Discount Not Found"];
   }
 
   double marginCalculation(double price, double cost) {
@@ -561,10 +616,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                 child: Column(
                   children: [
                     ListTile(
-                        leading: Text("Department"),
+                        leading: const Text("Department"),
                         title:  DropdownButton<String>(
                           isExpanded: true,
-                          value: dropdownValue,
+                          value: departmentList![0],
                           style: const TextStyle(
                               color: Colors.deepPurple
                           ),
@@ -575,8 +630,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           onChanged: (String? newValue) {
                             print("VALUE DROP DOWN\t\t" + newValue!);
                           },
-                          items: <String>['Search By Product Id', 'Search By Item Code', 'Search By Description']
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items: departmentList
+                              ?.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -585,10 +640,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         )
                     ),
                     ListTile(
-                        leading: Text("Category"),
+                        leading: const Text("Category"),
                         title:  DropdownButton<String>(
                           isExpanded: true,
-                          value: dropdownValue,
+                          value: categoryList![0],
                           style: const TextStyle(
                               color: Colors.deepPurple
                           ),
@@ -597,19 +652,17 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             color: Colors.deepPurpleAccent,
                           ),
                           onChanged: (String? newValue) {
-                            setState(() {
-                              dropdownValue = newValue!;
-                            });
+                            print("VALUE DROP DOWN\t\t" + newValue!);
                           },
-                          items: <String>['Search By Product Id', 'Search By Item Code', 'Search By Description']
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items: categoryList
+                              ?.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
                             );
                           }).toList(),
                         )
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -618,10 +671,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                 child: Column(
                   children: [
                     ListTile(
-                        leading: Text("Section"),
+                        leading: const Text("Section"),
                         title:  DropdownButton<String>(
                           isExpanded: true,
-                          value: dropdownValue,
+                          value: sectionList![0],
                           style: const TextStyle(
                               color: Colors.deepPurple
                           ),
@@ -630,12 +683,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             color: Colors.deepPurpleAccent,
                           ),
                           onChanged: (String? newValue) {
-                            setState(() {
-                              dropdownValue = newValue!;
-                            });
+                            print("VALUE DROP DOWN\t\t" + newValue!);
                           },
-                          items: <String>['Search By Product Id', 'Search By Item Code', 'Search By Description']
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items: sectionList
+                              ?.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -644,10 +695,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         )
                     ),
                     ListTile(
-                        leading: Text("Supplier/Vendor"),
+                        leading: const Text("Vendor"),
                         title:  DropdownButton<String>(
                           isExpanded: true,
-                          value: dropdownValue,
+                          value: vendorList![0],
                           style: const TextStyle(
                               color: Colors.deepPurple
                           ),
@@ -656,19 +707,17 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             color: Colors.deepPurpleAccent,
                           ),
                           onChanged: (String? newValue) {
-                            setState(() {
-                              dropdownValue = newValue!;
-                            });
+                            print("VALUE DROP DOWN\t\t" + newValue!);
                           },
-                          items: <String>['Search By Product Id', 'Search By Item Code', 'Search By Description']
-                              .map<DropdownMenuItem<String>>((String value) {
+                          items: vendorList
+                              ?.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
                             );
                           }).toList(),
                         )
-                    )
+                    ),
                   ],
                 ),
               )
@@ -679,169 +728,124 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
             children: [
               Expanded(
                 flex: 5,
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Text("Discount Type - A"),
-                      title: Checkbox(
-                        checkColor: Colors.white,
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
+                child:  ListTile(
+                    leading: const Text("Discount"),
+                    title:  DropdownButton<String>(
+                      isExpanded: true,
+                      value: discountList![0],
+                      style: const TextStyle(
+                          color: Colors.deepPurple
                       ),
-                    ),
-                    ListTile(
-                      leading: Text("Discount Type - B"),
-                      title: Checkbox(
-                        checkColor: Colors.white,
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
+                      underline: Container(
+                        height: 2,
+                        color: Colors.deepPurpleAccent,
                       ),
-                    ),
-                    ListTile(
-                      leading: Text("Discount Type - C"),
-                      title: Checkbox(
-                        checkColor: Colors.white,
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      leading: Text("Discount Type - D"),
-                      title: Checkbox(
-                        checkColor: Colors.white,
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
-                      ),
+                      onChanged: (String? newValue) {
+                        print("VALUE DROP DOWN\t\t" + newValue!);
+                      },
+                      items: discountList
+                          ?.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
                     )
-                  ],
                 ),
               ),
               Expanded(
                 flex: 5,
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Text("Tax Type - A"),
-                      title: Checkbox(
-                        checkColor: Colors.white,
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
+                child:  ListTile(
+                    leading: const Text("Tax"),
+                    title:  DropdownButton<String>(
+                      isExpanded: true,
+                      value: taxList![0],
+                      style: const TextStyle(
+                          color: Colors.deepPurple
                       ),
-                    ),
-                    ListTile(
-                      leading: Text("Tax Type - B"),
-                      title: Checkbox(
-                        checkColor: Colors.white,
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
+                      underline: Container(
+                        height: 2,
+                        color: Colors.deepPurpleAccent,
                       ),
-                    ),
-                    ListTile(
-                      leading: Text("Tax Type - C"),
-                      title: Checkbox(
-                        checkColor: Colors.white,
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      leading: Text("Tax Type - D"),
-                      title: Checkbox(
-                        checkColor: Colors.white,
-                        value: isChecked,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
-                      ),
+                      onChanged: (String? newValue) {
+                        print("VALUE DROP DOWN\t\t" + newValue!);
+                      },
+                      items: taxList
+                          ?.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
                     )
-                  ],
                 ),
-              )
+              ),
             ],
           ),
 
-          Row(
-            children: [
-              Expanded(
-                  flex: 3,
-                  child:  defaultProductMode == 2 ? solidButton("Add To Batch", "ADD-SAVE-BATCH")  : solidButton("Save To Batch", "SAVE-BATCH")
-              ),
-              Expanded(
-                  flex: 3,
-                  child:  defaultProductMode == 2 ? solidButton("Add Batch", "ADD-BATCH") : solidButton("Update Batch", "UPDATE-BATCH")
-              ),
-              Expanded(
-                  flex: 3,
-                  child:  defaultProductMode == 2 ? solidButton("Add Item", "ADD-ITEM") : solidButton("Update Item", "UPDATE-ITEM")
-              )
-            ],
-          ),
         ],
       )
     ) ;
   }
 
   Widget prodManLeftBotPanel() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 5,
-          child: Custom_ListTile_TextField(
-              read: perReadOnly,
-              controller: etCreatedBy,
-              labelText: "Created By/Datetime",
-              hintText: "TEST",
-              isMask: false,
-              mask: false
-          )
-        ),
-        Expanded(
-          flex: 5,
-          child: Custom_ListTile_TextField(
-              read: perReadOnly,
-              controller: etUpdatedBy,
-              labelText: "Last Updated By/Datetime",
-              hintText: "TEST",
-              isMask: false,
-              mask: false
-          )
-        )
-      ],
-    );
+    return
+      Column(
+        children: [
+          Expanded(
+            flex: 5,
+              child:
+              Row(
+                children: [
+                  Expanded(
+                      flex: 3,
+                      child:  defaultProductMode == 2 ? solidButton("Add To Batch", "ADD-SAVE-BATCH")  : solidButton("Save To Batch", "SAVE-BATCH")
+                  ),
+                  Expanded(
+                      flex: 3,
+                      child:  defaultProductMode == 2 ? solidButton("Add Batch", "ADD-BATCH") : solidButton("Update Batch", "UPDATE-BATCH")
+                  ),
+                  Expanded(
+                      flex: 3,
+                      child:  defaultProductMode == 2 ? solidButton("Add Item", "ADD-ITEM") : solidButton("Update Item", "UPDATE-ITEM")
+                  )
+                ],
+              ),
+          ),
+          Expanded(
+            flex: 5,
+              child: Row(
+                children: [
+                  Expanded(
+                      flex: 5,
+                      child: Custom_ListTile_TextField(
+                          read: perReadOnly,
+                          controller: etCreatedBy,
+                          labelText: "Created By/Datetime",
+                          hintText: "TEST",
+                          isMask: false,
+                          mask: false
+                      )
+                  ),
+                  Expanded(
+                      flex: 5,
+                      child: Custom_ListTile_TextField(
+                          read: perReadOnly,
+                          controller: etUpdatedBy,
+                          labelText: "Last Updated By/Datetime",
+                          hintText: "TEST",
+                          isMask: false,
+                          mask: false
+                      )
+                  )
+                ],
+              ))
+        ],
+      );
   }
 
   Widget prodManRightPanel() {
-    return paginateTable();
+    return isLoadingTable ?  ShareSpinner() : paginateTable();
   }
 
   Widget solidButton(String text, String event) {
@@ -948,48 +952,63 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     ConsolePrint("ADD MODEL", model.added_by);
   }
 
-  DataTableSource _data = TableData();
+
 
   Widget paginateTable() {
+    DataTableSource _data = TableData(listProductPaginate, DataCount, context, widget.userData);
+    return PaginatedDataTable2(
+      columns: const [
+        DataColumn(label: Text('Product Id')),
+        DataColumn(label: Text('Description')),
+        DataColumn(label: Text('Created Datetime')),
+        DataColumn(label: Text('Updated Datetime')),
+      ],
+      source: _data,
+      // horizontalMargin: 50,
+      // checkboxHorizontalMargin: 12,
+      columnSpacing: 25,
+      wrapInCard: false,
+      rowsPerPage: 15,
+      autoRowsToHeight: true, // match width and height
+      minWidth: 800, // enable horizontal scroll -- this also set width of the column
+      fit: FlexFit.tight,
+      initialFirstRowIndex: 0,
 
-    return SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-      child: PaginatedDataTable(
-        source: _data,
-        header: Text('My Products'),
-        columns: [
-          DataColumn(label: Text('ID')),
-          DataColumn(label: Text('Name')),
-          DataColumn(label: Text('Price'))
-        ],
-        columnSpacing: 100,
-        horizontalMargin: 10,
-        rowsPerPage: 15,
-        showCheckboxColumn: false,
-      )
     );
   }
+
+
 }
 
 
 class TableData extends DataTableSource {
-  // Generate some made-up data
-  final List<Map<String, dynamic>> _data = List.generate(
-      200,
-          (index) => {
-        "id": index,
-        "title": "Item $index",
-        "price": Random().nextInt(10000)
-      });
+  BuildContext context;
+  dynamic userData;
+  int dataCount = 0;
+  List<ProductModel> lstProductModel = [];
+  TableData(this.lstProductModel, this.dataCount, this.context, this.userData);
 
+  @override
   bool get isRowCountApproximate => false;
-  int get rowCount => _data.length;
+  @override
+  int get rowCount => lstProductModel.length ;
+  @override
   int get selectedRowCount => 0;
+  @override
   DataRow getRow(int index) {
-    return DataRow(cells: [
-      DataCell(Text(_data[index]['id'].toString())),
-      DataCell(Text(_data[index]["title"])),
-      DataCell(Text(_data[index]["price"].toString())),
-    ]);
+    return DataRow2(
+      onLongPress: () {
+        ProductModel selectedModel = lstProductModel[index];
+        Map<String, String> map = <String, String>{};
+        map["uid"] = selectedModel.uid!;
+        context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductByParamMap, userData: userData, productParameter: map));
+      },
+        cells: [
+          DataCell(Text(lstProductModel[index].uid.toString())),
+          DataCell(Text(lstProductModel[index].description.toString())),
+          DataCell(Text(lstProductModel[index].price.toString())),
+          DataCell(Text(lstProductModel[index].cost.toString())),
+        ]
+    );
   }
 }
