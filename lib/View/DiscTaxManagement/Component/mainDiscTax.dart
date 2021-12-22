@@ -21,6 +21,7 @@ import 'package:npos/View/Home/homeMenu.dart';
 
 import '../../Client/Component/mainClientBody.dart';
 import 'Discount.dart';
+import 'Tax.dart';
 
 
 class DisTaxBody extends StatefulWidget {
@@ -34,7 +35,7 @@ class Component extends State<DisTaxBody> {
   uiText uIText = uiText();
   uiImage uImage = uiImage();
   bool isLoading = false;
-  String currentScreen = "DEPARTMENT";
+  String currentScreen = "DISCOUNT";
   @override
   void initState() {
     super.initState();
@@ -60,9 +61,9 @@ class Component extends State<DisTaxBody> {
   void appSpecificEvent(MainState state) {
     // Executing Specific State
     if (state is SwitchScreenLoadedState) {
-      if (state.toWhere == "DEPARTMENT") {
+      if (state.toWhere == "DISCOUNT") {
         currentScreen = state.toWhere;
-      } else if (state.toWhere == "CATEGORY") {
+      } else if (state.toWhere == "TAX") {
         currentScreen = state.toWhere;
       }
     }
@@ -165,7 +166,18 @@ class Component extends State<DisTaxBody> {
                                   onTap: () {
                                     String event = UIItem.discountTaxOptionList[index]["event"];   // POS Menu
                                     switch(event) {
-                                    // Set this up in the similar way with Department option
+                                      case OPTION_DISCOUNT:
+                                      // Switch Main Container On Click
+                                      // Clear Data State of the current screen
+                                        print("DISC OPT");
+                                        context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "DISCOUNT", userData: widget.userData));
+                                        break;
+                                    // Switch Main Container On Click
+                                    // Clear Data State of the current screen
+                                      case OPTION_TAX:
+                                        print("TAX OPT");
+                                        context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "TAX", userData: widget.userData));
+                                        break;
                                       default:
                                         break;
                                     }
@@ -207,9 +219,13 @@ class Component extends State<DisTaxBody> {
     );
   }
 
-  Widget mainItem() {
-    return Discount(userData: widget.userData);
 
+  Widget mainItem() {
+    if (currentScreen == "DISCOUNT") {
+      return Discount(userData: widget.userData);
+    } else {
+      return Tax(userData: widget.userData);
+    }
 
   }
 

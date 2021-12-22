@@ -49,12 +49,13 @@ class MainRepository{
     return ProductService().GetProductPaginateByIndex(userId, locId, searchType, startIdx, endIdx);
   }
 
-  Future<List<DepartmentModel>>GetDepartments(String userId, String locId) {
-    return DepartmentService().GetDepartments(userId, locId);
-  }
   //endregion
 
   //region DEPARTMENT
+  Future<List<DepartmentModel>>GetDepartments(String userId, String locId) {
+    return DepartmentService().GetDepartments(userId, locId);
+  }
+
   Future<int> GetDepartmentPaginateCount(String userId, String locId, String searchType) {
     return DepartmentService().GetDepartmentPaginateCount(userId, locId, searchType);
   }
@@ -81,6 +82,10 @@ class MainRepository{
   //endregion
 
   //region CATEGORY
+  Future<List<CategoryModel>>GetCategory(String userId, String locId) {
+    return CategoryService().GetCategory(userId, locId);
+  }
+
   Future<int> GetCategoryPaginateCount(String userId, String locId, String searchType) {
     return CategoryService().GetCategoryPaginateCount(userId, locId, searchType);
   }
@@ -107,6 +112,10 @@ class MainRepository{
   //endregion
 
   //region VENDOR
+  Future<List<VendorModel>>GetVendors(String userId, String locId) {
+    return VendorService().GetVendor(userId, locId);
+  }
+
   Future<int> GetVendorPaginateCount(String userId, String locId, String searchType) {
     return VendorService().GetVendorPaginateCount(userId, locId, searchType);
   }
@@ -133,6 +142,10 @@ class MainRepository{
   //endregion
 
   //region SECTION
+  Future<List<SectionModel>>GetSections(String userId, String locId) {
+    return SectionService().GetSection(userId, locId);
+  }
+
   Future<int> GetSectionPaginateCount(String userId, String locId, String searchType) {
     return SectionService().GetSectionPaginateCount(userId, locId, searchType);
   }
@@ -159,6 +172,10 @@ class MainRepository{
   //endregion
 
   //region DISCOUNT
+  Future<List<DiscountModel>>GetDiscounts(String userId, String locId) {
+    return DiscountService().GetDiscount(userId, locId);
+  }
+
   Future<int> GetDiscountPaginateCount(String userId, String locId, String searchType) {
     return DiscountService().GetDiscountPaginateCount(userId, locId, searchType);
   }
@@ -185,6 +202,10 @@ class MainRepository{
   //endregion
 
   //region TAX
+  Future<List<TaxModel>>GetTax(String userId, String locId) {
+    return TaxService().GetTax(userId, locId);
+  }
+
   Future<int> GetTaxPaginateCount(String userId, String locId, String searchType) {
     return TaxService().GetTaxPaginateCount(userId, locId, searchType);
   }
