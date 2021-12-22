@@ -23,7 +23,7 @@ class DiscountModel {
     added_datetime = map["AddedDateTime"];
     updated_by = map["UpdatedBy"];
     added_by = map["AddedBy"];
-    rate = map["rate"].toDouble();
+    rate = map["Rate"].toDouble();
   }
 
   void print() {

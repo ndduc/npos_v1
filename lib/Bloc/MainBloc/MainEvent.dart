@@ -145,21 +145,27 @@ class MainParam {
 
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
+  MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});
 
   /// CATEGORY
   MainParam.GetCategoryByParam({this.eventStatus, this.categoryParameter, this.userData});
+  MainParam.AddUpdateCategory({this.eventStatus, this.userData, this.categoryParameter});
 
   /// VENDOR
   MainParam.GetVendorByParam({this.eventStatus, this.vendorParameter, this.userData});
+  MainParam.AddUpdateVendor({this.eventStatus, this.userData, this.vendorParameter});
 
   /// SECTION
   MainParam.GetSectionByParam({this.eventStatus, this.sectionParameter, this.userData});
+  MainParam.AddUpdateSection({this.eventStatus, this.userData, this.sectionParameter});
 
   /// DISCOUNT
   MainParam.GetDiscountByParam({this.eventStatus, this.discountParameter, this.userData});
+  MainParam.AddUpdateDiscount({this.eventStatus, this.userData, this.discountParameter});
 
   /// TAX
   MainParam.GetTaxByParam({this.eventStatus, this.taxParameter, this.userData});
+  MainParam.AddUpdateTax({this.eventStatus, this.userData, this.taxParameter});
 
   /// AUTHORIZATION
   MainParam.GetAuthorization({this.eventStatus, this.userData});
@@ -178,5 +184,5 @@ class MainParam {
 
   MainParam.AddItemMode({this.eventStatus, this.isAdded});
 
-  MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});
+
 }

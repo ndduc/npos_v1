@@ -6,10 +6,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
+import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
+import 'package:npos/Model/SectionModel.dart';
+import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
 import 'package:npos/View/DiscTaxManagement/disTaxManagement.dart';
 import 'package:npos/View/Home/homeMenu.dart';
@@ -34,7 +39,7 @@ class MainBloc extends Bloc<MainParam,MainState>
   @override
   Stream<MainState> mapEventToState(MainParam event) async* {
 
-    // Navigate Switch
+    /// Navigate Switch
     navigateHelper(event);
 
     switch(event.eventStatus)
@@ -84,6 +89,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         }
         break;
         //endregion
+
       //region DEPARTMENT HTTP EVENT
       case MainEvent.Event_GetDepartmentPaginateCount:
         yield GenericInitialState();
@@ -188,6 +194,532 @@ class MainBloc extends Bloc<MainParam,MainState>
         }
         break;
         //endregion
+
+      //region CATEGORY HTTP EVENT
+      case MainEvent.Event_GetCategoryPaginateCount:
+        yield GenericInitialState();
+        try {
+          yield CategoryPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int count = await mainRepo.GetCategoryPaginateCount(userId, locId!, searchType);
+          yield CategoryPaginateCountLoadedState(count: count);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetCategoryPaginate:
+        yield GenericInitialState();
+        try {
+          yield CategoryPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int startIdx = event.productParameter!["startIdx"];
+          int endIdx = event.productParameter!["endIdx"];
+          ConsolePrint("Map Param", event.productParameter);
+          List<CategoryModel> listModel = await mainRepo.GetCategoryPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          yield CategoryPaginateLoadedState(listCategoryModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetCategoryByDescription:
+        yield GenericInitialState();
+        try {
+          yield CategoryPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String description = event.categoryParameter!["description"];
+          ConsolePrint("Map Param Event_GetCategoryByDescription", event.categoryParameter);
+          List<CategoryModel> listModel = await mainRepo.GetCategoryByDescription(userId, locId!, description);
+          yield CategoryByDescriptionLoadedState(listCategoryModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetCategoryById:
+        yield GenericInitialState();
+        try {
+          yield CategoryLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String categoryId = event.categoryParameter!["categoryId"];
+          CategoryModel res = await mainRepo.GetCategoryById(userId, locId!, categoryId);
+          yield CategoryLoadedState(categoryModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetCategory:
+      // This will be replaced with paginate endpoint - not valid at the moment
+        yield GenericInitialState();
+        try {
+          yield CategoryPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<CategoryModel> res = await mainRepo.GetCategory(userId, locId!);
+          yield CategoryPaginateLoadedState(listCategoryModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_AddCategory:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.categoryParameter!["desc"],
+            "note":event.categoryParameter!["note"]
+          };
+          bool res = await mainRepo.AddCategory(userId, locId!, param);
+          yield AddUpdateCategoryLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_UpdateCategory:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.categoryParameter!["desc"],
+            "note":event.categoryParameter!["note"],
+            "id":event.categoryParameter!["id"]
+          };
+          bool res = await mainRepo.UpdateCategory(userId, locId!, param);
+          yield AddUpdateCategoryLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      //endregion
+
+      //region VENDOR HTTP EVENT
+      case MainEvent.Event_GetVendorPaginateCount:
+        yield GenericInitialState();
+        try {
+          yield VendorPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int count = await mainRepo.GetVendorPaginateCount(userId, locId!, searchType);
+          yield VendorPaginateCountLoadedState(count: count);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetVendorPaginate:
+        yield GenericInitialState();
+        try {
+          yield VendorPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int startIdx = event.productParameter!["startIdx"];
+          int endIdx = event.productParameter!["endIdx"];
+          ConsolePrint("Map Param", event.productParameter);
+          List<VendorModel> listModel = await mainRepo.GetVendorPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          yield VendorPaginateLoadedState(listVendorModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetVendorByDescription:
+        yield GenericInitialState();
+        try {
+          yield VendorPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String description = event.vendorParameter!["description"];
+          ConsolePrint("Map Param Event_GetVendorByDescription", event.vendorParameter);
+          List<VendorModel> listModel = await mainRepo.GetVendorByDescription(userId, locId!, description);
+          yield VendorByDescriptionLoadedState(listVendorModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetVendorById:
+        yield GenericInitialState();
+        try {
+          yield VendorLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String vendorId = event.vendorParameter!["vendorId"];
+          VendorModel res = await mainRepo.GetVendorById(userId, locId!, vendorId);
+          yield VendorLoadedState(vendorModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetVendors:
+      // This will be replaced with paginate endpoint - not valid at the moment
+        yield GenericInitialState();
+        try {
+          yield VendorPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<VendorModel> res = await mainRepo.GetVendors(userId, locId!);
+          yield VendorPaginateLoadedState(listVendorModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_AddVendor:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.vendorParameter!["desc"],
+            "note":event.vendorParameter!["note"]
+          };
+          bool res = await mainRepo.AddVendor(userId, locId!, param);
+          yield AddUpdateVendorLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_UpdateVendor:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.vendorParameter!["desc"],
+            "note":event.vendorParameter!["note"],
+            "id":event.vendorParameter!["id"]
+          };
+          bool res = await mainRepo.UpdateVendor(userId, locId!, param);
+          yield AddUpdateVendorLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      //endregion
+
+      //region SECTION HTTP EVENT
+      case MainEvent.Event_GetSectionPaginateCount:
+        yield GenericInitialState();
+        try {
+          yield SectionPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int count = await mainRepo.GetSectionPaginateCount(userId, locId!, searchType);
+          yield SectionPaginateCountLoadedState(count: count);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSectionPaginate:
+        yield GenericInitialState();
+        try {
+          yield SectionPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int startIdx = event.productParameter!["startIdx"];
+          int endIdx = event.productParameter!["endIdx"];
+          ConsolePrint("Map Param", event.productParameter);
+          List<SectionModel> listModel = await mainRepo.GetSectionPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          yield SectionPaginateLoadedState(listSectionModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSectionByDescription:
+        yield GenericInitialState();
+        try {
+          yield SectionPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String description = event.sectionParameter!["description"];
+          ConsolePrint("Map Param Event_GetSectionByDescription", event.sectionParameter);
+          List<SectionModel> listModel = await mainRepo.GetSectionByDescription(userId, locId!, description);
+          yield SectionByDescriptionLoadedState(listSectionModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSectionById:
+        yield GenericInitialState();
+        try {
+          yield SectionLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String sectionId = event.sectionParameter!["sectionId"];
+          SectionModel res = await mainRepo.GetSectionById(userId, locId!, sectionId);
+          yield SectionLoadedState(sectionModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSections:
+      // This will be replaced with paginate endpoint - not valid at the moment
+        yield GenericInitialState();
+        try {
+          yield SectionPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<SectionModel> res = await mainRepo.GetSections(userId, locId!);
+          yield SectionPaginateLoadedState(listSectionModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_AddSection:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.sectionParameter!["desc"],
+            "note":event.sectionParameter!["note"]
+          };
+          bool res = await mainRepo.AddSection(userId, locId!, param);
+          yield AddUpdateSectionLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_UpdateSection:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.sectionParameter!["desc"],
+            "note":event.sectionParameter!["note"],
+            "id":event.sectionParameter!["id"]
+          };
+          bool res = await mainRepo.UpdateSection(userId, locId!, param);
+          yield AddUpdateSectionLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      //endregion
+
+      //region DISCOUNT HTTP EVENT
+      case MainEvent.Event_GetDiscountPaginateCount:
+        yield GenericInitialState();
+        try {
+          yield DiscountPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int count = await mainRepo.GetDiscountPaginateCount(userId, locId!, searchType);
+          yield DiscountPaginateCountLoadedState(count: count);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetDiscountPaginate:
+        yield GenericInitialState();
+        try {
+          yield DiscountPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int startIdx = event.productParameter!["startIdx"];
+          int endIdx = event.productParameter!["endIdx"];
+          ConsolePrint("Map Param", event.productParameter);
+          List<DiscountModel> listModel = await mainRepo.GetDiscountPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          yield DiscountPaginateLoadedState(listDiscountModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetDiscountByDescription:
+        yield GenericInitialState();
+        try {
+          yield DiscountPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String description = event.discountParameter!["description"];
+          ConsolePrint("Map Param Event_GetDiscountByDescription", event.discountParameter);
+          List<DiscountModel> listModel = await mainRepo.GetDiscountByDescription(userId, locId!, description);
+          yield DiscountByDescriptionLoadedState(listDiscountModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetDiscountById:
+        yield GenericInitialState();
+        try {
+          yield DiscountLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String discountId = event.discountParameter!["discountId"];
+          DiscountModel res = await mainRepo.GetDiscountById(userId, locId!, discountId);
+          yield DiscountLoadedState(discountModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetDiscounts:
+      // This will be replaced with paginate endpoint - not valid at the moment
+        yield GenericInitialState();
+        try {
+          yield DiscountPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<DiscountModel> res = await mainRepo.GetDiscounts(userId, locId!);
+          yield DiscountPaginateLoadedState(listDiscountModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_AddDiscount:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.discountParameter!["desc"],
+            "note":event.discountParameter!["note"]
+          };
+          bool res = await mainRepo.AddDiscount(userId, locId!, param);
+          yield AddUpdateDiscountLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_UpdateDiscount:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.discountParameter!["desc"],
+            "note":event.discountParameter!["note"],
+            "id":event.discountParameter!["id"]
+          };
+          bool res = await mainRepo.UpdateDiscount(userId, locId!, param);
+          yield AddUpdateDiscountLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      //endregion
+
+      //region TAX HTTP EVENT
+      case MainEvent.Event_GetTaxPaginateCount:
+        yield GenericInitialState();
+        try {
+          yield TaxPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int count = await mainRepo.GetTaxPaginateCount(userId, locId!, searchType);
+          yield TaxPaginateCountLoadedState(count: count);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetTaxPaginate:
+        yield GenericInitialState();
+        try {
+          yield TaxPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int startIdx = event.productParameter!["startIdx"];
+          int endIdx = event.productParameter!["endIdx"];
+          ConsolePrint("Map Param", event.productParameter);
+          List<TaxModel> listModel = await mainRepo.GetTaxPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          yield TaxPaginateLoadedState(listTaxModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetTaxByDescription:
+        yield GenericInitialState();
+        try {
+          yield TaxPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String description = event.taxParameter!["description"];
+          ConsolePrint("Map Param Event_GetTaxByDescription", event.taxParameter);
+          List<TaxModel> listModel = await mainRepo.GetTaxByDescription(userId, locId!, description);
+          yield TaxByDescriptionLoadedState(listTaxModel: listModel);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetTaxById:
+        yield GenericInitialState();
+        try {
+          yield TaxLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String taxId = event.taxParameter!["taxId"];
+          TaxModel res = await mainRepo.GetTaxById(userId, locId!, taxId);
+          yield TaxLoadedState(taxModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetTax:
+      // This will be replaced with paginate endpoint - not valid at the moment
+        yield GenericInitialState();
+        try {
+          yield TaxPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<TaxModel> res = await mainRepo.GetTax(userId, locId!);
+          yield TaxPaginateLoadedState(listTaxModel: res);
+        } catch (e) {
+          yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_AddTax:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.taxParameter!["desc"],
+            "note":event.taxParameter!["note"]
+          };
+          bool res = await mainRepo.AddTax(userId, locId!, param);
+          yield AddUpdateTaxLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_UpdateTax:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.taxParameter!["desc"],
+            "note":event.taxParameter!["note"],
+            "id":event.taxParameter!["id"]
+          };
+          bool res = await mainRepo.UpdateTax(userId, locId!, param);
+          yield AddUpdateTaxLoaded(isSuccess: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
+        }
+        break;
+      //endregion
+
       //region USER HTTP EVENT
       case MainEvent.Event_VerifyUser:
         yield GenericLoadingState();
@@ -214,6 +746,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         }
         break;
         //endregion
+
       //region LOCAL EVENT
       case MainEvent.Local_Event_NewItem_Mode:
         yield GenericInitialState();
@@ -253,6 +786,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         }
         break;
         //endregion
+
       //region SNACK BAR
       case MainEvent.Show_SnackBar:
         yield GenericInitialState();

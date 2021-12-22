@@ -69,12 +69,6 @@ class AddItemModeLoaded extends MainState {
   bool? isAdded;
   AddItemModeLoaded({required this.isAdded});
 }
-
-/// Description: Response to the Add and Update Department request
-class AddUpdateDepartmentLoaded extends MainState {
-  bool? isSuccess;
-  AddUpdateDepartmentLoaded({required this.isSuccess});
-}
 //endregion
 
 //region AUTHORIZE
@@ -143,6 +137,12 @@ class DepartmentLoadedState extends MainState{
   DepartmentModel? departmentModel;
   DepartmentLoadedState({required this.departmentModel});
 }
+
+/// Description: Response to the Add and Update Department request
+class AddUpdateDepartmentLoaded extends MainState {
+  bool? isSuccess;
+  AddUpdateDepartmentLoaded({required this.isSuccess});
+}
 //endregion
 
 //region CATEGORY
@@ -168,6 +168,12 @@ class CategoryByDescriptionLoadedState extends MainState{
 class CategoryLoadedState extends MainState{
   CategoryModel? categoryModel;
   CategoryLoadedState({required this.categoryModel});
+}
+
+/// Description: Response to the Add and Update Department request
+class AddUpdateCategoryLoaded extends MainState {
+  bool? isSuccess;
+  AddUpdateCategoryLoaded({required this.isSuccess});
 }
 //endregion
 
@@ -195,6 +201,11 @@ class VendorLoadedState extends MainState{
   VendorModel? vendorModel;
   VendorLoadedState({required this.vendorModel});
 }
+
+class AddUpdateVendorLoaded extends MainState {
+  bool? isSuccess;
+  AddUpdateVendorLoaded({required this.isSuccess});
+}
 //endregion
 
 //region SECTION
@@ -220,6 +231,11 @@ class SectionByDescriptionLoadedState extends MainState{
 class SectionLoadedState extends MainState{
   SectionModel? sectionModel;
   SectionLoadedState({required this.sectionModel});
+}
+
+class AddUpdateSectionLoaded extends MainState {
+  bool? isSuccess;
+  AddUpdateSectionLoaded({required this.isSuccess});
 }
 //endregion
 
@@ -247,6 +263,11 @@ class DiscountLoadedState extends MainState{
   DiscountModel? discountModel;
   DiscountLoadedState({required this.discountModel});
 }
+
+class AddUpdateDiscountLoaded extends MainState {
+  bool? isSuccess;
+  AddUpdateDiscountLoaded({required this.isSuccess});
+}
 //endregion
 
 //region TAX
@@ -272,6 +293,11 @@ class TaxByDescriptionLoadedState extends MainState{
 class TaxLoadedState extends MainState{
   TaxModel? taxModel;
   TaxLoadedState({required this.taxModel});
+}
+
+class AddUpdateTaxLoaded extends MainState {
+  bool? isSuccess;
+  AddUpdateTaxLoaded({required this.isSuccess});
 }
 //endregion
 

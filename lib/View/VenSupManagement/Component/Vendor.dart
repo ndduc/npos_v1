@@ -1,11 +1,16 @@
 // ignore_for_file: file_names
 // ignore_for_file: library_prefixes
+import 'package:data_table_2/data_table_2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 class Vendor extends StatefulWidget {
   UserModel? userData;
@@ -19,13 +24,18 @@ class Component extends State<Vendor> {
   String dropdownValue = 'Search By Product Id';
   bool isChecked = false;
   TextEditingController eTSearchTopBy = TextEditingController();
-  int searchOptionValue = 1;
+  TextEditingController eTVendorName = TextEditingController();
+  TextEditingController eTVendorNote = TextEditingController();
+  TextEditingController eTCreated = TextEditingController();
+  TextEditingController eTUpdated = TextEditingController();
+  TextEditingController eTVendorId = TextEditingController();
+  int searchOptionValue = 0;
   Map<int, String> searchOptionByParam = <int, String>{
-    0:"Search By Department Id",
-    1:"Search By Department Code"
+    0:"Search By Vendor Name"
   };
   int defaultProductMode = 0;
   bool isLoading = false;
+  var formKey = GlobalKey<FormState>();
 
   void appBaseEvent(MainState state) {
     // Executing Generic State
@@ -35,15 +45,88 @@ class Component extends State<Vendor> {
       isLoading = false;
     } else if (state is GenericErrorState) {
       isLoading = false;
-
     }
   }
 
-  void appSpecificEvent(MainState state) {
-    // Executing Specific State
-
+  void appNestedEvent(MainState state) {
+    if (state is Generic2ndInitialState) {
+    } else if (state is Generic2ndLoadingState) {
+    } else if (state is Generic2ndLoadedState) {
+    } else if (state is Generic2ndErrorState) {
+    }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    loadOnInit();
+  }
+
+  loadOnInit() {
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetVendorPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+  }
+
+  List<VendorModel> listVendorPaginate = [];
+  int dataCount = 0;
+  VendorModel? currentModel;
+  bool isAdded = false;
+  void appSpecificEvent(MainState state) {
+    // Executing Specific State
+    if (state is VendorPaginateLoadingState) {
+      isLoadingTable = true;
+    } else if (state is VendorPaginateLoadedState) {
+      isLoadingTable = false;
+      listVendorPaginate = state.listVendorModel!;
+    } else if (state is VendorPaginateCountLoadedState) {
+      isLoadingTable = false;
+      // Invoke Load Paginate Product After Count is Completed
+      dataCount = state.count!;
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetVendorPaginate, userData: widget.userData, productParameter: {
+        "searchType": "test",
+        "startIdx": 1,
+        "endIdx": 10
+      }));
+    } else if (state is VendorLoadedState) {
+      currentModel = state.vendorModel;
+      parsingProductDataToUI(currentModel!);
+      context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: false));
+    } else if (state is VendorByDescriptionLoadedState) {
+      parsingProductDateByDescription(state.listVendorModel!);
+    } else if (state is AddItemModeLoaded) {
+      ConsolePrint("MODE TEST", state.isAdded!);
+      isAdded = state.isAdded!;
+      if (isAdded) {
+        eTVendorId.text = "Vendor Id Will Be Generated Once The Process Is Completed";
+        clearEditText();
+      }
+    } else if (state is AddUpdateVendorLoaded) {
+      ConsolePrint("RESPONSE", state.isSuccess.toString());
+      if(state.isSuccess!) {
+        loadOnInit();
+      } else {
+        // Pop A snackbar or a dialog here
+      }
+    }
+  }
+
+  void clearEditText() {
+    eTVendorNote = TextEditingController();
+    eTVendorName = TextEditingController();
+    eTCreated = TextEditingController();
+    eTUpdated = TextEditingController();
+  }
+  void parsingProductDateByDescription (List<VendorModel> modelList) {
+    dataCount = modelList.length;
+    listVendorPaginate = modelList;
+    isLoadingTable = false;
+  }
+  void parsingProductDataToUI(VendorModel model) {
+    eTVendorName.text = model.description!;
+    eTVendorNote.text = model.second_description == null ? "" : model.second_description!;
+    eTCreated.text = model.added_by! + " On " + model.added_datetime!;
+    eTUpdated.text = model.updated_by == null ? "Not Available" : model.updated_by! + " On " + model.updated_by!;
+    eTVendorId.text = model.uid!;
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -53,6 +136,7 @@ class Component extends State<Vendor> {
        * START
        * */
       appBaseEvent(state);
+      appNestedEvent(state);
       appSpecificEvent(state);
       /**
        * Bloc Action Note
@@ -109,7 +193,7 @@ class Component extends State<Vendor> {
       children: [
         Expanded(
             flex: 2,
-            child: solidButton("New Department", "NEW-DEPARTMENT")
+            child: solidButton("New Vendor", "NEW-VENDOR")
         ),
 
         Expanded(
@@ -166,86 +250,46 @@ class Component extends State<Vendor> {
   Widget prodManLeftMidPanel() {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: Column(
-          children: [
-            Custom_ListTile_TextField(
-                read: false,
-                controller: null,
-                labelText: "Department Name",
-                hintText: "Department Name",
-                isMask: false,
-                mask: false
-            ),
-            Custom_ListTile_TextField(
-                read: false,
-                controller: null,
-                labelText: "Department Code",
-                hintText: "Code Must Be Unique For Each Department",
-                isMask: false,
-                mask: false
-            ),
-            Custom_ListTile_TextField(
-              read: false,
-              controller: null,
-              labelText: "User's Note",
-              hintText: "User's Note",
-              isMask: false,
-              mask: false,
-              maxLines: 5,
-            ),
-            ListTile(
-                leading: Text("Default Discount"),
-                title:  DropdownButton<String>(
-                  isExpanded: true,
-                  value: dropdownValue,
-                  style: const TextStyle(
-                      color: Colors.deepPurple
-                  ),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.deepPurpleAccent,
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue!;
-                    });
+        child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                Custom_ListTile_TextField(
+                  read: true,
+                  controller: eTVendorId,
+                  labelText: "Vendor Id",
+                  hintText: "Vendor Id",
+                  isMask: false,
+                  mask: false,
+
+                ),
+                Custom_ListTile_TextField(
+                  read: false,
+                  controller: eTVendorName,
+                  labelText: "Vendor Name",
+                  hintText: "Vendor Name",
+                  isMask: false,
+                  mask: false,
+                  validations: (value) {
+                    if(eTVendorName.text.isNotEmpty) {
+                      return null;
+                    } else {
+                      return "Please Provide Description";
+                    }
                   },
-                  items: <String>['Search By Product Id', 'Search By Item Code', 'Search By Description']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+
+                ),
+                Custom_ListTile_TextField(
+                  read: false,
+                  controller: eTVendorNote,
+                  labelText: "User's Note",
+                  hintText: "User's Note",
+                  isMask: false,
+                  mask: false,
+                  maxLines: 5,
                 )
-            ),
-            ListTile(
-                leading: Text("Default Tax Rate"),
-                title:  DropdownButton<String>(
-                  isExpanded: true,
-                  value: dropdownValue,
-                  style: const TextStyle(
-                      color: Colors.deepPurple
-                  ),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.deepPurpleAccent,
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue!;
-                    });
-                  },
-                  items: <String>['Search By Product Id', 'Search By Item Code', 'Search By Description']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                )
+              ],
             )
-          ],
         )
     ) ;
   }
@@ -254,56 +298,61 @@ class Component extends State<Vendor> {
     return Column (
       children: [
         Expanded(
-          flex: 5,
-          child: Row(
-            children: [
-              const Expanded(
-                  flex: 3,
-                  child:  SizedBox()
+            flex: 4,
+            child: Container(
+              padding: EdgeInsets.only(bottom: 5),
+              child: Row(
+                children: [
+                  const Expanded(
+                      flex: 3,
+                      child:  SizedBox()
+                  ),
+                  const Expanded(
+                      flex: 3,
+                      child:  SizedBox()
+                  ),
+                  Expanded(
+                      flex: 3,
+                      child:  isAdded? solidButton("Add New Vendor", "ADD") : solidButton("Save Vendor", "UPDATE")
+                  )
+                ],
               ),
-              const Expanded(
-                  flex: 3,
-                  child:  SizedBox()
-              ),
-              Expanded(
-                  flex: 3,
-                  child:  solidButton("Update", "UPDATE")
-              )
-            ],
-          ),
+            )
         ),
         Expanded(
-            flex: 5,
+            flex: 6,
             child: Container(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Row(
                   children: [
-                    const Expanded(
-                        flex: 3,
-                        child: SizedBox()
-                    ),
                     Expanded(
-                        flex: 3,
-                        child: Custom_ListTile_TextField(
-                            read: false,
-                            controller: null,
-                            labelText: "Created By/Datetime",
-                            hintText: "TEST",
-                            isMask: false,
-                            mask: false
-                        )
-                    ),
-                    Expanded(
-                        flex: 3,
-                        child: Custom_ListTile_TextField(
-                            read: false,
-                            controller: null,
-                            labelText: "Last Updated By/Datetime",
-                            hintText: "TEST",
-                            isMask: false,
-                            mask: false
-                        )
-                    )
+                        flex: 5,
+                        child: Row(
+                          children: [
+                            Expanded(
+                                flex: 5,
+                                child: Custom_ListTile_TextField(
+                                    read: true,
+                                    controller: eTCreated,
+                                    labelText: "Created By/Datetime",
+                                    hintText: "TEST",
+                                    isMask: false,
+                                    mask: false
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Custom_ListTile_TextField(
+                                    read: true,
+                                    controller: eTUpdated,
+                                    labelText: "Last Updated By/Datetime",
+                                    hintText: "TEST",
+                                    isMask: false,
+                                    mask: false
+                                )
+                            )
+                          ],
+                        ))
                   ],
                 )
             )
@@ -312,51 +361,31 @@ class Component extends State<Vendor> {
     );
   }
 
+  bool isLoadingTable = false;
   Widget prodManRightPanel() {
-    return DataTable(
-      columns: const <DataColumn>[
-        DataColumn(
-          label: Text(
-            'Name',
-            style: TextStyle(fontStyle: FontStyle.italic),
-          ),
-        ),
-        DataColumn(
-          label: Text(
-            'Age',
-            style: TextStyle(fontStyle: FontStyle.italic),
-          ),
-        ),
-        DataColumn(
-          label: Text(
-            'Role',
-            style: TextStyle(fontStyle: FontStyle.italic),
-          ),
-        ),
+    return isLoadingTable ?  ShareSpinner() : paginateTable();
+  }
+
+  Widget paginateTable() {
+    DataTableSource _data = TableData(listVendorPaginate, dataCount, context, widget.userData);
+    return PaginatedDataTable2(
+      columns: const [
+        DataColumn(label: Text('Product Id')),
+        DataColumn(label: Text('Description')),
+        DataColumn(label: Text('Created Datetime')),
+        DataColumn(label: Text('Updated Datetime')),
       ],
-      rows: const <DataRow>[
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('Sarah')),
-            DataCell(Text('19')),
-            DataCell(Text('Student')),
-          ],
-        ),
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('Janine')),
-            DataCell(Text('43')),
-            DataCell(Text('Professor')),
-          ],
-        ),
-        DataRow(
-          cells: <DataCell>[
-            DataCell(Text('William')),
-            DataCell(Text('27')),
-            DataCell(Text('Associate Professor')),
-          ],
-        ),
-      ],
+      source: _data,
+      // horizontalMargin: 50,
+      // checkboxHorizontalMargin: 12,
+      columnSpacing: 25,
+      wrapInCard: false,
+      rowsPerPage: 15,
+      autoRowsToHeight: true, // match width and height
+      minWidth: 800, // enable horizontal scroll -- this also set width of the column
+      fit: FlexFit.tight,
+      initialFirstRowIndex: 0,
+
     );
   }
 
@@ -381,38 +410,73 @@ class Component extends State<Vendor> {
   VoidCallback? solidBtnOnClick(String text, String event) {
     if(defaultProductMode == 0) {
       switch (text) {
-        case "Modify ItemCode":
-          return null;
-        case "Modify Upc":
-          return null;
-        case "Save To Batch":
-          return null;
-        case "Update Batch":
-          return null;
-        case "Update Item":
-          return null;
         default:
           return () {
             solidButtonEvent(event);
           };
       }
-    } else if (defaultProductMode == 1) {
-      return () {
-        solidButtonEvent(event);
-      };
-    } else if (defaultProductMode == 2) {
-      return () {
-        solidButtonEvent(event);
-      };
-    } else {
-      return () {
-        solidButtonEvent(event);
-      };
     }
   }
 
   void solidButtonEvent(String event) {
+    if (event == "SEARCH") {
+      context.read<MainBloc>().add(MainParam.GetVendorByParam(eventStatus: MainEvent.Event_GetVendorByDescription, userData: widget.userData, vendorParameter: {"description" : eTSearchTopBy.text}));
+    } else if (event == "NEW-VENDOR") {
+      context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: true));
+    } else if (event == "UPDATE") {
+      bool val = formKey.currentState!.validate();
+      ConsolePrint("Validate", val);
+      if (val) {
+        context.read<MainBloc>().add(MainParam.AddUpdateVendor(eventStatus: MainEvent.Event_UpdateVendor, userData: widget.userData, vendorParameter: {
+          "desc": eTVendorName.text,
+          "note": eTVendorNote.text,
+          "id": eTVendorId.text
+        }));
+      }
+
+    } else if (event == "ADD") {
+      bool val = formKey.currentState!.validate();
+      ConsolePrint("Validate", val);
+      if (val) {
+        context.read<MainBloc>().add(MainParam.AddUpdateVendor(eventStatus: MainEvent.Event_AddVendor, userData: widget.userData, vendorParameter: {
+          "desc": eTVendorName.text,
+          "note": eTVendorNote.text,
+        }));
+      }
+    }
   }
 
 
+}
+
+class TableData extends DataTableSource {
+  BuildContext context;
+  dynamic userData;
+  int dataCount = 0;
+  List<VendorModel> lstModel = [];
+  TableData(this.lstModel, this.dataCount, this.context, this.userData);
+
+  @override
+  bool get isRowCountApproximate => false;
+  @override
+  int get rowCount => lstModel.length ;
+  @override
+  int get selectedRowCount => 0;
+  @override
+  DataRow getRow(int index) {
+    return DataRow2(
+        onLongPress: () {
+          VendorModel selectedModel = lstModel[index];
+          Map<String, String> map = <String, String>{};
+          map["vendorId"] = selectedModel.uid!;
+          context.read<MainBloc>().add(MainParam.GetVendorByParam(eventStatus: MainEvent.Event_GetVendorById, userData: userData, vendorParameter: map));
+        },
+        cells: [
+          DataCell(Text(lstModel[index].uid.toString())),
+          DataCell(Text(lstModel[index].description.toString())),
+          DataCell(Text(lstModel[index].added_datetime.toString())),
+          DataCell(Text(lstModel[index].updated_datetime.toString()))
+        ]
+    );
+  }
 }
