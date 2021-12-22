@@ -6,17 +6,19 @@ List<Map<dynamic, dynamic>> menuItem = [
   {"id" : 2, "name" : "Section/Aisle", "event" : "MENU_SEC_MAN"},
   {"id" : 3, "name" : "Discount & Tax", "event" : "MENU_DIS/TAX_MAN"},
   {"id" : 4, "name" : "Vendor/Supplier", "event" : "MENU_VEN_MAN"},
-  {"id" : 5, "name" : "Inventory Report", "event" : "MENU_INV_REPORT"},
-  {"id" : 6, "name" : "Detail Report", "event" : "MENU_DE_REPORT"},
-  {"id" : 7, "name" : "Daily Report", "event" : "MENU_DAI_REPORT"},
-  {"id" : 8, "name" : "Analysis/Cashier Performance Report", "event" : "MENU_ANA_REPORT"},
-  {"id" : 9, "name" : "Customer Royalty", "event" : "MENU_CUS_ROYAL"},
-  {"id" : 10, "name" : "Point Management", "event" : "MENU_POINT_MAN"},
-  {"id" : 11, "name" : "Customer Notification", "event" : "MENU_CUS_NOTI"},
-  {"id" : 12, "name" : "Social Media Management", "event" : "MENU_SOC_MAN"},
-  {"id" : 13, "name" : "Employee Management", "event" : "MENU_EMP_MAN"},
-  {"id" : 14, "name" : "Store/Location Management", "event" : "MENU_LOC_MAN"},
-  {"id" : 15, "name" : "System Setup", "event":"MENU_SETUP"}
+  {"id" : 5, "name" : "Employee Management", "event" : "MENU_EMP_MAN"},
+  {"id" : 6, "name" : "Store/Location Management", "event" : "MENU_LOC_MAN"},
+  {"id" : 7, "name" : "System Setup", "event":"MENU_SETUP"},
+
+  {"id" : 8, "name" : "Inventory Report", "event" : "MENU_INV_REPORT"},
+  {"id" : 9, "name" : "Detail Report", "event" : "MENU_DE_REPORT"},
+  {"id" : 10, "name" : "Daily Report", "event" : "MENU_DAI_REPORT"},
+  {"id" : 11, "name" : "Analysis/Cashier Performance Report", "event" : "MENU_ANA_REPORT"},
+  {"id" : 12, "name" : "Customer Royalty", "event" : "MENU_CUS_ROYAL"},
+  {"id" : 13, "name" : "Point Management", "event" : "MENU_POINT_MAN"},
+  {"id" : 14, "name" : "Customer Notification", "event" : "MENU_CUS_NOTI"},
+  {"id" : 15, "name" : "Social Media Management", "event" : "MENU_SOC_MAN"},
+
 ];
 
 List<Map<dynamic, dynamic>> menuItemLeft = [
@@ -53,4 +55,17 @@ List<Map<dynamic, dynamic>> clientOptionTop = [
 List<Map<dynamic, dynamic>> departCateOptionList = [
   {"id" : 0, "name" : "Department", "event" : "DEPARTMENT"},
   {"id" : 1, "name" : "Category", "event" : "CATEGORY"},
+];
+
+List<Map<dynamic, dynamic>> sectionOptionList = [
+  {"id" : 0, "name" : "section", "event" : "SECTION"},
+];
+
+List<Map<dynamic, dynamic>> discountTaxOptionList = [
+  {"id" : 0, "name" : "Discount", "event" : "DISCOUNT"},
+  {"id" : 1, "name" : "Tax", "event" : "TAX"},
+];
+
+List<Map<dynamic, dynamic>> vendorOptionList = [
+  {"id" : 0, "name" : "vendor", "event" : "VENDOR"},
 ];

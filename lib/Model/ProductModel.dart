@@ -18,11 +18,10 @@ class ProductModel {
   String? added_by;
   String? updated_by;
 
-  List<String>? itemCodeList;
+  late List<String> itemCodeList;
   List<String>? upcList;
 
   ProductModel.map(Map<String, dynamic> map) {
-    ConsolePrint("MAP MODEL", map);
     uid = map["UId"];
     description = map["Description"];
     second_description = map["SecondDescription"];
@@ -35,7 +34,13 @@ class ProductModel {
     added_datetime = map["AddedDateTime"];
     updated_by = map["UpdatedBy"];
     added_by = map["AddedBy"];
-    itemCodeList = (map["ItemCodeList"] as List).map((item) => item as String).toList();
+
+    if (map["ItemCodeList"] == null) {
+      itemCodeList = [];
+    }  else {
+      itemCodeList = (map["ItemCodeList"] as List).map((item) => item as String).toList();
+    }
+
   }
 
   void print() {

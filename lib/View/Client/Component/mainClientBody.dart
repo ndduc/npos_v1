@@ -7,7 +7,7 @@ import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/Home/homeMenu.dart';
 
-import '../customDialog.dart';
+import '../../Component/Stateful/customDialog.dart';
 
 class MainClientBody extends StatefulWidget {
   @override

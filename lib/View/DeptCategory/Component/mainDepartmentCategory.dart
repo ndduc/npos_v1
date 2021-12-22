@@ -19,7 +19,7 @@ import 'package:npos/View/Home/homeMenu.dart';
 
 
 
-import '../../Component/Stateful/Menu/mainClientBody.dart';
+import '../../Client/Component/mainClientBody.dart';
 import 'Category.dart';
 import 'Department.dart';
 

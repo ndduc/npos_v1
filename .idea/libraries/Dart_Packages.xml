@@ -93,6 +93,13 @@
             </list>
           </value>
         </entry>
+        <entry key="data_table_2">
+          <value>
+            <list>
+              <option value="$PROJECT_DIR$/../../../../../../../flutter_windows_1.22.4-stable/flutter/.pub-cache/hosted/pub.dartlang.org/data_table_2-2.2.0/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="easy_mask">
           <value>
             <list>
@@ -571,6 +578,7 @@
       <root url="file://$PROJECT_DIR$/../../../../../../../flutter_windows_1.22.4-stable/flutter/.pub-cache/hosted/pub.dartlang.org/cross_file-0.3.2/lib" />
       <root url="file://$PROJECT_DIR$/../../../../../../../flutter_windows_1.22.4-stable/flutter/.pub-cache/hosted/pub.dartlang.org/csslib-0.17.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../../../../../flutter_windows_1.22.4-stable/flutter/.pub-cache/hosted/pub.dartlang.org/cupertino_icons-1.0.3/lib" />
+      <root url="file://$PROJECT_DIR$/../../../../../../../flutter_windows_1.22.4-stable/flutter/.pub-cache/hosted/pub.dartlang.org/data_table_2-2.2.0/lib" />
       <root url="file://$PROJECT_DIR$/../../../../../../../flutter_windows_1.22.4-stable/flutter/.pub-cache/hosted/pub.dartlang.org/easy_mask-2.0.1/lib" />
       <root url="file://$PROJECT_DIR$/../../../../../../../flutter_windows_1.22.4-stable/flutter/.pub-cache/hosted/pub.dartlang.org/equatable-2.0.3/lib" />
       <root url="file://$PROJECT_DIR$/../../../../../../../flutter_windows_1.22.4-stable/flutter/.pub-cache/hosted/pub.dartlang.org/fake_async-1.2.0/lib" />

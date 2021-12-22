@@ -4,20 +4,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
-import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
-import 'package:npos/View/Authentication/authentication.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainClientBody.dart';
-import '../Home/Component/mainMenuBody.dart';
-import '../ProductManagement/Component/mainProductManagementBody.dart';
-import 'package:npos/View/Component/Stateful/Menu/mainVendor.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:npos/Bloc/MainBloc/MainBloc.dart';
+import 'package:npos/Bloc/MainBloc/MainEvent.dart';
+import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/UI/uiImages.dart';
+import 'package:npos/Constant/UI/uiText.dart';
+import 'package:npos/Model/UserModel.dart';
+
+import 'Component/mainVendor.dart';
+
 
 class VendorManagement extends StatefulWidget {
+  UserModel? userData;
+  VendorManagement({Key? key, this.userData}) : super(key: key);
   @override
-  _VendorManagement createState() => _VendorManagement();
+  Component createState() => Component();
 }
 
-class _VendorManagement extends State<VendorManagement> {
+class Component extends State<VendorManagement> {
   uiText uIText = uiText();
   uiImage uImage = uiImage();
   bool isLoading = false;
@@ -32,6 +41,22 @@ class _VendorManagement extends State<VendorManagement> {
     super.dispose();
   }
 
+  void appBaseEvent(MainState state) {
+    // Executing Generic State
+    if (state is GenericInitialState) {
+      isLoading = false;
+    } else if (state is GenericLoadingState) {
+      isLoading = true;
+    } else if (state is GenericErrorState) {
+      isLoading = false;
+      context.read<MainBloc>().add(MainParam.showSnackBar(eventStatus: MainEvent.Show_SnackBar, context: context, snackBarContent: state.error.toString()));
+    }
+  }
+
+  void appSpecificEvent(MainState state) {
+    // Executing Specific State
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -42,16 +67,32 @@ class _VendorManagement extends State<VendorManagement> {
     ]);
     return WillPopScope(
       onWillPop: () async => false,
-        child: Scaffold(
-        body: Container(
-        decoration: BoxDecoration(
-        image: DecorationImage(
-        image: AssetImage(uImage.mapImage['bg-3']),
+      child: Scaffold(
+          body:
+          BlocBuilder<MainBloc,MainState>(builder: (BuildContext context,MainState state) {
+            /**
+             * BLoc Action Note
+             * START
+             * */
+            appBaseEvent(state);
+            appSpecificEvent(state);
+            /**
+             * Bloc Action Note
+             * END
+             * */
+            return Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(uImage.mapImage['bg-3']),
 
-                  fit: BoxFit.cover,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              child: mainBody())),
+                child: mainBody());
+          })
+
+
+      ),
     );
   }
 
@@ -74,10 +115,7 @@ class _VendorManagement extends State<VendorManagement> {
   }
 
   Widget bodyContentEvent() {
-    bodyContent = VenBody();
-    //MainClientBody
-    //MainMenuBody
-    //MainProductMannagementBody
+    bodyContent = VenBody(userData: widget.userData);
     return bodyContent;
   }
 
