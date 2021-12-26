@@ -14,3 +14,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+# Application's structure
+- BLOC model
+- https://www.raywenderlich.com/4074597-getting-started-with-the-bloc-pattern
