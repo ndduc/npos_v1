@@ -9,7 +9,7 @@
 ### milestone -2:
 - Test Application on various platform
 - Provide support for major POS printer
-- Setup DevOp
+- Setup CI
 ### milestone -3:
 - Provide support for major Payment Terminal
 - Provide support for major POS Terminal
