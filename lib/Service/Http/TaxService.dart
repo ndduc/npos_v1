@@ -38,9 +38,9 @@ class TaxService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = jsonDecode(json["body"]);
+        List<dynamic> lstRes = json["body"];
         for(int i = 0; i < lstRes.length; i++) {
-          TaxModel _model =  TaxModel.map(lstRes[i]);
+          TaxModel _model =  TaxModel.mapLowerCase(lstRes[i]);
           listModel.add(_model);
         }
         return listModel;

@@ -22,8 +22,18 @@ class CategoryModel {
     added_datetime = map["AddedDateTime"];
     updated_by = map["UpdatedBy"];
     added_by = map["AddedBy"];
-
   }
+
+  CategoryModel.mapLowerCase(Map<String, dynamic> map) {
+    uid = map["uId"];
+    description = map["description"];
+    second_description = map["secondDescription"];
+    updated_datetime = map["updatedDateTime"];
+    added_datetime = map["addedDateTime"];
+    updated_by = map["updatedBy"];
+    added_by = map["addedBy"];
+  }
+
 
   void print() {
     ConsolePrint("uid", uid);

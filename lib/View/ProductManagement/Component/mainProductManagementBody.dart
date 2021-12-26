@@ -15,11 +15,19 @@ import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/Constant/UiEvent/menuEvent.dart';
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/CategoryModel.dart';
+import 'package:npos/Model/DepartmentModel.dart';
+import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/ProductModel.dart';
+import 'package:npos/Model/SectionModel.dart';
+import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/CustomerDialogBloc.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
+import 'package:npos/View/Component/Stateful/customDialog.dart';
 import 'package:provider/src/provider.dart';
 
 
@@ -73,23 +81,34 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   String? itemCodeDefault;
   List<String>? itemCodeList = ["No Item Found"];
 
-  String? discountDefault;
-  List<String> discountList = ["Discount Not Found"];
+  String? discountDefault = "-1";
+  Map<String, String> discountList = <String, String>{
+    "-1":"Discount Not Found"
+  };
 
-  String? taxDefault;
-  List<String> taxList = ["Tax Not Found"];
+  String? taxDefault = "-1";
+  Map<String, String> taxList = <String, String>{
+    "-1":"Tax Not Found"
+  };
 
-  String? departmentDefault;
-  List<String> departmentList = ["Department Not Found"];
+  String? departmentDefault = "-1";
+  Map<String, String> departmentList = <String, String>{
+    "-1":"Department Not Found"
+  };
+  String sectionDefault = "-1";
+  Map<String, String> sectionList = <String, String>{
+    "-1":"Section Not Found"
+  };
 
-  String? sectionDefault;
-  List<String> sectionList = ["Section Not Found"];
+  String? categoryDefault = "-1";
+  Map<String, String> categoryList = <String, String>{
+    "-1":"Category Not Found"
+  };
 
-  String? categoryDefault;
-  List<String> categoryList = ["Category Not Found"];
-
-  String? vendorDefault;
-  List<String> vendorList = ["Vendor Not Found"];
+  String? vendorDefault = "-1";
+  Map<String, String> vendorList = <String, String>{
+    "-1":"Category Not Found"
+  };
 
   bool isValidateOn = true;
 
@@ -112,7 +131,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   }
 
   loadOnInit() {
-    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetAllDependency, userData: widget.userData, productParameter: {}));
   }
 
   void appBaseEvent(MainState state) {
@@ -127,11 +146,99 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     }
   }
 
+  setDropDownData(Map<String, dynamic> response) {
+    if(response["department"] != null) {
+      departmentList = {};
+      List<DepartmentModel> deptList = response["department"];
+      for(int i = 0; i < deptList.length; i++) {
+        if (i == 0) {
+          departmentDefault = deptList[i].uid;
+        }
+        departmentList[deptList[i].uid!] = deptList[i].description!;
+      }
+      departmentList["-1"] = "Item Does Not Have Department";
+    }
+
+    if(response["category"] != null) {
+      categoryList = {};
+      List<CategoryModel> list = response["category"];
+      for(int i = 0; i < list.length; i++) {
+        if (i == 0) {
+          categoryDefault = list[i].uid;
+        }
+        categoryList[list[i].uid!] = list[i].description!;
+      }
+      categoryList["-1"] = "Item Does Not Have Category";
+    }
+
+    if(response["section"] != null) {
+      sectionList = {};
+      List<SectionModel> list = response["section"];
+      for(int i = 0; i < list.length; i++) {
+        if (i == 0) {
+          sectionDefault = list[i].uid!;
+        }
+        sectionList[list[i].uid!] = list[i].description!;
+      }
+      sectionList["-1"] = "Item Does Not Have Section";
+    }
+
+    if(response["vendor"] != null) {
+      vendorList = {};
+      List<VendorModel> list = response["vendor"];
+      for(int i = 0; i < list.length; i++) {
+        if (i == 0) {
+          vendorDefault = list[i].uid!;
+        }
+        vendorList[list[i].uid!] = list[i].description!;
+      }
+      vendorList["-1"] = "Item Does Not Have Vendor";
+    }
+
+    if(response["discount"] != null) {
+      discountList = {};
+      List<DiscountModel> list = response["discount"];
+      for(int i = 0; i < list.length; i++) {
+        if (i == 0) {
+          discountDefault = list[i].uid!;
+        }
+        discountList[list[i].uid!] = list[i].description! + " - " + list[i].rate.toString() + "%";
+      }
+      discountList["-1"] = "Item Does Not Have Discount";
+    }
+
+    if(response["tax"] != null) {
+      taxList = {};
+      List<TaxModel> list = response["tax"];
+      for(int i = 0; i < list.length; i++) {
+        if (i == 0) {
+          taxDefault = list[i].uid!;
+        }
+        taxList[list[i].uid!] = list[i].description! + " - " + list[i].rate.toString() + "%";
+      }
+      taxList["-1"] = "Item Does Not Have Tax";
+    }
+  }
+
+  void app2ndGenericEvent(MainState state) {
+    ConsolePrint("2ndGENE", "TRIG");
+    if (state is Generic2ndInitialState) {
+    } else if (state is Generic2ndLoadingState) {
+    } else if (state is Generic2ndLoadedState) {
+      Map<String, dynamic> res = state.genericData;
+      setDropDownData(res);
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+    } else if (state is Generic2ndErrorState) {
+
+    }
+  }
+
   void appSpecificEvent(MainState state) {
     // Executing Specific State
     if(state is ProductLoadingState) {
       isLoading = true;
     } else if (state is ProductLoadedState) {
+      readOnlyMode = false;
       isLoading = false;
       parsingProductDataToUI(state.productModel!);
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 1, dropDownType: "PRODUCT-MODE-UPDATE-ITEM"));
@@ -139,7 +246,21 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       if (state.dropDownType == "SEARCH-BY-MAP") {
         ConsolePrint("TICK", "SEARCH-BY-MAP");
         searchOptionValue = state.dropDownValue;
-      } else if (state.dropDownType == "PRODUCT-MODE-NEW-ITEM") {
+      } else if (state.dropDownType == "DEPARTMENT-DROP-DOWN") {
+        departmentDefault = state.dropDownValue;
+      } else if (state.dropDownType == "CATEGORY-DROP-DOWN") {
+        categoryDefault = state.dropDownValue;
+      } else if (state.dropDownType == "SECTION-DROP-DOWN") {
+        sectionDefault = state.dropDownValue;
+      } else if (state.dropDownType == "VENDOR-DROP-DOWN") {
+        vendorDefault = state.dropDownValue;
+      } else if (state.dropDownType == "DISCOUNT-DROP-DOWN") {
+        discountDefault = state.dropDownValue;
+      } else if (state.dropDownType == "TAX-DROP-DOWN") {
+        taxDefault = state.dropDownValue;
+      }
+
+      else if (state.dropDownType == "PRODUCT-MODE-NEW-ITEM") {
         ConsolePrint("TICK", "PRODUCT-MODE-NEW-ITEM");
         defaultProductMode = state.dropDownValue;
         clearProductDataUI();
@@ -187,10 +308,14 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     etMargin.text = blank;
     etMarkup.text = blank;
     itemCodeList = ["No Item Found"];
-    discountList = ["Discount Not Found"];
-    taxList = ["Tax Not Found"];
     readOnlyMode = false;
     mainProductModel = null;
+    departmentDefault = "-1";
+    sectionDefault = "-1";
+    categoryDefault = "-1";
+    vendorDefault = "-1";
+    discountDefault = "-1";
+    taxDefault = "-1";
   }
   ProductModel? mainProductModel;
   void parsingProductDataToUI(ProductModel productModel) {
@@ -212,11 +337,41 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       itemCodeList =  ["No Item Found"];
     }
 
-    //Set Tax List Here
-    taxList = ["Tax Not Found"];
+    if ( productModel.departmentList.isNotEmpty) {
+      departmentDefault = productModel.departmentList[0].toString();
+    } else {
+      departmentDefault =  "-1";
+    }
 
-    //Set Discount List Here
-    discountList = ["Discount Not Found"];
+    if ( productModel.sectionList.isNotEmpty) {
+      sectionDefault = productModel.sectionList[0].toString();
+    } else {
+      sectionDefault =  "-1";
+    }
+
+    if ( productModel.categoryList.isNotEmpty) {
+      categoryDefault = productModel.categoryList[0].toString();
+    } else {
+      categoryDefault =  "-1";
+    }
+
+    if ( productModel.vendorList.isNotEmpty) {
+      vendorDefault = productModel.vendorList[0].toString();
+    } else {
+      vendorDefault =  "-1";
+    }
+
+    if ( productModel.discountList.isNotEmpty) {
+      discountDefault = productModel.discountList[0].toString();
+    } else {
+      discountDefault =  "-1";
+    }
+
+    if ( productModel.taxList.isNotEmpty) {
+      taxDefault = productModel.taxList[0].toString();
+    } else {
+      taxDefault =  "-1";
+    }
   }
 
   double marginCalculation(double price, double cost) {
@@ -239,6 +394,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
        * START
        * */
       appBaseEvent(state);
+      app2ndGenericEvent(state);
       appSpecificEvent(state);
       /**
        * Bloc Action Note
@@ -619,7 +775,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         leading: const Text("Department"),
                         title:  DropdownButton<String>(
                           isExpanded: true,
-                          value: departmentList![0],
+                          value: departmentDefault,
                           style: const TextStyle(
                               color: Colors.deepPurple
                           ),
@@ -629,21 +785,24 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           ),
                           onChanged: (String? newValue) {
                             print("VALUE DROP DOWN\t\t" + newValue!);
+                            context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "DEPARTMENT-DROP-DOWN"));
                           },
                           items: departmentList
-                              ?.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                              .map((key, value) {
+                            return MapEntry(
+                                key,
+                                DropdownMenuItem<String>(
+                                  value: key,
+                                  child: Text(value),
+                                ));
+                          }).values.toList(),
                         )
                     ),
                     ListTile(
                         leading: const Text("Category"),
                         title:  DropdownButton<String>(
                           isExpanded: true,
-                          value: categoryList![0],
+                          value: categoryDefault,
                           style: const TextStyle(
                               color: Colors.deepPurple
                           ),
@@ -653,14 +812,17 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           ),
                           onChanged: (String? newValue) {
                             print("VALUE DROP DOWN\t\t" + newValue!);
+                            context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "CATEGORY-DROP-DOWN"));
                           },
                           items: categoryList
-                              ?.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                              .map((key, value) {
+                            return MapEntry(
+                                key,
+                                DropdownMenuItem<String>(
+                                  value: key,
+                                  child: Text(value),
+                                ));
+                          }).values.toList(),
                         )
                     ),
                   ],
@@ -674,7 +836,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         leading: const Text("Section"),
                         title:  DropdownButton<String>(
                           isExpanded: true,
-                          value: sectionList![0],
+                          value: sectionDefault,
                           style: const TextStyle(
                               color: Colors.deepPurple
                           ),
@@ -683,22 +845,24 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             color: Colors.deepPurpleAccent,
                           ),
                           onChanged: (String? newValue) {
-                            print("VALUE DROP DOWN\t\t" + newValue!);
+                            context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "SECTION-DROP-DOWN"));
                           },
                           items: sectionList
-                              ?.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                              .map((key, value) {
+                            return MapEntry(
+                                key,
+                                DropdownMenuItem<String>(
+                                  value: key,
+                                  child: Text(value),
+                                ));
+                          }).values.toList(),
                         )
                     ),
                     ListTile(
                         leading: const Text("Vendor"),
                         title:  DropdownButton<String>(
                           isExpanded: true,
-                          value: vendorList![0],
+                          value: vendorDefault,
                           style: const TextStyle(
                               color: Colors.deepPurple
                           ),
@@ -708,14 +872,17 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           ),
                           onChanged: (String? newValue) {
                             print("VALUE DROP DOWN\t\t" + newValue!);
+                            context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "VENDOR-DROP-DOWN"));
                           },
                           items: vendorList
-                              ?.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                              .map((key, value) {
+                            return MapEntry(
+                                key,
+                                DropdownMenuItem<String>(
+                                  value: key,
+                                  child: Text(value),
+                                ));
+                          }).values.toList(),
                         )
                     ),
                   ],
@@ -732,7 +899,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                     leading: const Text("Discount"),
                     title:  DropdownButton<String>(
                       isExpanded: true,
-                      value: discountList![0],
+                      value: discountDefault,
                       style: const TextStyle(
                           color: Colors.deepPurple
                       ),
@@ -742,14 +909,17 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       ),
                       onChanged: (String? newValue) {
                         print("VALUE DROP DOWN\t\t" + newValue!);
+                        context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "DISCOUNT-DROP-DOWN"));
                       },
                       items: discountList
-                          ?.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                          .map((key, value) {
+                        return MapEntry(
+                            key,
+                            DropdownMenuItem<String>(
+                              value: key,
+                              child: Text(value),
+                            ));
+                      }).values.toList(),
                     )
                 ),
               ),
@@ -759,7 +929,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                     leading: const Text("Tax"),
                     title:  DropdownButton<String>(
                       isExpanded: true,
-                      value: taxList![0],
+                      value: taxDefault,
                       style: const TextStyle(
                           color: Colors.deepPurple
                       ),
@@ -769,14 +939,17 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       ),
                       onChanged: (String? newValue) {
                         print("VALUE DROP DOWN\t\t" + newValue!);
+                        context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "TAX-DROP-DOWN"));
                       },
                       items: taxList
-                          ?.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                          .map((key, value) {
+                        return MapEntry(
+                            key,
+                            DropdownMenuItem<String>(
+                              value: key,
+                              child: Text(value),
+                            ));
+                      }).values.toList(),
                     )
                 ),
               ),
@@ -799,11 +972,11 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                 children: [
                   Expanded(
                       flex: 3,
-                      child:  defaultProductMode == 2 ? solidButton("Add To Batch", "ADD-SAVE-BATCH")  : solidButton("Save To Batch", "SAVE-BATCH")
+                      child:  SizedBox()//defaultProductMode == 2 ? solidButton("Add To Batch", "ADD-SAVE-BATCH")  : solidButton("Save To Batch", "SAVE-BATCH")
                   ),
                   Expanded(
                       flex: 3,
-                      child:  defaultProductMode == 2 ? solidButton("Add Batch", "ADD-BATCH") : solidButton("Update Batch", "UPDATE-BATCH")
+                      child:  SizedBox()//defaultProductMode == 2 ? solidButton("Add Batch", "ADD-BATCH") : solidButton("Update Batch", "UPDATE-BATCH")
                   ),
                   Expanded(
                       flex: 3,
@@ -864,7 +1037,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   }
 
   VoidCallback? solidBtnOnClick(String text, String event) {
-
     if(defaultProductMode == 0) {
       switch (text) {
         case "Modify ItemCode":
@@ -919,24 +1091,23 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     } else if (event == "NEW-ITEM") {
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 2, dropDownType: "PRODUCT-MODE-NEW-ITEM"));
     } else if (event == "UPDATE-ITEM") {
-      //ConsolePrint("TICK", "UPDATE-ITEM");
-      //context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 1, dropDownType: "PRODUCT-MODE-UPDATE-ITEM"));
       if(formKey.currentState!.validate()) {
         print("UPDATE ITEM CLICK");
       }
-    }
-    // maybe redundant
-    else if (event == "SEARCH-ITEM") {
+    } else if (event == "SEARCH-ITEM") {
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 0, dropDownType: "PRODUCT-MODE-SEARCH-ITEM"));
-    }
-    //
-    else if (event == "ADD-ITEM") {
+    } else if (event == "ADD-ITEM") {
 
       if(formKey.currentState!.validate()) {
         print("ADD ITEM CLICK");
         addNewProductEvent();
       }
-
+    } else if (event == "MODIFY-ITEM-CODE") {
+      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode
+          , userData: widget.userData, productData: mainProductModel, context: context));
+    } else if (event == "ADD-ITEM-CODE") {
+      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode
+          , userData: widget.userData, productData: mainProductModel, context: context));
     }
   }
 

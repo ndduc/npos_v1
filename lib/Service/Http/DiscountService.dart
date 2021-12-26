@@ -38,9 +38,9 @@ class DiscountService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = jsonDecode(json["body"]);
+        List<dynamic> lstRes = json["body"];
         for(int i = 0; i < lstRes.length; i++) {
-          DiscountModel _model =  DiscountModel.map(lstRes[i]);
+          DiscountModel _model =  DiscountModel.mapLowerCase(lstRes[i]);
           listModel.add(_model);
         }
         return listModel;

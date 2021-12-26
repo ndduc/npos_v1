@@ -38,9 +38,9 @@ class SectionService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = jsonDecode(json["body"]);
+        List<dynamic> lstRes = json["body"];
         for(int i = 0; i < lstRes.length; i++) {
-          SectionModel _model =  SectionModel.map(lstRes[i]);
+          SectionModel _model =  SectionModel.mapLowerCase(lstRes[i]);
           listModel.add(_model);
         }
         return listModel;

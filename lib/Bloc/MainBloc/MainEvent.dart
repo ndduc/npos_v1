@@ -4,6 +4,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:flutter/cupertino.dart';
+import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UserModel.dart';
 
 enum MainEvent{
@@ -22,6 +23,7 @@ enum MainEvent{
   Event_GetProductByParamMap,
   Event_GetProductPaginateCount,
   Event_GetProductPaginate,
+  Event_GetAllDependency,
   //endregion
 
   //region DEPARTMENT REQUEST
@@ -97,6 +99,8 @@ enum MainEvent{
   //endregion
 
   //region NAVIGATION
+  Nav_Dialog_ItemCode,
+  Nav_Dialog_Upc,
   Nav_MainMenu, //Screen After Login
   Nav_Man_Product,
   Nav_Man_Dept,
@@ -127,6 +131,7 @@ class MainParam {
   BuildContext? context;
   dynamic snackBarContent;
   UserModel? userData;
+  ProductModel? productData;
   int? index;
   Map<String, dynamic>? productParameter;
   Map<String, dynamic>? departmentParameter;
@@ -136,9 +141,12 @@ class MainParam {
   Map<String, dynamic>? discountParameter;
   Map<String, dynamic>? taxParameter;
   String? dropDownType;
-  int? dropDownValue;
+  dynamic dropDownValue;
   String? toWhere;
   bool? isAdded;
+
+  /// DIALOG
+  MainParam.NavDialog({this.userData, this.productData, this.eventStatus, this.context});
 
   /// PRODUCT
   MainParam.GetProductByParam({this.eventStatus, this.productParameter, this.userData});
