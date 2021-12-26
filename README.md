@@ -9,8 +9,10 @@
 ### milestone -2:
 - Test Application on various platform
 - Provide support for major POS printer
+- Setup DevOp
 ### milestone -3:
 - Provide support for major Payment Terminal
+- Provide support for major POS Terminal
 
 ## New To Flutter?
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
