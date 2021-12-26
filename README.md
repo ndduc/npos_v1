@@ -36,7 +36,25 @@
 - Execute this database script https://github.com/ndduc/npos_api_v1/blob/master/Database/db_creation.sql
 - Execute any store procedure creation script https://github.com/ndduc/npos_api_v1/tree/master/Database/StoreProc
 ## APP's sceenshots
-![image](https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_1.PNG)
-![image](https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_2.PNG)
-![image](https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_3.PNG)
-![image](https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_4.PNG)
+<table>
+  <tr>
+    <td>
+      <img src="https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_1.PNG">
+    </td>
+    <td>
+      <img src="https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_2.PNG">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_3.PNG">
+    </td>
+    <td>
+      <img src="https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_4.PNG">
+    </td>
+  </tr>
+</table>
+
+
+
+
