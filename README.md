@@ -35,3 +35,8 @@
 - Install Mysql and Mysql Workbench
 - Execute this database script https://github.com/ndduc/npos_api_v1/blob/master/Database/db_creation.sql
 - Execute any store procedure creation script https://github.com/ndduc/npos_api_v1/tree/master/Database/StoreProc
+## APP's sceenshots
+![image](https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_1.PNG)
+![image](https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_2.PNG)
+![image](https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_3.PNG)
+![image](https://github.com/ndduc/npos_v1/blob/master/app_screens/sc_4.PNG)
