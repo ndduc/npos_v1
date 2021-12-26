@@ -15,6 +15,7 @@ import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/VendorModel.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/CustomerDialogBloc.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
 import 'package:npos/View/DiscTaxManagement/disTaxManagement.dart';
 import 'package:npos/View/Home/homeMenu.dart';
@@ -86,6 +87,36 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ProductPaginateLoadedState(listProductModel: listModel);
         } catch (e) {
           yield GenericErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetAllDependency:
+        yield Generic2ndInitialState();
+        try {
+          yield Generic2ndLoadingState();
+          ConsolePrint("2nd Generic", "loaded");
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          ConsolePrint("userId", userId);
+          ConsolePrint("locId", locId);
+          List<DepartmentModel> dept = await mainRepo.GetDepartments(userId, locId.toString());
+          List<SectionModel> sec = await mainRepo.GetSections(userId, locId.toString());
+          List<CategoryModel> cate = await mainRepo.GetCategory(userId, locId.toString());
+          List<VendorModel> ven = await mainRepo.GetVendors(userId, locId.toString());
+          List<DiscountModel> disc = await mainRepo.GetDiscounts(userId, locId.toString());
+          List<TaxModel> tax = await mainRepo.GetTax(userId, locId.toString());
+
+          Map<String, dynamic> res = {
+            "department" : dept.isNotEmpty ? dept : null,
+            "section" : sec.isNotEmpty ? sec : null,
+            "category" : cate.isNotEmpty ? cate : null,
+            "vendor": ven.isNotEmpty ? ven : null,
+            "discount" : disc.isNotEmpty ? disc : null,
+            "tax": tax.isNotEmpty ? tax : null
+          };
+          ConsolePrint("RES", res);
+          yield Generic2ndLoadedState(genericData: res);
+        } catch (e) {
+          yield Generic2ndErrorState(error: e);
         }
         break;
         //endregion
@@ -770,7 +801,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         yield GenericInitialState();
         try {
           yield GenericLoadingState();
-          yield DropDownLoadedState(dropDownType: event.dropDownType as String, dropDownValue:  event.dropDownValue as int);
+          yield DropDownLoadedState(dropDownType: event.dropDownType as String, dropDownValue:  event.dropDownValue as dynamic);
         } catch (e) {
           yield GenericErrorState(error: e);
         }
@@ -858,6 +889,47 @@ class MainBloc extends Bloc<MainParam,MainState>
                   child:SectionManagement(userData: event.userData));
             }));
         break;
+      case MainEvent.Nav_Dialog_ItemCode:
+        showGeneralDialog(
+          barrierLabel: "Barrier",
+          barrierDismissible: false,
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 500),
+          context: event.context as BuildContext,
+          pageBuilder: (_, __, ___) {
+            return CustomDialogBloc(userModel: event.userData, whoAmI: 'ITEMCODE', productMode: event.productData,);
+          },
+          transitionBuilder: (_, anim, __, child) {
+            return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                child:SlideTransition(
+                  position:
+                  Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                  child: child,
+                ));
+          },
+        );
+        break;
+      case MainEvent.Nav_Dialog_Upc:
+        showGeneralDialog(
+          barrierLabel: "Barrier",
+          barrierDismissible: false,
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 500),
+          context: event.context as BuildContext,
+          pageBuilder: (_, __, ___) {
+            return CustomDialogBloc(userModel: event.userData, whoAmI: 'UPC', productMode: event.productData,);
+          },
+          transitionBuilder: (_, anim, __, child) {
+            return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                child:SlideTransition(
+                  position:
+                  Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                  child: child,
+                ));
+          },
+        );
+        break;
+
     }
   }
   //endregion

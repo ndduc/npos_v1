@@ -19,6 +19,12 @@ class ProductModel {
   String? updated_by;
 
   late List<String> itemCodeList;
+  late List<String> categoryList;
+  late List<String> departmentList;
+  late List<String> sectionList;
+  late List<String> vendorList;
+  late List<String> discountList;
+  late List<String> taxList;
   List<String>? upcList;
 
   ProductModel.map(Map<String, dynamic> map) {
@@ -41,6 +47,77 @@ class ProductModel {
       itemCodeList = (map["ItemCodeList"] as List).map((item) => item as String).toList();
     }
 
+    if (map["CategoryList"] == null) {
+      categoryList = [];
+    }  else {
+      // categoryList = (map["CategoryList"] as List).map((item) => item as String).toList();
+      categoryList = [];
+      List<dynamic> cate = map["CategoryList"];
+      if (cate.isNotEmpty) {
+        categoryList.add(cate[0]["UId"]);
+      }
+
+    }
+
+    if (map["DepartmentList"] == null) {
+      departmentList = [];
+    }  else {
+      // departmentList = (map["DepartmentList"] as List).map((item) => item as String).toList();
+      departmentList = [];
+      List<dynamic> dept = map["DepartmentList"];
+      if (dept.isNotEmpty) {
+        departmentList.add(dept[0]["UId"]);
+      }
+
+    }
+
+    if (map["SectionList"] == null) {
+      sectionList = [];
+    }  else {
+      // sectionList = (map["SectionList"] as List).map((item) => item as String).toList();
+      sectionList = [];
+      List<dynamic> sec = map["SectionList"];
+      if (sec.isNotEmpty) {
+        sectionList.add(sec[0]["UId"]);
+      }
+
+    }
+
+    if (map["VendorList"] == null) {
+      vendorList = [];
+    }  else {
+      // vendorList = (map["VendorList"] as List).map((item) => item as String).toList();
+      vendorList= [];
+      List<dynamic> ven = map["VendorList"];
+      if(ven.isNotEmpty) {
+        vendorList.add(ven[0]["UId"]);
+      }
+
+    }
+
+    if (map["DiscountList"] == null) {
+      discountList = [];
+    }  else {
+      //discountList = (map["DiscountList"] as List).map((item) => item as String).toList();
+      discountList = [];
+      List<dynamic> discount = map["DiscountList"];
+      if(discount.isNotEmpty) {
+        discountList.add(discount[0]["UId"]);
+      }
+
+    }
+
+    if (map["TaxList"] == null) {
+      taxList = [];
+    }  else {
+      taxList = [];
+      List<dynamic> tax = map["TaxList"];
+      if (tax.isNotEmpty) {
+        taxList.add(tax[0]["UId"]);
+      }
+      ConsolePrint("TAX" , taxList);
+
+    }
   }
 
   void print() {

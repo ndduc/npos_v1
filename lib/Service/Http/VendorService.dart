@@ -38,9 +38,9 @@ class VendorService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = jsonDecode(json["body"]);
+        List<dynamic> lstRes = json["body"];
         for(int i = 0; i < lstRes.length; i++) {
-          VendorModel _model =  VendorModel.map(lstRes[i]);
+          VendorModel _model =  VendorModel.mapLowerCase(lstRes[i]);
           listModel.add(_model);
         }
         return listModel;

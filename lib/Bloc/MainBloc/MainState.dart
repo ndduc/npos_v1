@@ -42,6 +42,7 @@ class Generic2ndLoadingState extends MainState{ }
 class Generic2ndLoadedState extends MainState{
   dynamic genericData;
   Generic2ndLoadedState.GenericData({this.genericData});
+  Generic2ndLoadedState({this.genericData});
 }
 class Generic2ndErrorState extends MainState{
   final error;
@@ -52,8 +53,8 @@ class Generic2ndErrorState extends MainState{
 //region GENERIC
 /// Description: Loaded Value On Dropdown -- this look like it loadding DEFAULT value
 class DropDownLoadedState extends MainState {
-  int dropDownValue;
-  String dropDownType;
+  dynamic dropDownValue;
+  late String dropDownType;
   DropDownLoadedState({required this.dropDownValue, required this.dropDownType});
 }
 
