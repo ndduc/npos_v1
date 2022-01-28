@@ -3,6 +3,7 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -49,6 +50,9 @@ class MainRepository{
     return ProductService().GetProductPaginateByIndex(userId, locId, searchType, startIdx, endIdx);
   }
 
+  Future<AddResponseModel> AddProduct(ProductModel productModel, String locationId) {
+    return ProductService().AddProduct(productModel, locationId);
+  }
   //endregion
 
   //region DEPARTMENT

@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -15,7 +16,8 @@ import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/VendorModel.dart';
-import 'package:npos/View/Component/Stateful/Dialogs/CustomerDialogBloc.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocAddUpdate.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocItemCode.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
 import 'package:npos/View/DiscTaxManagement/disTaxManagement.dart';
 import 'package:npos/View/Home/homeMenu.dart';
@@ -63,7 +65,6 @@ class MainBloc extends Bloc<MainParam,MainState>
         yield GenericInitialState();
         try {
           yield ProductPaginateLoadingState();
-          ConsolePrint("TEST", "TEST");
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
           String searchType = event.productParameter!["searchType"];
@@ -82,7 +83,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String searchType = event.productParameter!["searchType"];
           int startIdx = event.productParameter!["startIdx"];
           int endIdx = event.productParameter!["endIdx"];
-          ConsolePrint("Map Param", event.productParameter);
           List<ProductModel> listModel = await mainRepo.GetProductPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
           yield ProductPaginateLoadedState(listProductModel: listModel);
         } catch (e) {
@@ -93,11 +93,8 @@ class MainBloc extends Bloc<MainParam,MainState>
         yield Generic2ndInitialState();
         try {
           yield Generic2ndLoadingState();
-          ConsolePrint("2nd Generic", "loaded");
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          ConsolePrint("userId", userId);
-          ConsolePrint("locId", locId);
           List<DepartmentModel> dept = await mainRepo.GetDepartments(userId, locId.toString());
           List<SectionModel> sec = await mainRepo.GetSections(userId, locId.toString());
           List<CategoryModel> cate = await mainRepo.GetCategory(userId, locId.toString());
@@ -113,13 +110,26 @@ class MainBloc extends Bloc<MainParam,MainState>
             "discount" : disc.isNotEmpty ? disc : null,
             "tax": tax.isNotEmpty ? tax : null
           };
-          ConsolePrint("RES", res);
           yield Generic2ndLoadedState(genericData: res);
         } catch (e) {
           yield Generic2ndErrorState(error: e);
         }
         break;
-        //endregion
+      case MainEvent.Event_AddProduct:
+        yield ProductAddUpdateInitState();
+        try {
+          ConsolePrint("Add Product", "Init");
+          yield ProductAddUpdateLoadingState();
+          ProductModel productModel = event.productData!;
+          String locationId = event.locationId!;
+          AddResponseModel addEventResponse = await mainRepo.AddProduct(productModel, locationId);
+          addEventResponse.print();
+          yield ProductAddUpdateLoadedState();
+        } catch (e) {
+          yield ProductAddUpdateErrorState(error: e);
+        }
+        break;
+      //endregion
 
       //region DEPARTMENT HTTP EVENT
       case MainEvent.Event_GetDepartmentPaginateCount:
@@ -144,7 +154,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String searchType = event.productParameter!["searchType"];
           int startIdx = event.productParameter!["startIdx"];
           int endIdx = event.productParameter!["endIdx"];
-          ConsolePrint("Map Param", event.productParameter);
           List<DepartmentModel> listModel = await mainRepo.GetDepartmentPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
           yield DepartmentPaginateLoadedState(listDepartmentModel: listModel);
         } catch (e) {
@@ -158,7 +167,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
           String description = event.departmentParameter!["description"];
-          ConsolePrint("Map Param Event_GetDepartmentByDescription", event.departmentParameter);
           List<DepartmentModel> listModel = await mainRepo.GetDepartmentByDescription(userId, locId!, description);
           yield DepartmentByDescriptionLoadedState(listDepartmentModel: listModel);
         } catch (e) {
@@ -249,7 +257,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String searchType = event.productParameter!["searchType"];
           int startIdx = event.productParameter!["startIdx"];
           int endIdx = event.productParameter!["endIdx"];
-          ConsolePrint("Map Param", event.productParameter);
           List<CategoryModel> listModel = await mainRepo.GetCategoryPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
           yield CategoryPaginateLoadedState(listCategoryModel: listModel);
         } catch (e) {
@@ -263,7 +270,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
           String description = event.categoryParameter!["description"];
-          ConsolePrint("Map Param Event_GetCategoryByDescription", event.categoryParameter);
           List<CategoryModel> listModel = await mainRepo.GetCategoryByDescription(userId, locId!, description);
           yield CategoryByDescriptionLoadedState(listCategoryModel: listModel);
         } catch (e) {
@@ -354,7 +360,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String searchType = event.productParameter!["searchType"];
           int startIdx = event.productParameter!["startIdx"];
           int endIdx = event.productParameter!["endIdx"];
-          ConsolePrint("Map Param", event.productParameter);
           List<VendorModel> listModel = await mainRepo.GetVendorPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
           yield VendorPaginateLoadedState(listVendorModel: listModel);
         } catch (e) {
@@ -368,7 +373,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
           String description = event.vendorParameter!["description"];
-          ConsolePrint("Map Param Event_GetVendorByDescription", event.vendorParameter);
           List<VendorModel> listModel = await mainRepo.GetVendorByDescription(userId, locId!, description);
           yield VendorByDescriptionLoadedState(listVendorModel: listModel);
         } catch (e) {
@@ -459,7 +463,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String searchType = event.productParameter!["searchType"];
           int startIdx = event.productParameter!["startIdx"];
           int endIdx = event.productParameter!["endIdx"];
-          ConsolePrint("Map Param", event.productParameter);
           List<SectionModel> listModel = await mainRepo.GetSectionPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
           yield SectionPaginateLoadedState(listSectionModel: listModel);
         } catch (e) {
@@ -473,7 +476,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
           String description = event.sectionParameter!["description"];
-          ConsolePrint("Map Param Event_GetSectionByDescription", event.sectionParameter);
           List<SectionModel> listModel = await mainRepo.GetSectionByDescription(userId, locId!, description);
           yield SectionByDescriptionLoadedState(listSectionModel: listModel);
         } catch (e) {
@@ -564,7 +566,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String searchType = event.productParameter!["searchType"];
           int startIdx = event.productParameter!["startIdx"];
           int endIdx = event.productParameter!["endIdx"];
-          ConsolePrint("Map Param", event.productParameter);
           List<DiscountModel> listModel = await mainRepo.GetDiscountPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
           yield DiscountPaginateLoadedState(listDiscountModel: listModel);
         } catch (e) {
@@ -578,7 +579,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
           String description = event.discountParameter!["description"];
-          ConsolePrint("Map Param Event_GetDiscountByDescription", event.discountParameter);
           List<DiscountModel> listModel = await mainRepo.GetDiscountByDescription(userId, locId!, description);
           yield DiscountByDescriptionLoadedState(listDiscountModel: listModel);
         } catch (e) {
@@ -669,7 +669,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String searchType = event.productParameter!["searchType"];
           int startIdx = event.productParameter!["startIdx"];
           int endIdx = event.productParameter!["endIdx"];
-          ConsolePrint("Map Param", event.productParameter);
           List<TaxModel> listModel = await mainRepo.GetTaxPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
           yield TaxPaginateLoadedState(listTaxModel: listModel);
         } catch (e) {
@@ -683,7 +682,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
           String description = event.taxParameter!["description"];
-          ConsolePrint("Map Param Event_GetTaxByDescription", event.taxParameter);
           List<TaxModel> listModel = await mainRepo.GetTaxByDescription(userId, locId!, description);
           yield TaxByDescriptionLoadedState(listTaxModel: listModel);
         } catch (e) {
@@ -889,7 +887,7 @@ class MainBloc extends Bloc<MainParam,MainState>
                   child:SectionManagement(userData: event.userData));
             }));
         break;
-      case MainEvent.Nav_Dialog_ItemCode:
+      case MainEvent.Nav_Dialog_ItemCode_Update:
         showGeneralDialog(
           barrierLabel: "Barrier",
           barrierDismissible: false,
@@ -897,7 +895,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           transitionDuration: Duration(milliseconds: 500),
           context: event.context as BuildContext,
           pageBuilder: (_, __, ___) {
-            return CustomDialogBloc(userModel: event.userData, whoAmI: 'ITEMCODE', productMode: event.productData,);
+            return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: 'ITEMCODE-UPDATE', productMode: event.productData,);
           },
           transitionBuilder: (_, anim, __, child) {
             return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
@@ -909,6 +907,48 @@ class MainBloc extends Bloc<MainParam,MainState>
           },
         );
         break;
+      case MainEvent.Nav_Dialog_ItemCode_Add:
+        showGeneralDialog(
+          barrierLabel: "Barrier",
+          barrierDismissible: false,
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 500),
+          context: event.context as BuildContext,
+          pageBuilder: (_, __, ___) {
+            return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: 'ITEMCODE-ADD', productMode: event.productData,);
+          },
+          transitionBuilder: (_, anim, __, child) {
+            return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                child:SlideTransition(
+                  position:
+                  Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                  child: child,
+                ));
+          },
+        );
+        break;
+      case MainEvent.Nav_Dialog_Product_Add:
+        showGeneralDialog(
+          barrierLabel: "Barrier",
+          barrierDismissible: false,
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 500),
+          context: event.context as BuildContext,
+          pageBuilder: (_, __, ___) {
+            return ProductDialogBlocAddUpdate(whoAmI: 'PRODUCT-ADD', productModel: event.productData);
+          },
+          transitionBuilder: (_, anim, __, child) {
+            return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                child:SlideTransition(
+                  position:
+                  Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                  child: child,
+                ));
+          },
+        ).then((value) => {
+          ConsolePrint("VALUE", value)
+        });
+        break;
       case MainEvent.Nav_Dialog_Upc:
         showGeneralDialog(
           barrierLabel: "Barrier",
@@ -917,7 +957,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           transitionDuration: Duration(milliseconds: 500),
           context: event.context as BuildContext,
           pageBuilder: (_, __, ___) {
-            return CustomDialogBloc(userModel: event.userData, whoAmI: 'UPC', productMode: event.productData,);
+            return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: 'UPC', productMode: event.productData,);
           },
           transitionBuilder: (_, anim, __, child) {
             return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),

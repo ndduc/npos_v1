@@ -4,13 +4,16 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 import 'package:easy_mask/easy_mask.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 
 class Custom_ListTile_TextField extends StatelessWidget {
   TextEditingController? controller;
   FormFieldValidator? validations;
+  ValueChanged<String>? onChange;
   bool read;
   bool isMask;
+  bool isNumber;
   var mask;
   var labelText;
   var hintText;
@@ -24,31 +27,40 @@ class Custom_ListTile_TextField extends StatelessWidget {
         this.validations,
         this.labelText,
         this.hintText,
-        this.maxLines
+        this.maxLines,
+        this.onChange,
+        required this.isNumber
       //  required this.textInput
       }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: TextFormField(
-        maxLines: maxLines ?? 1,
-        inputFormatters:
-        isMask ? [TextInputMask(mask: mask, reverse: false)] : null,
-        readOnly: read,
+    return
+    Container(
+     margin: EdgeInsets.all(2),
+     child: TextFormField(
+       onChanged: onChange ?? null,
+       maxLines: maxLines ?? 1,
+       inputFormatters:
+       isNumber ?  <TextInputFormatter>[
+         FilteringTextInputFormatter.allow(RegExp(r"[0-9.]")),
+       ] : isMask ? [TextInputMask(mask: mask, reverse: false)] : null,
+       readOnly: read,
        // keyboardType: textInput == null ? TextInputType.text : textInput,
-        textCapitalization: TextCapitalization.sentences,
-        decoration: InputDecoration(
-            labelText: labelText,
-            hintText: hintText,
-            border:
-            OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
+       textCapitalization: TextCapitalization.sentences,
+       decoration: InputDecoration(
+           labelText: labelText,
+           hintText: hintText,
+           border:
+           OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
            // fillColor: ThemeColors.confidenceBlue,
-            filled: read ? true : false),
-        controller: controller,
-        validator: validations,
-      ),
-    );
+           filled: read ? true : false),
+       controller: controller,
+       validator: validations,
+     )
+    )
+
+    ;
   }
 }
 
@@ -79,8 +91,8 @@ class Custom_ListTile_TextField_Icon extends StatelessWidget {
     return Row(children: [
       Expanded(
         flex: 9,
-        child: ListTile(
-          title: TextFormField(
+        child:
+           TextFormField(
             inputFormatters: isMask
                 ? [TextInputMask(mask: this.mask, reverse: false)]
                 : null,
@@ -97,7 +109,7 @@ class Custom_ListTile_TextField_Icon extends StatelessWidget {
             controller: this.controller,
             // validator: this.validations,
           ),
-        ),
+
       ),
       Expanded(
         flex: 1,

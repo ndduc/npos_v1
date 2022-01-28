@@ -24,7 +24,7 @@ import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
-import 'package:npos/View/Component/Stateful/Dialogs/CustomerDialogBloc.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocItemCode.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/Component/Stateful/customDialog.dart';
@@ -60,7 +60,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   TextEditingController etMargin = TextEditingController();
   TextEditingController etMarkup = TextEditingController();
 
-
+  
+  double genericTextFieldMargin = 5;
   int searchOptionValue = 1;
   Map<int, String> searchOptionByParam = <int, String>{
     0:"Search By Product Id",
@@ -221,7 +222,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   }
 
   void app2ndGenericEvent(MainState state) {
-    ConsolePrint("2ndGENE", "TRIG");
     if (state is Generic2ndInitialState) {
     } else if (state is Generic2ndLoadingState) {
     } else if (state is Generic2ndLoadedState) {
@@ -233,6 +233,17 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     }
   }
 
+  void appProductEvent(MainState state) {
+    if (state is ProductAddUpdateInitState) {
+
+    } else if (state is ProductAddUpdateLoadingState) {
+
+    } else if (state is ProductAddUpdateLoadedState) {
+
+    } else if (state is ProductAddUpdateErrorState) {
+
+    }
+  }
   void appSpecificEvent(MainState state) {
     // Executing Specific State
     if(state is ProductLoadingState) {
@@ -244,7 +255,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 1, dropDownType: "PRODUCT-MODE-UPDATE-ITEM"));
     } else if (state is DropDownLoadedState) {
       if (state.dropDownType == "SEARCH-BY-MAP") {
-        ConsolePrint("TICK", "SEARCH-BY-MAP");
         searchOptionValue = state.dropDownValue;
       } else if (state.dropDownType == "DEPARTMENT-DROP-DOWN") {
         departmentDefault = state.dropDownValue;
@@ -261,27 +271,25 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       }
 
       else if (state.dropDownType == "PRODUCT-MODE-NEW-ITEM") {
-        ConsolePrint("TICK", "PRODUCT-MODE-NEW-ITEM");
-        defaultProductMode = state.dropDownValue;
-        clearProductDataUI();
+        // ADD NEW ITEM MODE LOGIC
+        addNewItemMode(state.dropDownValue);
       } else if (state.dropDownType == "PRODUCT-MODE-NEW-ITEM") {
-        ConsolePrint("TICK", "SEARCH-BY-MAP");
         defaultProductMode = state.dropDownValue;
       } else if (state.dropDownType == "PRODUCT-MODE-UPDATE-ITEM" ) {
+        // UPDATE ITEM MODE LOGIC
         if(mainProductModel != null) {
+          // UPDATE ITEM MODE WHERE PRODUCT MODEL IS NOT NULL
           formKey.currentState!.validate();
-          ConsolePrint("TICK MODEL NOT NULL", "PRODUCT-MODE-UPDATE-ITEM");
         } else {
-          ConsolePrint("TICK MODEL NULL", "PRODUCT-MODE-UPDATE-ITEM");
+          // UPDATE ITEM MODE WHERE PRODUCT MODEL IS NULL
         }
-        defaultProductMode = state.dropDownValue;
+        updateItemMode(state.dropDownValue);
       }
     }  else if (state is ProductPaginateLoadingState) {
       isLoadingTable = true;
     } else if (state is ProductPaginateLoadedState) {
       isLoadingTable = false;
       listProductPaginate = state.listProductModel!;
-      ConsolePrint("LIST PRODUCT MODEL", state.listProductModel);
     } else if (state is ProductPaginateCountLoadedState) {
       isLoadingTable = false;
       // Invoke Load Paginate Product After Count is Completed
@@ -291,11 +299,34 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
         "startIdx": 1,
         "endIdx": 10
       }));
-      print("LOADING\t\t" + isLoading.toString());
     }
   }
 
   int DataCount = 0;
+
+  // ADD NEW ITEM LOGIC
+  void addNewItemMode(int productMode) {
+    defaultProductMode = productMode;
+    clearProductDataUI();
+    etProductUid.text = "Product Id Will Automatically Be Generated";
+    departmentList["-1"] = "Select Product Department";
+    sectionList["-1"] = "Select Product Section";
+    categoryList["-1"] = "Select Product Category";
+    vendorList["-1"] = "Select Product Vendor";
+    discountList["-1"] = "Select Product Discount";
+    taxList["-1"] = "Select Product Tax";
+  }
+
+  // UPDATE ITEM LOGIC
+  void updateItemMode(int productMode) {
+    departmentList["-1"] = "Product Doesn't Have Department";
+    sectionList["-1"] = "Product Doesn't Have Section";
+    categoryList["-1"] = "Product Doesn't Have Category";
+    vendorList["-1"] = "Product Doesn't Have Vendor";
+    discountList["-1"] = "Product Doesn't Have Discount";
+    taxList["-1"] = "Product Doesn't Have Tax";
+    defaultProductMode = productMode;
+  }
 
   void clearProductDataUI() {
     String blank = "";
@@ -333,8 +364,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
 
     if ( productModel.itemCodeList.isNotEmpty) {
       itemCodeList = productModel.itemCodeList;
+      mainProductModel?.itemCode = int.parse(itemCodeList![0]);
     } else {
       itemCodeList =  ["No Item Found"];
+      mainProductModel?.itemCode = -1;
     }
 
     if ( productModel.departmentList.isNotEmpty) {
@@ -396,6 +429,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       appBaseEvent(state);
       app2ndGenericEvent(state);
       appSpecificEvent(state);
+      appProductEvent(state);
       /**
        * Bloc Action Note
        * END
@@ -570,9 +604,9 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
             child: Custom_ListTile_TextField(
                 read: false,
                 controller: eTSearchTopBy,
-                labelText: "TEST LABEL",
-                hintText: "TEST",
-                isMask: false,
+                labelText: "Search Text",
+                hintText: "Enter Your Search Text Here",
+                isMask: false, isNumber:false,
                 mask: false
             )
         ),
@@ -589,15 +623,16 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       scrollDirection: Axis.vertical,
       child: Column(
         children: [
-          Custom_ListTile_TextField(
+          Container(
+            margin: EdgeInsets.all(genericTextFieldMargin),
+            child: Custom_ListTile_TextField(
               read: readOnlyMode,
               controller: eTDescription,
               labelText: "Description",
-              hintText: "TEST",
-              isMask: false,
+              hintText: "Enter Description",
+              isMask: false, isNumber:false,
               mask: false,
               validations: (value) {
-                ConsolePrint(eTDescription.text, value);
                 if(!isValidateOn) {
                   return null;
                 } else if (eTDescription.text.isNotEmpty) {
@@ -606,38 +641,60 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                   return "Please Provide Description";
                 }
               },
+            ),
           ),
-          Custom_ListTile_TextField(
-              read: readOnlyMode,
-              controller: etDescription2,
-              labelText: "Extended Description",
-              hintText: "TEST",
-              isMask: false,
-              mask: false
+          Container(
+            margin: EdgeInsets.all(genericTextFieldMargin),
+            child:
+            Custom_ListTile_TextField(
+                read: readOnlyMode,
+                controller: etDescription2,
+                labelText: "Extended Description",
+                hintText: "Enter Extended Description",
+                isMask: false, isNumber:false,
+                mask: false,
+                maxLines: 3,
+            ),
           ),
-          Custom_ListTile_TextField(
-              read: readOnlyMode,
-              controller: etDescription3,
-              labelText: "User Note",
-              hintText: "TEST",
-              isMask: false,
-              mask: false
+          Container(
+            margin: EdgeInsets.all(genericTextFieldMargin),
+            child: Custom_ListTile_TextField(
+                read: readOnlyMode,
+                controller: etDescription3,
+                labelText: "User Note",
+                hintText: "Enter User Note",
+                isMask: false, isNumber:false,
+                mask: false,
+              maxLines: 3,
+            ),
           ),
-          Custom_ListTile_TextField(
-              read: readOnlyMode,
-              controller: etProductUid,
-              labelText: "Product Id",
-              hintText: "TEST",
-              isMask: false,
-              mask: false
+          Container(
+            margin: EdgeInsets.all(genericTextFieldMargin),
+            child:  Custom_ListTile_TextField(
+                read: true,
+                controller: etProductUid,
+                labelText: "Product Id",
+                hintText: "Product Id Will Be Generated By The System",
+                isMask: false, isNumber:false,
+                mask: false
+            ),
           ),
           Row(
             children: [
               Expanded(
-                  flex: 3,
+                  flex: defaultProductMode ==  2 ? 5 : 3,
                   child:  ListTile(
                       leading: const Text("Item Code"),
-                      title:  DropdownButton<String>(
+                      title:
+                      defaultProductMode ==  2 ? Custom_ListTile_TextField(
+                        controller: etItemCode,
+                          read: false,
+                          labelText: "Item Code",
+                          hintText: "Enter Item Code",
+                          isMask: false, isNumber:false,
+                          mask: false
+                      ) :
+                      DropdownButton<String>(
                         isExpanded: true,
                         value: itemCodeList![0],
                         style: const TextStyle(
@@ -648,7 +705,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           color: Colors.deepPurpleAccent,
                         ),
                         onChanged: (String? newValue) {
-                          print("VALUE DROP DOWN\t\t" + newValue!);
                         },
                         items: itemCodeList
                             ?.map<DropdownMenuItem<String>>((String value) {
@@ -660,15 +716,22 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       )
                   ),
               ),
-              Expanded(
+              defaultProductMode ==  2 ? SizedBox() : Expanded(
                   flex: 2,
                   child:  defaultProductMode == 2 ? solidButton("Add ItemCode", "ADD-ITEM-CODE")  : solidButton("Modify ItemCode", "MODIFY-ITEM-CODE")
               ),
               Expanded(
-                flex: 3,
+                flex:  defaultProductMode ==  2 ? 5 : 3,
                 child:  ListTile(
                     leading: const Text("Upc"),
-                    title:  DropdownButton<String>(
+                    title:   defaultProductMode ==  2 ? Custom_ListTile_TextField(
+                      controller: etUpc,
+                        read: false,
+                        labelText: "Upc",
+                        hintText: "Enter Upc",
+                        isMask: false, isNumber:false,
+                        mask: false
+                    ) : DropdownButton<String>(
                       isExpanded: true,
                       value: itemCodeList![0],
                       style: const TextStyle(
@@ -679,7 +742,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         color: Colors.deepPurpleAccent,
                       ),
                       onChanged: (String? newValue) {
-                        print("VALUE DROP DOWN\t\t" + newValue!);
                       },
                       items: itemCodeList
                           ?.map<DropdownMenuItem<String>>((String value) {
@@ -691,7 +753,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                     )
                 ),
               ),
-              Expanded(
+              defaultProductMode ==  2 ? SizedBox() : Expanded(
                   flex: 2,
                   child:  defaultProductMode == 2 ? solidButton("Add Upc", "ADD-UPC")  : solidButton("Modify Upc", "MODIFY-UPC")
               ),
@@ -703,13 +765,18 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                 flex: 5,
                 child: Column(
                   children: [
-                    Custom_ListTile_TextField(
+                    Container(
+                      margin: EdgeInsets.all(genericTextFieldMargin),
+                      child: Custom_ListTile_TextField(
                         read: readOnlyMode,
                         controller: etCost,
                         labelText: "Cost",
-                        hintText: "TEST",
-                        isMask: false,
+                        hintText: "Enter Cost, Require format is (##.#)",
+                        isMask: false, isNumber:true,
                         mask: false,
+                        onChange: (text) {
+                          textFieldOnChangeEvent("COST", text);
+                        },
                         validations: (value) {
                           if(!isValidateOn) {
                             return null;
@@ -719,14 +786,20 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             return "Please Provide Item's Cost. Enter 0 if Item Does Not Have Cost";
                           }
                         },
+                      ),
                     ),
-                    Custom_ListTile_TextField(
+                    Container(
+                      margin: EdgeInsets.all(genericTextFieldMargin),
+                      child: Custom_ListTile_TextField(
                         read: readOnlyMode,
                         controller: etPrice,
                         labelText: "Price",
-                        hintText: "TEST",
-                        isMask: false,
+                        hintText: "Enter Price, Require format is (##.#)",
+                        isMask: false, isNumber:true,
                         mask: false,
+                        onChange: (text) {
+                          textFieldOnChangeEvent("PRICE", text);
+                        } ,
                         validations: (value) {
                           if(!isValidateOn) {
                             return null;
@@ -736,7 +809,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             return "Please Provide Price";
                           }
                         },
-                    )
+                      ),
+                    ),
+
+
                   ],
                 ),
               ),
@@ -744,22 +820,36 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                 flex: 5,
                 child: Column(
                   children: [
-                    Custom_ListTile_TextField(
-                        read: readOnlyMode,
-                        controller: etMargin,
-                        labelText: "Margin",
-                        hintText: "TEST",
-                        isMask: false,
-                        mask: false
+                    Container(
+                      margin: EdgeInsets.all(genericTextFieldMargin),
+                      child:  Custom_ListTile_TextField(
+                          read: readOnlyMode,
+                          controller: etMargin,
+                          labelText: "Margin",
+                          hintText: "Enter Expected Margin, Require format is (##.#)",
+                          isMask: false, isNumber:true,
+                          mask: false,
+                          onChange: (text) {
+                            textFieldOnChangeEvent("MARGIN", text);
+                          } ,
+                      ),
                     ),
-                    Custom_ListTile_TextField(
-                        read: readOnlyMode,
-                        controller: etMarkup,
-                        labelText: "Markup",
-                        hintText: "TEST",
-                        isMask: false,
-                        mask: false
-                    )
+                    Container(
+                      margin: EdgeInsets.all(genericTextFieldMargin),
+                      child:  Custom_ListTile_TextField(
+                          read: readOnlyMode,
+                          controller: etMarkup,
+                          labelText: "Markup",
+                          hintText: "Enter Expected Markup, Require format is (##.#)",
+                          isMask: false, isNumber:true,
+                          mask: false,
+                          onChange: (text) {
+                            textFieldOnChangeEvent("MARKUP", text);
+                          } ,
+                      ),
+                    ),
+
+
                   ],
                 ),
               )
@@ -784,7 +874,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             color: Colors.deepPurpleAccent,
                           ),
                           onChanged: (String? newValue) {
-                            print("VALUE DROP DOWN\t\t" + newValue!);
                             context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "DEPARTMENT-DROP-DOWN"));
                           },
                           items: departmentList
@@ -811,7 +900,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             color: Colors.deepPurpleAccent,
                           ),
                           onChanged: (String? newValue) {
-                            print("VALUE DROP DOWN\t\t" + newValue!);
                             context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "CATEGORY-DROP-DOWN"));
                           },
                           items: categoryList
@@ -871,7 +959,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                             color: Colors.deepPurpleAccent,
                           ),
                           onChanged: (String? newValue) {
-                            print("VALUE DROP DOWN\t\t" + newValue!);
                             context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "VENDOR-DROP-DOWN"));
                           },
                           items: vendorList
@@ -908,7 +995,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         color: Colors.deepPurpleAccent,
                       ),
                       onChanged: (String? newValue) {
-                        print("VALUE DROP DOWN\t\t" + newValue!);
                         context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "DISCOUNT-DROP-DOWN"));
                       },
                       items: discountList
@@ -938,7 +1024,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         color: Colors.deepPurpleAccent,
                       ),
                       onChanged: (String? newValue) {
-                        print("VALUE DROP DOWN\t\t" + newValue!);
                         context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: "TAX-DROP-DOWN"));
                       },
                       items: taxList
@@ -995,8 +1080,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           read: perReadOnly,
                           controller: etCreatedBy,
                           labelText: "Created By/Datetime",
-                          hintText: "TEST",
-                          isMask: false,
+                          isMask: false, isNumber:false,
                           mask: false
                       )
                   ),
@@ -1006,8 +1090,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           read: perReadOnly,
                           controller: etUpdatedBy,
                           labelText: "Last Updated By/Datetime",
-                          hintText: "TEST",
-                          isMask: false,
+                          isMask: false, isNumber:false,
                           mask: false
                       )
                   )
@@ -1034,6 +1117,58 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
         child: Text(text),
       )
     ) ;
+  }
+
+
+  void textFieldOnChangeEvent(String event, String text) {
+    // DO THE IF LOGIC HERE
+    if (event == "PRICE") {
+      etCost.text = "6969";
+    } else if (event == "COST") {
+
+    } else if (event == "MARKUP") {
+      calculateRevenueGivenMarkup();
+    } else if (event == "MARGIN") {
+      calculateRevenueGivenMargin();
+    } else {
+
+    }
+
+  }
+
+  void calculateRevenueGivenMargin() {
+      double margin = double.parse(etMargin.text);
+      double cost = double.parse(etCost.text);
+      double step1 = 1 - (margin / 100);
+      double step2 = cost / step1;
+      etPrice.text = step2.toString();
+      calculateMarkupGivenCostAndPrice();
+  }
+
+  void calculateMarginGivenCostAndPrice() {
+      double cost = double.parse(etCost.text);
+      double price =double.parse(etPrice.text);
+      double step1 = 100 * (price - cost) / price;
+      etMargin.text = step1.toString();
+  }
+
+  void calculateRevenueGivenMarkup() {
+      double markup = double.parse(etMarkup.text);
+      double cost = double.parse(etCost.text);
+      double step1 = (1 + (markup / 100)) * cost;
+      etPrice.text = step1.toString();
+      calculateMarginGivenCostAndPrice();
+  }
+
+  void calculateMarkupGivenCostAndPrice() {
+
+    /*
+    * (price / cost) - 1 = markup
+    * */
+    double cost = double.parse(etCost.text);
+    double price =double.parse(etPrice.text);
+    double step1 = ((price / cost) - 1) * 100;
+    etMarkup.text = step1.toString();
   }
 
   VoidCallback? solidBtnOnClick(String text, String event) {
@@ -1072,7 +1207,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   }
 
   void solidButtonEvent(String event) {
-    print("EVENT\t\t" + event);
     if(event == "SEARCH") {
       Map<String, String> map = Map<String, String>();
       if(searchOptionValue == 0) {
@@ -1092,22 +1226,61 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 2, dropDownType: "PRODUCT-MODE-NEW-ITEM"));
     } else if (event == "UPDATE-ITEM") {
       if(formKey.currentState!.validate()) {
-        print("UPDATE ITEM CLICK");
+        updateProductEvent();
       }
     } else if (event == "SEARCH-ITEM") {
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 0, dropDownType: "PRODUCT-MODE-SEARCH-ITEM"));
     } else if (event == "ADD-ITEM") {
 
       if(formKey.currentState!.validate()) {
-        print("ADD ITEM CLICK");
         addNewProductEvent();
       }
     } else if (event == "MODIFY-ITEM-CODE") {
-      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode
+      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode_Update
           , userData: widget.userData, productData: mainProductModel, context: context));
     } else if (event == "ADD-ITEM-CODE") {
-      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode
+      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode_Add
           , userData: widget.userData, productData: mainProductModel, context: context));
+    }
+  }
+
+  void updateProductEvent() {
+    mainProductModel?.description = eTDescription.text;
+    mainProductModel?.second_description = etDescription2.text;
+    mainProductModel?.third_description = etDescription3.text;
+    mainProductModel?.cost = double.parse(etCost.text);
+    mainProductModel?.price  = double.parse(etPrice.text);
+    mainProductModel?.updated_by = widget.userData?.uid;
+
+    mainProductModel?.departmentList = <String>[];
+    mainProductModel?.sectionList = <String>[];
+    mainProductModel?.categoryList = <String>[];
+    mainProductModel?.vendorList = <String>[];
+    mainProductModel?.discountList = <String>[];
+    mainProductModel?.taxList = <String>[];
+
+    if(departmentDefault != '-1') {
+      mainProductModel?.departmentList.add(departmentDefault!);
+    }
+
+    if(sectionDefault != '-1') {
+      mainProductModel?.sectionList.add(sectionDefault);
+    }
+
+    if(categoryDefault != '-1') {
+      mainProductModel?.categoryList.add(categoryDefault!);
+    }
+
+    if(vendorDefault != '-1') {
+      mainProductModel?.vendorList.add(vendorDefault!);
+    }
+
+    if(discountDefault != '-1') {
+      mainProductModel?.discountList.add(discountDefault!);
+    }
+
+    if(taxDefault != '-1') {
+      mainProductModel?.taxList.add(taxDefault!);
     }
   }
 
@@ -1120,10 +1293,52 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     model.price  = double.parse(etPrice.text);
     model.added_by = widget.userData?.uid;
 
-    ConsolePrint("ADD MODEL", model.added_by);
+    model.itemCodeList = <String>[];
+    model.upcList = <String>[];
+    model.departmentList = <String>[];
+    model.sectionList = <String>[];
+    model.categoryList = <String>[];
+    model.vendorList = <String>[];
+    model.discountList = <String>[];
+    model.taxList = <String>[];
+
+    if(etItemCode.text.isNotEmpty) {
+      model.itemCodeList.add(etItemCode.text);
+    }
+
+    if(etUpc.text.isNotEmpty) {
+      model.upcList?.add(etUpc.text);
+    }
+
+    if(departmentDefault != '-1') {
+      model.departmentList.add(departmentDefault!);
+    }
+
+    if(sectionDefault != '-1') {
+     model.sectionList.add(sectionDefault);
+    }
+
+    if(categoryDefault != '-1') {
+      model.categoryList.add(categoryDefault!);
+    }
+
+    if(vendorDefault != '-1') {
+      model.vendorList.add(vendorDefault!);
+    }
+
+    if(discountDefault != '-1') {
+      model.discountList.add(discountDefault!);
+    }
+
+    if(taxDefault != '-1') {
+      model.taxList.add(taxDefault!);
+    }
+
+    context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_Product_Add
+        , userData: widget.userData, productData: model, context: context));
+
+   // context.read<MainBloc>().add(MainParam.AddProduct(eventStatus: MainEvent.Event_AddProduct, productData: model, locationId: widget.userData?.defaultLocation?.uid));
   }
-
-
 
   Widget paginateTable() {
     DataTableSource _data = TableData(listProductPaginate, DataCount, context, widget.userData);
@@ -1147,7 +1362,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
 
     );
   }
-
 
 }
 

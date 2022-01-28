@@ -2,4 +2,5 @@
 // ignore_for_file: library_prefixes
 double widthQuery = 0.5;
 double dWidthQuery = 0.1;
+double dWidthQuerySm = 0.3;
 double dHeightQuery = 0.15;
