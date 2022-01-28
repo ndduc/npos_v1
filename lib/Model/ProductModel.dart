@@ -134,6 +134,14 @@ class ProductModel {
     ConsolePrint("updated_by", updated_by);
     ConsolePrint("added_by", added_by);
     ConsolePrint("itemCodeList", itemCodeList);
+    ConsolePrint("upcList", upcList);
+    ConsolePrint("departmentList", departmentList);
+    ConsolePrint("categoryList", categoryList);
+    ConsolePrint("sectionList", sectionList);
+    ConsolePrint("vendorList", vendorList);
+    ConsolePrint("discountList", discountList);
+    ConsolePrint("taxList", taxList);
+
   }
 
   ProductModel() {

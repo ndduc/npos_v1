@@ -239,7 +239,7 @@ class Component extends State<Discount> {
                 controller: eTSearchTopBy,
                 labelText: "TEST LABEL",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             )
         ),
@@ -262,7 +262,7 @@ class Component extends State<Discount> {
                   controller: eTDiscountId,
                   labelText: "Discount Id",
                   hintText: "Discount Id",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
 
                 ),
@@ -271,7 +271,7 @@ class Component extends State<Discount> {
                   controller: eTDiscountName,
                   labelText: "Discount Name",
                   hintText: "Discount Name",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
                   validations: (value) {
                     if(eTDiscountName.text.isNotEmpty) {
@@ -286,7 +286,7 @@ class Component extends State<Discount> {
                   controller: etDiscountRate,
                   labelText: "Discount Rate",
                   hintText: "Please Enter Digit Only. etc: 1.8 as 1.8%",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
                   validations: (value) {
                     if(etDiscountRate.text.isNotEmpty) {
@@ -301,7 +301,7 @@ class Component extends State<Discount> {
                   controller: eTDiscountNote,
                   labelText: "User's Note",
                   hintText: "User's Note",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
                   maxLines: 5,
                 )
@@ -353,7 +353,7 @@ class Component extends State<Discount> {
                                     controller: eTCreated,
                                     labelText: "Created By/Datetime",
                                     hintText: "TEST",
-                                    isMask: false,
+                                    isMask: false, isNumber:false,
                                     mask: false
                                 )
                             ),
@@ -364,7 +364,7 @@ class Component extends State<Discount> {
                                     controller: eTUpdated,
                                     labelText: "Last Updated By/Datetime",
                                     hintText: "TEST",
-                                    isMask: false,
+                                    isMask: false, isNumber:false,
                                     mask: false
                                 )
                             )

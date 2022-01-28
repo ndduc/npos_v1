@@ -30,7 +30,6 @@ GestureTapCallback menuClickEvent(int index, BuildContext context, UserModel use
     String event = UIItem.menuItem[index]["event"];
     switch(event){
       case MENU_MAN_PROD:
-        print("PRODUCT EVENT CLICKED\t\t" + userData.firstName.toString());
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Product, context: context, userData: userData));
         break;
       case MENU_MAN_DEPTCATE:

@@ -236,7 +236,7 @@ class Component extends State<Department> {
                 controller: eTSearchTopBy,
                 labelText: "TEST LABEL",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             )
         ),
@@ -259,7 +259,7 @@ class Component extends State<Department> {
                   controller: eTDepartmentId,
                   labelText: "Department Id",
                   hintText: "Department Id",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
 
               ),
@@ -268,7 +268,7 @@ class Component extends State<Department> {
                   controller: eTDepartmentName,
                   labelText: "Department Name",
                   hintText: "Department Name",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
                   validations: (value) {
                     if(eTDepartmentName.text.isNotEmpty) {
@@ -284,7 +284,7 @@ class Component extends State<Department> {
                 controller: eTDepartmentNote,
                 labelText: "User's Note",
                 hintText: "User's Note",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false,
                 maxLines: 5,
               )
@@ -336,7 +336,7 @@ class Component extends State<Department> {
                                     controller: eTCreated,
                                     labelText: "Created By/Datetime",
                                     hintText: "TEST",
-                                    isMask: false,
+                                    isMask: false, isNumber:false,
                                     mask: false
                                 )
                             ),
@@ -347,7 +347,7 @@ class Component extends State<Department> {
                                     controller: eTUpdated,
                                     labelText: "Last Updated By/Datetime",
                                     hintText: "TEST",
-                                    isMask: false,
+                                    isMask: false, isNumber:false,
                                     mask: false
                                 )
                             )

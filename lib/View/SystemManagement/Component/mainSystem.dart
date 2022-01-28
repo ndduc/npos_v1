@@ -169,7 +169,7 @@ class _SystemBody extends State<SystemBody> {
                 controller: null,
                 labelText: "TEST LABEL",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             )
         ),
@@ -219,7 +219,7 @@ class _SystemBody extends State<SystemBody> {
                 controller: null,
                 labelText: "Description",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             ),
             Custom_ListTile_TextField(
@@ -227,7 +227,7 @@ class _SystemBody extends State<SystemBody> {
                 controller: null,
                 labelText: "Long Description",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             ),
             Row(
@@ -239,7 +239,7 @@ class _SystemBody extends State<SystemBody> {
                         controller: null,
                         labelText: "Product Id",
                         hintText: "TEST",
-                        isMask: false,
+                        isMask: false, isNumber:false,
                         mask: false
                     )
                 ),
@@ -250,7 +250,7 @@ class _SystemBody extends State<SystemBody> {
                         controller: null,
                         labelText: "Item Code",
                         hintText: "TEST",
-                        isMask: false,
+                        isMask: false, isNumber:false,
                         mask: false
                     )
                 ),
@@ -261,7 +261,7 @@ class _SystemBody extends State<SystemBody> {
                         controller: null,
                         labelText: "UPC",
                         hintText: "TEST",
-                        isMask: false,
+                        isMask: false, isNumber:false,
                         mask: false
                     )
                 )
@@ -278,7 +278,7 @@ class _SystemBody extends State<SystemBody> {
                           controller: null,
                           labelText: "Cost",
                           hintText: "TEST",
-                          isMask: false,
+                          isMask: false, isNumber:false,
                           mask: false
                       ),
                       Custom_ListTile_TextField(
@@ -286,7 +286,7 @@ class _SystemBody extends State<SystemBody> {
                           controller: null,
                           labelText: "Price",
                           hintText: "TEST",
-                          isMask: false,
+                          isMask: false, isNumber:false,
                           mask: false
                       )
                     ],
@@ -301,7 +301,7 @@ class _SystemBody extends State<SystemBody> {
                           controller: null,
                           labelText: "Margin",
                           hintText: "TEST",
-                          isMask: false,
+                          isMask: false, isNumber:false,
                           mask: false
                       ),
                       Custom_ListTile_TextField(
@@ -309,7 +309,7 @@ class _SystemBody extends State<SystemBody> {
                           controller: null,
                           labelText: "Markup",
                           hintText: "TEST",
-                          isMask: false,
+                          isMask: false, isNumber:false,
                           mask: false
                       )
                     ],
@@ -322,7 +322,7 @@ class _SystemBody extends State<SystemBody> {
                 controller: null,
                 labelText: "User Note",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             ),
             Row(
@@ -598,7 +598,7 @@ class _SystemBody extends State<SystemBody> {
                 controller: null,
                 labelText: "Created By/Datetime",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             )
         ),
@@ -609,7 +609,7 @@ class _SystemBody extends State<SystemBody> {
                 controller: null,
                 labelText: "Last Updated By/Datetime",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             )
         )

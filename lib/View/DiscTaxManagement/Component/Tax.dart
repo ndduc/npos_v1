@@ -239,7 +239,7 @@ class Component extends State<Tax> {
                 controller: eTSearchTopBy,
                 labelText: "TEST LABEL",
                 hintText: "TEST",
-                isMask: false,
+                isMask: false, isNumber:false,
                 mask: false
             )
         ),
@@ -262,7 +262,7 @@ class Component extends State<Tax> {
                   controller: eTTaxId,
                   labelText: "Tax Id",
                   hintText: "Tax Id",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
 
                 ),
@@ -271,7 +271,7 @@ class Component extends State<Tax> {
                   controller: eTTaxName,
                   labelText: "Tax Name",
                   hintText: "Tax Name",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
                   validations: (value) {
                     if(eTTaxName.text.isNotEmpty) {
@@ -286,7 +286,7 @@ class Component extends State<Tax> {
                   controller: eTTaxRate,
                   labelText: "Tax Rate",
                   hintText: "Please Enter Number Only. Ex: 1.8 as 1.8%",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
                   validations: (value) {
                     if(eTTaxRate.text.isNotEmpty) {
@@ -301,7 +301,7 @@ class Component extends State<Tax> {
                   controller: eTTaxNote,
                   labelText: "User's Note",
                   hintText: "User's Note",
-                  isMask: false,
+                  isMask: false, isNumber:false,
                   mask: false,
                   maxLines: 5,
                 )
@@ -353,7 +353,7 @@ class Component extends State<Tax> {
                                     controller: eTCreated,
                                     labelText: "Created By/Datetime",
                                     hintText: "TEST",
-                                    isMask: false,
+                                    isMask: false, isNumber:false,
                                     mask: false
                                 )
                             ),
@@ -364,7 +364,7 @@ class Component extends State<Tax> {
                                     controller: eTUpdated,
                                     labelText: "Last Updated By/Datetime",
                                     hintText: "TEST",
-                                    isMask: false,
+                                    isMask: false, isNumber:false,
                                     mask: false
                                 )
                             )

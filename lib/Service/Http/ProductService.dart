@@ -5,20 +5,69 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
+import 'package:npos/Model/UserModel.dart';
 
 abstract class Service{
   Future<ProductModel>GetProductByMap(String userId, String locId, Map<String, String> param);
   Future<int>GetProductPaginateCount(String userId, String locId, String searchType);
   Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, String searchType, int startIdx, int endIdx);
+  Future<AddResponseModel> AddProduct(ProductModel productMode,  String locationIdl);
 }
 class ProductService extends Service{
   String HOST ="https://192.168.1.2:5001/";
   String MAIN_ENDPOINT = "api/pos/";
+
+  @override
+  Future<AddResponseModel> AddProduct(ProductModel productModel, String locationId) async {
+    ConsolePrint("Add Product", "Repo Init");
+    Map<String, dynamic> param = <String, dynamic>{
+      "description" : productModel.description.toString(),
+      "second_description" : productModel.second_description.toString(),
+      "third_description" : productModel.third_description.toString(),
+      "cost" : productModel.cost.toString(),
+      "price": productModel.price.toString()
+    };
+
+    param["departmentList"] = json.encode(productModel.departmentList);
+    param["categoryList"] = json.encode(productModel.categoryList);
+    param["vendorList"] = json.encode(productModel.vendorList);
+    param["sectionList"] = json.encode(productModel.sectionList);
+    param["discountList"] = json.encode(productModel.discountList);
+    param["taxList"] = json.encode(productModel.taxList);
+    param["itemCodeList"] = json.encode(productModel.itemCodeList);
+    param["upcList"] = json.encode(productModel.upcList);
+    ConsolePrint("PARAM", param);
+
+
+    try {
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + productModel.added_by.toString() + "/" + locationId + "/product/add");
+      var res = await http.post(
+          url,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          encoding: Encoding.getByName('utf-8'),
+          body: param
+      );
+      if(res.statusCode != 200) {
+        throw Exception(res.body.toString());
+      } else {
+        var json = jsonDecode(res.body);
+        Map<String, dynamic> mapRes = jsonDecode(json["body"]);
+        AddResponseModel model = AddResponseModel.map(mapRes);
+        return model;
+      }
+    } catch (e) {
+      ConsolePrint("Error", e.toString());
+      throw Exception(e);
+    }
+  }
+
   @override
   Future<ProductModel> GetProductByMap(String userId, String locId, Map<String, String> param) async {
-    ConsolePrint("PARAM", param);
     ProductModel model;
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/product/get-by-map");
@@ -36,9 +85,7 @@ class ProductService extends Service{
       } else {
         var json = jsonDecode(res.body);
         Map<String, dynamic> mapRes = jsonDecode(json["body"]);
-        ConsolePrint("RES", mapRes);
         model = ProductModel.map(mapRes);
-        model.print();
         return model;
       }
     } catch(e) {
@@ -68,7 +115,6 @@ class ProductService extends Service{
       } else {
         var json = jsonDecode(res.body);
         int response = jsonDecode(json["body"]);
-        ConsolePrint("GetProductPaginateCount", response);
         return response;
       }
     } catch(e) {
@@ -84,8 +130,6 @@ class ProductService extends Service{
       "startIdx" : startIdx.toString(),
       "endIdx" : endIdx.toString()
     };
-    ConsolePrint("TEST\t\t", param);
-
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/product/get-product-paginate");
       var res = await http.post(

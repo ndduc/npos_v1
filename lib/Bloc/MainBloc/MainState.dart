@@ -112,6 +112,14 @@ class ProductPaginateLoadedState extends MainState{
   List<ProductModel>? listProductModel;
   ProductPaginateLoadedState({required this.listProductModel});
 }
+
+class ProductAddUpdateInitState extends MainState{}
+class ProductAddUpdateLoadingState extends MainState{}
+class ProductAddUpdateLoadedState extends MainState{}
+class ProductAddUpdateErrorState extends MainState{
+  final error;
+  ProductAddUpdateErrorState({this.error});
+}
 //endregion
 
 //region DEPARTMENT
