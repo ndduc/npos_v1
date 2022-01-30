@@ -105,6 +105,8 @@ enum MainEvent{
   Nav_Dialog_ItemCode_Update,
   Nav_Dialog_Upc,
   Nav_Dialog_Product_Add,
+  Nav_Dialog_Product_Add_Yes,
+  Nav_Dialog_Product_Add_No,
   Nav_Dialog_Product_Update,
   Nav_Dialog_Product_Add_Response,
   Nav_Dialog_Product_Update_Response,
@@ -148,13 +150,14 @@ class MainParam {
   Map<String, dynamic>? sectionParameter;
   Map<String, dynamic>? discountParameter;
   Map<String, dynamic>? taxParameter;
+  Map<String, String>? optionalParameter;
   String? dropDownType;
   dynamic dropDownValue;
   String? toWhere;
   bool? isAdded;
 
   /// DIALOG
-  MainParam.NavDialog({this.userData, this.productData, this.eventStatus, this.context});
+  MainParam.NavDialog({this.userData, this.productData, this.eventStatus, this.context, this.optionalParameter});
 
   /// PRODUCT
   MainParam.GetProductByParam({this.eventStatus, this.productParameter, this.userData});

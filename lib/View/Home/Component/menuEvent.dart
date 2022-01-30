@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
-import 'package:npos/Constant/UiEvent/menuEvent.dart';
+import 'package:npos/Constant/UIEvent/menuEvent.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/DailyReport/dailyReport.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';

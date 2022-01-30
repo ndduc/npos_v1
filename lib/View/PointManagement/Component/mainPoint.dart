@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
-import 'package:npos/Constant/UiEvent/menuEvent.dart';
+import 'package:npos/Constant/UIEvent/menuEvent.dart';
 import 'package:npos/View/Client/clientView.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
