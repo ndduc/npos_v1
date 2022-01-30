@@ -310,3 +310,15 @@ class AddUpdateTaxLoaded extends MainState {
 }
 //endregion
 
+//region DIALOG PRODUCT
+class DialogProductAddUpdateInitState extends MainState{}
+class DialogProductAddUpdateLoadingState extends MainState{}
+class DialogProductAddUpdateLoadedState extends MainState{
+  dynamic response;
+  DialogProductAddUpdateLoadedState({this.response});
+}
+class DialogProductAddUpdateErrorState extends MainState{
+  final error;
+  DialogProductAddUpdateErrorState({this.error});
+}
+//endregion
