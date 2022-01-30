@@ -40,11 +40,6 @@ class MainBloc extends Bloc<MainParam,MainState>
   bool isAuthorized = false;
   UserModel? userModel;
 
-  Stream<MainState> test(MainParam event) async* {
-    print("yeidl test");
-    yield DialogProductAddUpdateLoadedState();
-
-  }
   @override
   Stream<MainState> mapEventToState(MainParam event) async* {
 
@@ -130,7 +125,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           String locationId = event.locationId!;
           AddResponseModel addEventResponse = await mainRepo.AddProduct(productModel, locationId);
           addEventResponse.print();
-          yield ProductAddUpdateLoadedState();
+          yield ProductAddUpdateLoadedState(responseModel: addEventResponse);
         } catch (e) {
           yield ProductAddUpdateErrorState(error: e);
         }
@@ -838,7 +833,6 @@ class MainBloc extends Bloc<MainParam,MainState>
         //endregion
       //region DIALOG PRODUCT
       case MainEvent.Nav_Dialog_Product_Add:
-
         dynamic val;
         yield DialogProductAddUpdateInitState();
         try {
@@ -864,20 +858,51 @@ class MainBloc extends Bloc<MainParam,MainState>
             val = value
           }).whenComplete(() {}
           );
-
-          print("AFTER AWAIT  " +  val.toString());
-          yield DialogProductAddUpdateLoadedState();
+          yield DialogProductAddUpdateLoadedState(sucess: val);
         } catch (e) {
           yield DialogProductAddUpdateErrorState(error:  e);
         }
         break;
       case MainEvent.Nav_Dialog_Product_Add_No:
-       // Navigator.pop(event.context as BuildContext, false);
-        yield DialogProductAddUpdateLoadedState(response: "TEST");
+        Navigator.pop(event.context as BuildContext, false);
         break;
       case MainEvent.Nav_Dialog_Product_Add_Yes:
         Navigator.pop(event.context as BuildContext, true);
-        yield DialogProductAddUpdateLoadedState(response: "TEST");
+        yield DialogProductAddUpdateLoadedState(sucess: true);
+        break;
+      case MainEvent.Nav_Dialog_Product_Update:
+        dynamic val;
+        yield DialogProductAddUpdateInitState();
+        try {
+          yield DialogProductAddUpdateLoadingState();
+          await showGeneralDialog(
+            barrierLabel: "Barrier",
+            barrierDismissible: false,
+            barrierColor: Colors.black.withOpacity(0.5),
+            transitionDuration: Duration(milliseconds: 500),
+            context: event.context as BuildContext,
+            pageBuilder: (_, __, ___) {
+              return ProductDialogBlocAddUpdate(whoAmI: EVENT_PRODUCT_UPDATE, productModel: event.productData, userModel:  event.userData, optionalParam:  event.optionalParameter);
+            },
+            transitionBuilder: (_, anim, __, child) {
+              return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                  child:SlideTransition(
+                    position:
+                    Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                    child: child,
+                  ));
+            },
+          ).then((value) => {
+            val = value
+          }).whenComplete(() {}
+          );
+          yield DialogProductAddUpdateLoadedState(sucess: val);
+        } catch (e) {
+          yield DialogProductAddUpdateErrorState(error:  e);
+        }
+        break;
+      case MainEvent.Nav_Dialog_Product_Update_No:
+        Navigator.pop(event.context as BuildContext, false);
         break;
       //endregion
       default:

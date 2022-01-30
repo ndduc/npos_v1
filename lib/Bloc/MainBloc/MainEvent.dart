@@ -108,6 +108,8 @@ enum MainEvent{
   Nav_Dialog_Product_Add_Yes,
   Nav_Dialog_Product_Add_No,
   Nav_Dialog_Product_Update,
+  Nav_Dialog_Product_Update_Yes,
+  Nav_Dialog_Product_Update_No,
   Nav_Dialog_Product_Add_Response,
   Nav_Dialog_Product_Update_Response,
   Nav_MainMenu, //Screen After Login
