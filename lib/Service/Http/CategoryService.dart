@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:npos/Constant/API/MapValues.dart';
+import 'package:npos/Constant/API/NumberValues.dart';
 import 'package:npos/Constant/API/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/CategoryModel.dart';
@@ -31,11 +32,11 @@ class CategoryService extends Service{
           url,
           headers: HEADER
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = json["body"];
+        List<dynamic> lstRes = json[BODY];
         for(int i = 0; i < lstRes.length; i++) {
           CategoryModel _model =  CategoryModel.mapLowerCase(lstRes[i]);
           listModel.add(_model);
@@ -57,14 +58,14 @@ class CategoryService extends Service{
       var res = await http.post(
           url,
           headers: HEADER,
-          encoding: Encoding.getByName('utf-8'),
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        int response = jsonDecode(json["body"]);
+        int response = jsonDecode(json[BODY]);
         return response;
       }
     } catch(e) {
@@ -85,14 +86,14 @@ class CategoryService extends Service{
       var res = await http.post(
           url,
           headers: HEADER,
-          encoding: Encoding.getByName('utf-8'),
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = jsonDecode(json["body"]);
+        List<dynamic> lstRes = jsonDecode(json[BODY]);
         for(int i = 0; i < lstRes.length; i++) {
           CategoryModel _model =  CategoryModel.map(lstRes[i]);
           listModel.add(_model);
@@ -113,12 +114,11 @@ class CategoryService extends Service{
           url,
           headers: HEADER
       );
-      List<CategoryModel> locationList = [];
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        Map<String, dynamic> mapRes = jsonDecode(json["body"]);
+        Map<String, dynamic> mapRes = jsonDecode(json[BODY]);
         model = CategoryModel.map(mapRes);
         return model;
       }
@@ -138,14 +138,14 @@ class CategoryService extends Service{
       var res = await http.post(
           url,
           headers: HEADER,
-          encoding: Encoding.getByName('utf-8'),
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = jsonDecode(json["body"]);
+        List<dynamic> lstRes = jsonDecode(json[BODY]);
         for(int i = 0; i < lstRes.length; i++) {
           CategoryModel _model =  CategoryModel.map(lstRes[i]);
           listModel.add(_model);
@@ -164,14 +164,14 @@ class CategoryService extends Service{
       var res = await http.post(
           url,
           headers: HEADER,
-          encoding: Encoding.getByName('utf-8'),
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        String response = json["body"];
+        String response = json[BODY];
         if (response == OK) {
           return true;
         } else {
@@ -190,14 +190,14 @@ class CategoryService extends Service{
       var res = await http.post(
           url,
           headers: HEADER,
-          encoding: Encoding.getByName('utf-8'),
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        String response = json["body"];
+        String response = json[BODY];
         if (response == OK) {
           return true;
         } else {
