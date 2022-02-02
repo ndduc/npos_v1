@@ -25,7 +25,7 @@ class ProductModel {
   late List<String> vendorList;
   late List<String> discountList;
   late List<String> taxList;
-  List<String>? upcList;
+  late List<String> upcList;
 
   ProductModel.map(Map<String, dynamic> map) {
     uid = map["UId"];
@@ -45,6 +45,12 @@ class ProductModel {
       itemCodeList = [];
     }  else {
       itemCodeList = (map["ItemCodeList"] as List).map((item) => item as String).toList();
+    }
+
+    if (map["UpcList"] == null) {
+      upcList = [];
+    }  else {
+      upcList = (map["UpcList"] as List).map((item) => item as String).toList();
     }
 
     if (map["CategoryList"] == null) {

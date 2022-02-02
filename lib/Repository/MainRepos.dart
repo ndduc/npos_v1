@@ -53,6 +53,10 @@ class MainRepository{
   Future<AddResponseModel> AddProduct(ProductModel productModel, String locationId) {
     return ProductService().AddProduct(productModel, locationId);
   }
+
+  Future<AddResponseModel> UpdateProduct(ProductModel productModel, String locationId) {
+    return ProductService().UpdateProduct(productModel, locationId);
+  }
   //endregion
 
   //region DEPARTMENT

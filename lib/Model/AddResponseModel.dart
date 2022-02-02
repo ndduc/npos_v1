@@ -11,6 +11,8 @@ class AddResponseModel {
   String? Product_ItemCode;
   String? Product_Upc;
 
+  AddResponseModel(){}
+
   AddResponseModel.map(Map<String, dynamic> map) {
     Product_Location_Status = map["Product_Location_Status"];
     Product_Department = map["Product_Department"];

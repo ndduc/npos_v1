@@ -36,6 +36,9 @@ const String BTN_ADD_UPC = 'Add Upc';
 const String BTN_UPDATE_UPC = 'Modify Upc';
 const String BTN_ADD_PRODUCT = 'Add Item';
 const String BTN_UPDATE_PRODUCT = 'Update Item';
+const String BTN_SAVE = 'Save';
+const String BTN_DISMISS = 'Dismiss';
+const String BTN_NEW_ITEMCODE = 'New Item Code';
 
 const String HINT_SEARCH_TEXT = 'Enter Your Search Text Here';
 const String HINT_DESCRIPTION = 'Enter Description';
@@ -48,6 +51,7 @@ const String HINT_COST = 'Enter Cost (Numeric Value Only)';
 const String HINT_PRICE = 'Enter Price (Numeric Value Only)';
 const String HINT_MARGIN = 'Enter Expected Margin (Numeric Value Only And Rounded Percentage)';
 const String HINT_MARKUP = 'Enter Expected Markup (Numeric Value Only And Rounded Percentage)';
+const String HINT_ITEMCODE_ADD_UPDATE = "This Item Does Not Have ItemCode";
 
 const String VALIDATE_DESCRIPTION = 'Please Provide Description';
 const String VALIDATE_COST = 'Please Provide Cost For The Item. Enter 0 if Item Does Not Have Cost';

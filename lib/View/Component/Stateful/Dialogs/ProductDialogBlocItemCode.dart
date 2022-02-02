@@ -7,8 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiSize.dart' as UISize;
+import 'package:npos/Constant/UIEvent/AddUpdateUpcItemCodeEvent.dart';
+import 'package:npos/Constant/Values/NumberValues.dart';
+import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/ProductModel.dart';
@@ -42,11 +46,10 @@ class Component extends State<ProductDialogBlocItemCode> {
   @override
   void initState() {
     super.initState();
-    ConsolePrint("TEST", widget.whoAmI);
-    if (widget.whoAmI == 'ITEMCODE-ADD') {
+    if (widget.whoAmI == EVENT_ADD_ITEMCODE) {
       model = ProductModel();
       addNewItemCode = true;
-    } else if (widget.whoAmI == 'ITEMCODE-UPDATE') {
+    } else if (widget.whoAmI == EVENT_UPDATE_ITEMCODE) {
       model = widget.productMode!;
       addNewItemCode = false;
     }
@@ -62,18 +65,16 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   void setValue() {
-    ConsolePrint("Test", model.uid);
-
-    if (model.itemCode == -1) {
-      etItemCode.text = "This Item Does Not Have ItemCode";
+    if (model.itemCode == NUMBER_NULL) {
+      etItemCode.text = HINT_ITEMCODE_ADD_UPDATE;
     } else {
       etItemCode.text = model.itemCode.toString();
     }
     etDescription.text = model.description!;
     etPrice.text = model.price.toString();
     etCost.text = model.cost.toString();
-    etExtDesc.text = model.second_description ?? "";
-    etNote.text = model.third_description ?? "";
+    etExtDesc.text = model.second_description ?? EMPTY;
+    etNote.text = model.third_description ?? EMPTY;
     etMarkup.text = marginCalculation(double.parse(etPrice.text), double.parse(etCost.text)).toString();
     etMargin.text = marginCalculation(double.parse(etPrice.text), double.parse(etCost.text)).toString();
   }
@@ -152,10 +153,10 @@ class Component extends State<ProductDialogBlocItemCode> {
             left: MediaQuery.of(context).size.width * UISize.dWidthQuery,
             right: MediaQuery.of(context).size.width * UISize.dWidthQuery),
         child: Container(
-          padding: EdgeInsets.all(25),
+          padding: const EdgeInsets.all(GENERIC_CONTAINER_PADDING),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderRadius: const BorderRadius.all(Radius.circular(GENERIC_BORDER_RADIUS)),
               border: Border.all(color: Colors.blueAccent),
             ),
             child: Row(
@@ -172,15 +173,15 @@ class Component extends State<ProductDialogBlocItemCode> {
                                 child: Custom_ListTile_TextField(
                                     controller: etItemCode,
                                     read: readOnly,
-                                    labelText: "Item Code",
-                                    hintText: "TEST",
-                                    isMask: false, isNumber:false,
+                                    labelText: TXT_ITEMCODE,
+                                    isMask: false,
+                                    isNumber:false,
                                     mask: false
                                 ),
                               ),
                               Expanded(
                                   flex: 3,
-                                  child: solidButton("New Item Code", "NEW-ITEM-CODE-MODE")
+                                  child: solidButton(BTN_NEW_ITEMCODE, EVENT_NEW_ITEMCODE_MODE)
                               )
                             ],
                           ),
@@ -188,9 +189,9 @@ class Component extends State<ProductDialogBlocItemCode> {
                           Custom_ListTile_TextField(
                             controller: etDescription,
                               read: readOnly,
-                              labelText: "Item Description",
-                              hintText: "TEST",
-                              isMask: false, isNumber:false,
+                              labelText: TXT_DESCRIPTION,
+                              isMask: false,
+                              isNumber:false,
                               mask: false
                           ),
                           Row(
@@ -200,9 +201,9 @@ class Component extends State<ProductDialogBlocItemCode> {
                                 child: Custom_ListTile_TextField(
                                   controller: etPrice,
                                     read: readOnly,
-                                    labelText: "Price",
-                                    hintText: "TEST",
-                                    isMask: false, isNumber:false,
+                                    labelText:TXT_PRICE,
+                                    isMask: false,
+                                    isNumber:false,
                                     mask: false
                                 ),
                               ),
@@ -211,9 +212,9 @@ class Component extends State<ProductDialogBlocItemCode> {
                                 child: Custom_ListTile_TextField(
                                   controller: etCost,
                                     read: readOnly,
-                                    labelText: "Cost",
-                                    hintText: "TEST",
-                                    isMask: false, isNumber:false,
+                                    labelText: TXT_COST,
+                                    isMask: false,
+                                    isNumber:false,
                                     mask: false
                                 ),
                               )
@@ -226,9 +227,9 @@ class Component extends State<ProductDialogBlocItemCode> {
                                 child: Custom_ListTile_TextField(
                                   controller: etMargin,
                                     read: readOnly,
-                                    labelText: "Margin",
-                                    hintText: "TEST",
-                                    isMask: false, isNumber:false,
+                                    labelText: TXT_MARGIN,
+                                    isMask: false,
+                                    isNumber:false,
                                     mask: false
                                 ),
                               ),
@@ -237,9 +238,9 @@ class Component extends State<ProductDialogBlocItemCode> {
                                 child: Custom_ListTile_TextField(
                                   controller: etMarkup,
                                     read: readOnly,
-                                    labelText: "Markup",
-                                    hintText: "TEST",
-                                    isMask: false, isNumber:false,
+                                    labelText: TXT_MARKUP,
+                                    isMask: false,
+                                    isNumber:false,
                                     mask: false
                                 ),
                               )
@@ -248,34 +249,34 @@ class Component extends State<ProductDialogBlocItemCode> {
                           Custom_ListTile_TextField(
                             controller: etExtDesc,
                             read: readOnly,
-                            labelText: "Extended Description",
-                            hintText: "TEST",
-                            isMask: false, isNumber:false,
+                            labelText: TXT_DESCRIPTION_2,
+                            isMask: false,
+                            isNumber:false,
                             mask: false,
                             maxLines: 5,
                           ),
                           Custom_ListTile_TextField(
                             controller: etNote,
                             read: readOnly,
-                            labelText: "User's Note",
-                            hintText: "TEST",
-                            isMask: false, isNumber:false,
+                            labelText: TXT_DESCRIPTION_3,
+                            isMask: false,
+                            isNumber:false,
                             mask: false,
                             maxLines: 5,
                           ),
                           Row(
                             children: [
-                              Expanded(
+                              const Expanded(
                                   flex: 4,
                                   child: SizedBox()
                               ),
                               Expanded(
                                   flex: 3,
-                                  child: solidButton("Dismiss", "RETURN")
+                                  child: solidButton(BTN_DISMISS, EVENT_CLOSE)
                               ),
                               Expanded(
                                   flex: 3,
-                                  child: solidButton("Save", "SAVE-ITEM-CODE")
+                                  child: solidButton(BTN_SAVE, EVENT_SAVE_ITEMCODE)
                               )
                             ],
                           )
@@ -314,8 +315,7 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   void solidButtonEvent(String event) {
-    if(event == "RETURN") {
-      print("RETURN");
+    if(event == EVENT_CLOSE) {
       Navigator.pop(context);
     }
   }
@@ -334,13 +334,11 @@ class Component extends State<ProductDialogBlocItemCode> {
     DataTableSource _data = TableData([], 0, context);
     return PaginatedDataTable2(
       columns: const [
-        DataColumn(label: Text('Product Id')),
-        DataColumn(label: Text('Description')),
-        DataColumn(label: Text('Created Datetime')),
+        DataColumn(label: Text(TXT_PRODUCT_ID)),
+        DataColumn(label: Text(TXT_DESCRIPTION)),
+        DataColumn(label: Text(TXT_CREATE_DATETIME)),
       ],
       source: _data,
-      // horizontalMargin: 50,
-      // checkboxHorizontalMargin: 12,
       columnSpacing: 25,
       wrapInCard: false,
       rowsPerPage: 15,

@@ -61,7 +61,6 @@ class Component extends State<ProductDialogBlocAddUpdate> {
   @override
   void initState() {
     super.initState();
-    ConsolePrint("TEST", widget.whoAmI);
     productModel = widget.productModel!;
     userModel = widget.userModel!;
     optionalParam = widget.optionalParam!;
@@ -132,8 +131,6 @@ class Component extends State<ProductDialogBlocAddUpdate> {
 
   void appSpecificEvent(MainState state) {
     if (state is DialogProductAddUpdateLoadedState) {
-      print("LOADEDEDEDED");
-
     }
   }
 
@@ -142,7 +139,6 @@ class Component extends State<ProductDialogBlocAddUpdate> {
     } else if (state is ProductAddUpdateLoadingState) {
       isLoading = true;
     } else if (state is ProductAddUpdateLoadedState) {
-      ConsolePrint("print", "LOADED ADD");
       isLoading = false;
       isProceeded = true;
       responseModel = state.responseModel;
@@ -467,13 +463,13 @@ class Component extends State<ProductDialogBlocAddUpdate> {
       }
     } else {
       if (event == EVENT_YES) {
-        // context.read<MainBloc>().add(MainParam.AddProduct(eventStatus: MainEvent.Event_AddProduct, productData: productModel, locationId: widget.userModel?.defaultLocation?.uid));
+        context.read<MainBloc>().add(MainParam.UpdateProduct(eventStatus: MainEvent.Event_UpdateProduct, productData: productModel, locationId: widget.userModel?.defaultLocation?.uid));
       } else if (event == EVENT_NO) {
         context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_Product_Update_No
             , productData: widget.productModel, context: context));
       } else if (event == EVENT_CONFIRM) {
-        // context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_Product_Add_Yes
-        //     , productData: widget.productModel, context: context));
+        context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_Product_Add_Yes
+            , productData: widget.productModel, context: context));
       }
     }
 

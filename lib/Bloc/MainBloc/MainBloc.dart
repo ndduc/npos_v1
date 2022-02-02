@@ -130,6 +130,20 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ProductAddUpdateErrorState(error: e);
         }
         break;
+      case MainEvent.Event_UpdateProduct:
+        yield ProductAddUpdateInitState();
+        try {
+          ConsolePrint("Update Product", "Init");
+          yield ProductAddUpdateLoadingState();
+          ProductModel productModel = event.productData!;
+          String locationId = event.locationId!;
+          AddResponseModel addEventResponse = await mainRepo.UpdateProduct(productModel, locationId);
+          // addEventResponse.print();
+          yield ProductAddUpdateLoadedState(responseModel: addEventResponse);
+        } catch (e) {
+          yield ProductAddUpdateErrorState(error: e);
+        }
+        break;
       //endregion
 
       //region DEPARTMENT HTTP EVENT

@@ -30,3 +30,4 @@ const String RESPONSE_MODEL_UPC = "Upc Status:";
 const String EMPTY = "";
 const String PERCENT = "%";
 const String DASH = "-";
+const String OK = "OK";

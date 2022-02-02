@@ -69,11 +69,11 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   int defaultProductMode = 0;
   Map<int, String> productMode = PRODUCT_MODE;
 
+  String? upcDefault = STRING_NULL;
   String? upcDefaultValue;
-  String? upcDefault;
   List<String>? upcList = [UPC + WHITE_SPACE + STRING_NOT_FOUND];
 
-  String? itemCodeDefault;
+  String? itemCodeDefault = STRING_NULL;
   String? itemCodeDefaultValue;
   List<String>? itemCodeList = [ITEMCODE + WHITE_SPACE + STRING_NOT_FOUND];
 
@@ -364,6 +364,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     etMargin.text = EMPTY;
     etMarkup.text = EMPTY;
     itemCodeList = [ITEM_NOT_FOUND];
+    upcList = [ITEM_NOT_FOUND];
     readOnlyMode = false;
     mainProductModel = null;
 
@@ -402,6 +403,14 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     } else {
       itemCodeList =  [ITEM_NOT_FOUND];
       mainProductModel?.itemCode = NUMBER_NULL;
+    }
+
+    if ( productModel.upcList.isNotEmpty) {
+      upcList = productModel.upcList;
+      mainProductModel?.upc = int.parse(upcList![0]);
+    } else {
+      upcList =  [ITEM_NOT_FOUND];
+      mainProductModel?.upc = NUMBER_NULL;
     }
 
     if ( productModel.departmentList.isNotEmpty) {
@@ -774,7 +783,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         mask: false
                     ) : DropdownButton<String>(
                       isExpanded: true,
-                      value: itemCodeList![0],
+                      value: upcList![0],
                       style: const TextStyle(
                           color: Colors.deepPurple
                       ),
@@ -784,7 +793,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       ),
                       onChanged: (String? newValue) {
                       },
-                      items: itemCodeList
+                      items: upcList
                           ?.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -1221,15 +1230,11 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   VoidCallback? solidBtnOnClick(String text, String event) {
     if(defaultProductMode == 0) {
       switch (text) {
-        case "Modify ItemCode":
+        case BTN_UPDATE_ITEMCODE:
           return null;
-        case "Modify Upc":
+        case BTN_UPDATE_UPC:
           return null;
-        case "Save To Batch":
-          return null;
-        case "Update Batch":
-          return null;
-        case "Update Item":
+        case BTN_UPDATE_PRODUCT:
           return null;
         default:
           return () {
@@ -1352,8 +1357,24 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       taxDefaultValue = EMPTY_VALUE;
     }
 
+    if(itemCodeDefault != STRING_NULL) {
+      model?.itemCodeList = itemCodeList!;
+      itemCodeDefaultValue = OK;
+    } else {
+      itemCodeDefaultValue = EMPTY_VALUE;
+    }
+
+    if(upcDefault != STRING_NULL) {
+      model?.upcList = upcList!;
+      upcDefaultValue = OK;
+    } else {
+      upcDefaultValue = EMPTY_VALUE;
+    }
+
     Map<String, String> optionalParam = {
-      'departmentDefault' : departmentDefault.toString(),
+      'itemCodeDefaultValue' : itemCodeDefaultValue.toString(),
+      'upcDefaultValue' : upcDefaultValue.toString(),
+      'departmentDefault' : departmentDefaultValue.toString(),
       'sectionDefaultValue' : sectionDefaultValue.toString(),
       'categoryDefaultValue' : categoryDefaultValue.toString(),
       'vendorDefaultValue' : vendorDefaultValue.toString(),
@@ -1392,7 +1413,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     }
 
     if(etUpc.text.isNotEmpty) {
-      model.upcList?.add(etUpc.text);
+      model.upcList.add(etUpc.text);
       upcDefaultValue = etUpc.text;
     } else {
       upcDefaultValue = EMPTY_VALUE;
@@ -1443,7 +1464,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     Map<String, String> optionalParam = {
       'itemCodeDefaultValue' : itemCodeDefaultValue.toString(),
       'upcDefaultValue' : upcDefaultValue.toString(),
-      'departmentDefault' : departmentDefault.toString(),
+      'departmentDefault' : departmentDefaultValue.toString(),
       'sectionDefaultValue' : sectionDefaultValue.toString(),
       'categoryDefaultValue' : categoryDefaultValue.toString(),
       'vendorDefaultValue' : vendorDefaultValue.toString(),
