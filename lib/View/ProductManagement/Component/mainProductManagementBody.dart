@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
@@ -68,11 +69,11 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   int defaultProductMode = 0;
   Map<int, String> productMode = PRODUCT_MODE;
 
+  String? upcDefault = STRING_NULL;
   String? upcDefaultValue;
-  String? upcDefault;
   List<String>? upcList = [UPC + WHITE_SPACE + STRING_NOT_FOUND];
 
-  String? itemCodeDefault;
+  String? itemCodeDefault = STRING_NULL;
   String? itemCodeDefaultValue;
   List<String>? itemCodeList = [ITEMCODE + WHITE_SPACE + STRING_NOT_FOUND];
 
@@ -205,7 +206,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
         if (i == 0) {
           discountDefault = list[i].uid!;
         }
-        discountList[list[i].uid!] = list[i].description! + " - " + list[i].rate.toString() + "%";
+        discountList[list[i].uid!] = list[i].description! + WHITE_SPACE + DASH + WHITE_SPACE + list[i].rate.toString() + PERCENT;
       }
       discountList[STRING_NULL] = STRING_NOT_HAVE + WHITE_SPACE + DISCOUNT;
     }
@@ -217,7 +218,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
         if (i == 0) {
           taxDefault = list[i].uid!;
         }
-        taxList[list[i].uid!] = list[i].description! + " - " + list[i].rate.toString() + "%";
+        taxList[list[i].uid!] = list[i].description! + WHITE_SPACE + DASH + WHITE_SPACE + list[i].rate.toString() + PERCENT;
       }
       taxList[STRING_NULL] = STRING_NOT_HAVE + WHITE_SPACE + TAX;
     }
@@ -253,6 +254,12 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     } else if (state is DialogProductAddUpdateLoadingState) {
       ConsolePrint("STATE", "LOADING");
     } else if (state is DialogProductAddUpdateLoadedState) {
+      if (state.sucess) {
+        clearProductDataUI();
+      } else {
+
+      }
+
       ConsolePrint("DialogProductAddUpdateLoadedState", "LOADED");
       ConsolePrint("STATE", state.response);
 
@@ -292,7 +299,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
         addNewItemMode(state.dropDownValue);
       } else if (state.dropDownType == EVENT_MODE_NEW_ITEM) {
         defaultProductMode = state.dropDownValue;
-      } else if (state.dropDownType == "PRODUCT-MODE-UPDATE-ITEM" ) {
+      } else if (state.dropDownType == EVENT_MODE_PRODUCT_UPDATE ) {
         // UPDATE ITEM MODE LOGIC
         if(mainProductModel != null) {
           // UPDATE ITEM MODE WHERE PRODUCT MODEL IS NOT NULL
@@ -344,24 +351,37 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   }
 
   void clearProductDataUI() {
-    String blank = "";
-    eTDescription.text = blank;
-    etCost.text = blank;
-    etPrice.text = blank;
-    etCreatedBy.text = blank;
-    etUpdatedBy.text = blank;
-    etProductUid.text = blank;
-    etMargin.text = blank;
-    etMarkup.text = blank;
+    eTDescription.text = EMPTY;
+    etDescription2.text = EMPTY;
+    etDescription3.text = EMPTY;
+    etCost.text = EMPTY;
+    etPrice.text = EMPTY;
+    etCreatedBy.text = EMPTY;
+    etUpdatedBy.text = EMPTY;
+    etProductUid.text = EMPTY;
+    etItemCode.text = EMPTY;
+    etUpc.text = EMPTY;
+    etMargin.text = EMPTY;
+    etMarkup.text = EMPTY;
     itemCodeList = [ITEM_NOT_FOUND];
+    upcList = [ITEM_NOT_FOUND];
     readOnlyMode = false;
     mainProductModel = null;
+
+    departmentDefaultValue = EMPTY;
     departmentDefault = STRING_NULL;
+    sectionDefaultValue = EMPTY;
     sectionDefault = STRING_NULL;
+    categoryDefaultValue = EMPTY;
     categoryDefault = STRING_NULL;
+    vendorDefaultValue = EMPTY;
     vendorDefault = STRING_NULL;
+    discountDefaultValue = EMPTY;
     discountDefault = STRING_NULL;
+    taxDefaultValue = EMPTY;
     taxDefault = STRING_NULL;
+    itemCodeDefaultValue = EMPTY;
+    upcDefaultValue = EMPTY;
   }
 
   void parsingProductDataToUI(ProductModel productModel) {
@@ -383,6 +403,14 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     } else {
       itemCodeList =  [ITEM_NOT_FOUND];
       mainProductModel?.itemCode = NUMBER_NULL;
+    }
+
+    if ( productModel.upcList.isNotEmpty) {
+      upcList = productModel.upcList;
+      mainProductModel?.upc = int.parse(upcList![0]);
+    } else {
+      upcList =  [ITEM_NOT_FOUND];
+      mainProductModel?.upc = NUMBER_NULL;
     }
 
     if ( productModel.departmentList.isNotEmpty) {
@@ -580,12 +608,11 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       children: [
         Expanded(
             flex: 2,
-            child: solidButton("NEW ITEM", EVENT_NEW_ITEM)
+            child: solidButton(BTN_NEW_ITEM, EVENT_NEW_ITEM)
         ),
-
         Expanded(
           flex: 2,
-          child: solidButton("Search", EVENT_SEARCH)
+          child: solidButton(BTN_SEARCH, EVENT_SEARCH)
         ),
         Expanded(
             flex: 2,
@@ -620,9 +647,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
             child: Custom_ListTile_TextField(
                 read: false,
                 controller: eTSearchTopBy,
-                labelText: "Search Text",
-                hintText: "Enter Your Search Text Here",
-                isMask: false, isNumber:false,
+                labelText: TXT_SEARCH_TEXT,
+                hintText: HINT_SEARCH_TEXT,
+                isMask: false,
+                isNumber:false,
                 mask: false
             )
         ),
@@ -644,9 +672,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
             child: Custom_ListTile_TextField(
               read: readOnlyMode,
               controller: eTDescription,
-              labelText: "Description",
-              hintText: "Enter Description",
-              isMask: false, isNumber:false,
+              labelText: TXT_DESCRIPTION,
+              hintText: HINT_DESCRIPTION,
+              isMask: false,
+              isNumber:false,
               mask: false,
               validations: (value) {
                 if(!isValidateOn) {
@@ -654,7 +683,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                 } else if (eTDescription.text.isNotEmpty) {
                   return null;
                 } else {
-                  return "Please Provide Description";
+                  return VALIDATE_DESCRIPTION;
                 }
               },
             ),
@@ -665,9 +694,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
             Custom_ListTile_TextField(
                 read: readOnlyMode,
                 controller: etDescription2,
-                labelText: "Extended Description",
-                hintText: "Enter Extended Description",
-                isMask: false, isNumber:false,
+                labelText: TXT_DESCRIPTION_2,
+                hintText: HINT_DESCRIPTION_2,
+                isMask: false,
+                isNumber:false,
                 mask: false,
                 maxLines: 3,
             ),
@@ -677,9 +707,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
             child: Custom_ListTile_TextField(
                 read: readOnlyMode,
                 controller: etDescription3,
-                labelText: "User Note",
-                hintText: "Enter User Note",
-                isMask: false, isNumber:false,
+                labelText: TXT_DESCRIPTION_3,
+                hintText: HINT_DESCRIPTION_3,
+                isMask: false,
+                isNumber:false,
                 mask: false,
               maxLines: 3,
             ),
@@ -689,9 +720,10 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
             child:  Custom_ListTile_TextField(
                 read: true,
                 controller: etProductUid,
-                labelText: "Product Id",
-                hintText: "Product Id Will Be Generated By The System",
-                isMask: false, isNumber:false,
+                labelText: TXT_PRODUCT_ID,
+                hintText: HINT_PRODUCT_ID,
+                isMask: false,
+                isNumber:false,
                 mask: false
             ),
           ),
@@ -700,14 +732,15 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
               Expanded(
                   flex: defaultProductMode ==  2 ? 5 : 3,
                   child:  ListTile(
-                      leading: const Text("Item Code"),
+                      leading: const Text(TXT_ITEMCODE),
                       title:
                       defaultProductMode ==  2 ? Custom_ListTile_TextField(
                         controller: etItemCode,
                           read: false,
-                          labelText: "Item Code",
-                          hintText: "Enter Item Code",
-                          isMask: false, isNumber:false,
+                          labelText: TXT_ITEMCODE,
+                          hintText: HINT_ITEMCODE,
+                          isMask: false,
+                          isNumber:false,
                           mask: false
                       ) :
                       DropdownButton<String>(
@@ -734,22 +767,23 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
               ),
               defaultProductMode ==  2 ? const SizedBox() : Expanded(
                   flex: 2,
-                  child:  defaultProductMode == 2 ? solidButton("Add ItemCode", EVENT_ITEMCODE_ADD)  : solidButton("Modify ItemCode", EVENT_ITEMCODE_UPDATE)
+                  child:  defaultProductMode == 2 ? solidButton(BTN_ADD_ITEMCODE, EVENT_ITEMCODE_ADD)  : solidButton(BTN_UPDATE_ITEMCODE, EVENT_ITEMCODE_UPDATE)
               ),
               Expanded(
                 flex:  defaultProductMode ==  2 ? 5 : 3,
                 child:  ListTile(
-                    leading: const Text("Upc"),
+                    leading: const Text(TXT_UPC),
                     title:   defaultProductMode ==  2 ? Custom_ListTile_TextField(
                       controller: etUpc,
                         read: false,
-                        labelText: "Upc",
-                        hintText: "Enter Upc",
-                        isMask: false, isNumber:false,
+                        labelText: TXT_UPC,
+                        hintText: HINT_UPC,
+                        isMask: false,
+                        isNumber:false,
                         mask: false
                     ) : DropdownButton<String>(
                       isExpanded: true,
-                      value: itemCodeList![0],
+                      value: upcList![0],
                       style: const TextStyle(
                           color: Colors.deepPurple
                       ),
@@ -759,7 +793,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       ),
                       onChanged: (String? newValue) {
                       },
-                      items: itemCodeList
+                      items: upcList
                           ?.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -771,7 +805,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
               ),
               defaultProductMode ==  2 ? SizedBox() : Expanded(
                   flex: 2,
-                  child:  defaultProductMode == 2 ? solidButton("Add Upc", EVENT_UPC_ADD)  : solidButton("Modify Upc", EVENT_UPC_UPDATE)
+                  child:  defaultProductMode == 2 ? solidButton(BTN_ADD_UPC, EVENT_UPC_ADD)  : solidButton(BTN_UPDATE_UPC, EVENT_UPC_UPDATE)
               ),
             ],
           ),
@@ -786,12 +820,13 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       child: Custom_ListTile_TextField(
                         read: readOnlyMode,
                         controller: etCost,
-                        labelText: "Cost",
-                        hintText: "Enter Cost, Require format is (##.#)",
-                        isMask: false, isNumber:true,
+                        labelText: TXT_COST,
+                        hintText: HINT_COST,
+                        isMask: false,
+                        isNumber:true,
                         mask: false,
                         onChange: (text) {
-                          textFieldOnChangeEvent("COST", text);
+                          textFieldOnChangeEvent(EVENT_COST, text);
                         },
                         validations: (value) {
                           if(!isValidateOn) {
@@ -799,7 +834,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           } else if (etCost.text.isNotEmpty) {
                             return null;
                           } else {
-                            return "Please Provide Item's Cost. Enter 0 if Item Does Not Have Cost";
+                            return VALIDATE_COST;
                           }
                         },
                       ),
@@ -809,12 +844,13 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       child: Custom_ListTile_TextField(
                         read: readOnlyMode,
                         controller: etPrice,
-                        labelText: "Price",
-                        hintText: "Enter Price, Require format is (##.#)",
-                        isMask: false, isNumber:true,
+                        labelText: TXT_PRICE,
+                        hintText: HINT_PRICE,
+                        isMask: false,
+                        isNumber:true,
                         mask: false,
                         onChange: (text) {
-                          textFieldOnChangeEvent("PRICE", text);
+                          textFieldOnChangeEvent(EVENT_PRICE, text);
                         } ,
                         validations: (value) {
                           if(!isValidateOn) {
@@ -822,7 +858,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                           } else if (etPrice.text.isNotEmpty) {
                             return null;
                           } else {
-                            return "Please Provide Price";
+                            return VALIDATE_PRICE;
                           }
                         },
                       ),
@@ -841,12 +877,13 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       child:  Custom_ListTile_TextField(
                           read: readOnlyMode,
                           controller: etMargin,
-                          labelText: "Margin",
-                          hintText: "Enter Expected Margin, Require format is (##.#)",
-                          isMask: false, isNumber:true,
+                          labelText: TXT_MARGIN,
+                          hintText: HINT_MARGIN,
+                          isMask: false,
+                          isNumber:true,
                           mask: false,
                           onChange: (text) {
-                            textFieldOnChangeEvent("MARGIN", text);
+                            textFieldOnChangeEvent(EVENT_MARGIN, text);
                           } ,
                       ),
                     ),
@@ -855,12 +892,13 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       child:  Custom_ListTile_TextField(
                           read: readOnlyMode,
                           controller: etMarkup,
-                          labelText: "Markup",
-                          hintText: "Enter Expected Markup, Require format is (##.#)",
-                          isMask: false, isNumber:true,
+                          labelText: TXT_MARKUP,
+                          hintText: HINT_MARKUP,
+                          isMask: false,
+                          isNumber:true,
                           mask: false,
                           onChange: (text) {
-                            textFieldOnChangeEvent("MARKUP", text);
+                            textFieldOnChangeEvent(EVENT_MARKUP, text);
                           } ,
                       ),
                     ),
@@ -878,7 +916,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                 child: Column(
                   children: [
                     ListTile(
-                        leading: const Text("Department"),
+                        leading: const Text(TXT_DEPARTMENT),
                         title:  DropdownButton<String>(
                           isExpanded: true,
                           value: departmentDefault,
@@ -904,7 +942,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         )
                     ),
                     ListTile(
-                        leading: const Text("Category"),
+                        leading: const Text(TXT_CATEGORY),
                         title:  DropdownButton<String>(
                           isExpanded: true,
                           value: categoryDefault,
@@ -937,7 +975,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                 child: Column(
                   children: [
                     ListTile(
-                        leading: const Text("Section"),
+                        leading: const Text(TXT_SECTION),
                         title:  DropdownButton<String>(
                           isExpanded: true,
                           value: sectionDefault,
@@ -963,7 +1001,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                         )
                     ),
                     ListTile(
-                        leading: const Text("Vendor"),
+                        leading: const Text(TXT_VENDOR),
                         title:  DropdownButton<String>(
                           isExpanded: true,
                           value: vendorDefault,
@@ -999,7 +1037,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
               Expanded(
                 flex: 5,
                 child:  ListTile(
-                    leading: const Text("Discount"),
+                    leading: const Text(TXT_DISCOUNT),
                     title:  DropdownButton<String>(
                       isExpanded: true,
                       value: discountDefault,
@@ -1028,7 +1066,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
               Expanded(
                 flex: 5,
                 child:  ListTile(
-                    leading: const Text("Tax"),
+                    leading: const Text(TXT_TAX),
                     title:  DropdownButton<String>(
                       isExpanded: true,
                       value: taxDefault,
@@ -1081,7 +1119,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                   ),
                   Expanded(
                       flex: 3,
-                      child:  defaultProductMode == 2 ? solidButton("Add Item", EVENT_PRODUCT_ADD) : solidButton("Update Item", EVENT_PRODUCT_UPDATE)
+                      child:  defaultProductMode == 2 ? solidButton(BTN_ADD_PRODUCT, EVENT_PRODUCT_ADD) : solidButton(BTN_UPDATE_PRODUCT, EVENT_PRODUCT_UPDATE)
                   )
                 ],
               ),
@@ -1095,8 +1133,9 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       child: Custom_ListTile_TextField(
                           read: perReadOnly,
                           controller: etCreatedBy,
-                          labelText: "Created By/Datetime",
-                          isMask: false, isNumber:false,
+                          labelText: TXT_CREATED_BY,
+                          isMask: false,
+                          isNumber:false,
                           mask: false
                       )
                   ),
@@ -1105,8 +1144,9 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
                       child: Custom_ListTile_TextField(
                           read: perReadOnly,
                           controller: etUpdatedBy,
-                          labelText: "Last Updated By/Datetime",
-                          isMask: false, isNumber:false,
+                          labelText: TXT_UPDATED_BY,
+                          isMask: false,
+                          isNumber:false,
                           mask: false
                       )
                   )
@@ -1138,13 +1178,13 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
 
   void textFieldOnChangeEvent(String event, String text) {
     // DO THE IF LOGIC HERE
-    if (event == "PRICE") {
+    if (event == EVENT_PRICE) {
 
-    } else if (event == "COST") {
+    } else if (event == EVENT_COST) {
 
-    } else if (event == "MARKUP") {
+    } else if (event == EVENT_MARKUP) {
       calculateRevenueGivenMarkup();
-    } else if (event == "MARGIN") {
+    } else if (event == EVENT_MARGIN) {
       calculateRevenueGivenMargin();
     } else {
 
@@ -1190,15 +1230,11 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   VoidCallback? solidBtnOnClick(String text, String event) {
     if(defaultProductMode == 0) {
       switch (text) {
-        case "Modify ItemCode":
+        case BTN_UPDATE_ITEMCODE:
           return null;
-        case "Modify Upc":
+        case BTN_UPDATE_UPC:
           return null;
-        case "Save To Batch":
-          return null;
-        case "Update Batch":
-          return null;
-        case "Update Item":
+        case BTN_UPDATE_PRODUCT:
           return null;
         default:
           return () {
@@ -1244,7 +1280,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       if(formKey.currentState!.validate()) {
         updateProductEvent();
       }
-    } else if (event == "SEARCH-ITEM") {
+    } else if (event == EVENT_SEARCH_ITEM) {
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 0, dropDownType: EVENT_MODE_SEARCH_ITEM));
     } else if (event == EVENT_PRODUCT_ADD) {
 
@@ -1260,50 +1296,99 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     }
   }
 
+  /// UPDATE PRODUCT
+  /// Item Code and Upc will be updated separately on it own panel
   void updateProductEvent() {
-    mainProductModel?.description = eTDescription.text;
-    mainProductModel?.second_description = etDescription2.text;
-    mainProductModel?.third_description = etDescription3.text;
-    mainProductModel?.cost = double.parse(etCost.text);
-    mainProductModel?.price  = double.parse(etPrice.text);
-    mainProductModel?.updated_by = widget.userData?.uid;
+    ProductModel? model = mainProductModel;
 
-    mainProductModel?.departmentList = <String>[];
-    mainProductModel?.sectionList = <String>[];
-    mainProductModel?.categoryList = <String>[];
-    mainProductModel?.vendorList = <String>[];
-    mainProductModel?.discountList = <String>[];
-    mainProductModel?.taxList = <String>[];
+    model?.description = eTDescription.text;
+    model?.second_description = etDescription2.text;
+    model?.third_description = etDescription3.text;
+    model?.cost = double.parse(etCost.text);
+    model?.price  = double.parse(etPrice.text);
+    model?.updated_by = widget.userData?.uid;
+
+    model?.departmentList = <String>[];
+    model?.sectionList = <String>[];
+    model?.categoryList = <String>[];
+    model?.vendorList = <String>[];
+    model?.discountList = <String>[];
+    model?.taxList = <String>[];
 
     if(departmentDefault != STRING_NULL) {
-      mainProductModel?.departmentList.add(departmentDefault!);
+      model?.departmentList.add(departmentDefault!);
+      departmentDefaultValue = departmentList[departmentDefault];
+    } else {
+      departmentDefaultValue = EMPTY_VALUE;
     }
 
     if(sectionDefault != STRING_NULL) {
-      mainProductModel?.sectionList.add(sectionDefault!);
+      model?.sectionList.add(sectionDefault!);
+      sectionDefaultValue = sectionList[sectionDefault];
+    } else {
+      sectionDefaultValue = EMPTY_VALUE;
     }
 
     if(categoryDefault != STRING_NULL) {
-      mainProductModel?.categoryList.add(categoryDefault!);
+      model?.categoryList.add(categoryDefault!);
+      categoryDefaultValue = categoryList[categoryDefault];
+    } else {
+      categoryDefaultValue = EMPTY_VALUE;
     }
 
     if(vendorDefault != STRING_NULL) {
-      mainProductModel?.vendorList.add(vendorDefault!);
+      model?.vendorList.add(vendorDefault!);
+      vendorDefaultValue = vendorList[vendorDefault];
+    } else {
+      vendorDefaultValue = EMPTY_VALUE;
     }
 
     if(discountDefault != STRING_NULL) {
-      mainProductModel?.discountList.add(discountDefault!);
+      model?.discountList.add(discountDefault!);
+      discountDefaultValue = discountList[discountDefault];
+    } else {
+      discountDefaultValue = EMPTY_VALUE;
     }
 
     if(taxDefault != STRING_NULL) {
-      mainProductModel?.taxList.add(taxDefault!);
+      model?.taxList.add(taxDefault!);
+      taxDefaultValue = taxList[taxDefault];
+    } else {
+      taxDefaultValue = EMPTY_VALUE;
     }
+
+    if(itemCodeDefault != STRING_NULL) {
+      model?.itemCodeList = itemCodeList!;
+      itemCodeDefaultValue = OK;
+    } else {
+      itemCodeDefaultValue = EMPTY_VALUE;
+    }
+
+    if(upcDefault != STRING_NULL) {
+      model?.upcList = upcList!;
+      upcDefaultValue = OK;
+    } else {
+      upcDefaultValue = EMPTY_VALUE;
+    }
+
+    Map<String, String> optionalParam = {
+      'itemCodeDefaultValue' : itemCodeDefaultValue.toString(),
+      'upcDefaultValue' : upcDefaultValue.toString(),
+      'departmentDefault' : departmentDefaultValue.toString(),
+      'sectionDefaultValue' : sectionDefaultValue.toString(),
+      'categoryDefaultValue' : categoryDefaultValue.toString(),
+      'vendorDefaultValue' : vendorDefaultValue.toString(),
+      'discountDefaultValue' : discountDefaultValue.toString(),
+      'taxDefaultValue' : taxDefaultValue.toString()
+    };
+
+    context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_Product_Update
+        , productData: model, context: context, userData: widget.userData, optionalParameter: optionalParam));
   }
 
   /// ADD PRODUCT EVENT
   void addNewProductEvent() {
     ProductModel model = ProductModel();
-    StringBuffer sb;
     model.description = eTDescription.text;
     model.second_description = etDescription2.text;
     model.third_description = etDescription3.text;
@@ -1328,7 +1413,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     }
 
     if(etUpc.text.isNotEmpty) {
-      model.upcList?.add(etUpc.text);
+      model.upcList.add(etUpc.text);
       upcDefaultValue = etUpc.text;
     } else {
       upcDefaultValue = EMPTY_VALUE;
@@ -1379,7 +1464,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     Map<String, String> optionalParam = {
       'itemCodeDefaultValue' : itemCodeDefaultValue.toString(),
       'upcDefaultValue' : upcDefaultValue.toString(),
-      'departmentDefault' : departmentDefault.toString(),
+      'departmentDefault' : departmentDefaultValue.toString(),
       'sectionDefaultValue' : sectionDefaultValue.toString(),
       'categoryDefaultValue' : categoryDefaultValue.toString(),
       'vendorDefaultValue' : vendorDefaultValue.toString(),
@@ -1396,14 +1481,12 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     DataTableSource _data = TableData(listProductPaginate, DataCount, context, widget.userData);
     return PaginatedDataTable2(
       columns: const [
-        DataColumn(label: Text('Product Id')),
-        DataColumn(label: Text('Description')),
-        DataColumn(label: Text('Created Datetime')),
-        DataColumn(label: Text('Updated Datetime')),
+        DataColumn(label: Text(TXT_PRODUCT_ID)),
+        DataColumn(label: Text(TXT_DESCRIPTION)),
+        DataColumn(label: Text(TXT_CREATE_DATETIME)),
+        DataColumn(label: Text(TXT_UPDATED_DATETIME)),
       ],
       source: _data,
-      // horizontalMargin: 50,
-      // checkboxHorizontalMargin: 12,
       columnSpacing: 25,
       wrapInCard: false,
       rowsPerPage: 15,

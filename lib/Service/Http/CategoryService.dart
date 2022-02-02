@@ -4,6 +4,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:npos/Constant/API/MapValues.dart';
+import 'package:npos/Constant/API/NumberValues.dart';
+import 'package:npos/Constant/API/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
@@ -20,25 +23,20 @@ abstract class Service{
   Future<bool>UpdateCategory(String userId, String locId, Map<String, String> param);
 }
 class CategoryService extends Service{
-  String HOST ="https://192.168.1.2:5001/";
-  String MAIN_ENDPOINT = "api/pos/";
-  String confirm = "OK";
   @override
   Future<List<CategoryModel>>GetCategory(String userId, String locId) async {
     List<CategoryModel> listModel = [];
     try {
-      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/category/get");
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + CATEGORY_GET);
       var res = await http.get(
           url,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          }
+          headers: HEADER
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = json["body"];
+        List<dynamic> lstRes = json[BODY];
         for(int i = 0; i < lstRes.length; i++) {
           CategoryModel _model =  CategoryModel.mapLowerCase(lstRes[i]);
           listModel.add(_model);
@@ -56,20 +54,18 @@ class CategoryService extends Service{
       "searchType" : searchType
     };
     try {
-      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/category/get-count");
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + CATEGORY_GET_COUNT);
       var res = await http.post(
           url,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          encoding: Encoding.getByName('utf-8'),
+          headers: HEADER,
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        int response = jsonDecode(json["body"]);
+        int response = jsonDecode(json[BODY]);
         return response;
       }
     } catch(e) {
@@ -86,20 +82,18 @@ class CategoryService extends Service{
       "endIdx" : endIdx.toString()
     };
     try {
-      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/category/get-category-paginate");
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + CATEGORY_GET_PAGINATE);
       var res = await http.post(
           url,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          encoding: Encoding.getByName('utf-8'),
+          headers: HEADER,
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = jsonDecode(json["body"]);
+        List<dynamic> lstRes = jsonDecode(json[BODY]);
         for(int i = 0; i < lstRes.length; i++) {
           CategoryModel _model =  CategoryModel.map(lstRes[i]);
           listModel.add(_model);
@@ -115,19 +109,16 @@ class CategoryService extends Service{
   Future <CategoryModel> GetCategoryById(String userId, String locId, String categoryId) async {
     CategoryModel model;
     try {
-      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/category/" + categoryId);
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + CATEGORY + categoryId);
       var res = await http.get(
           url,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          }
+          headers: HEADER
       );
-      List<CategoryModel> locationList = [];
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        Map<String, dynamic> mapRes = jsonDecode(json["body"]);
+        Map<String, dynamic> mapRes = jsonDecode(json[BODY]);
         model = CategoryModel.map(mapRes);
         return model;
       }
@@ -143,20 +134,18 @@ class CategoryService extends Service{
       "description": description,
     };
     try {
-      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/category/get-by-category");
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + CATEGORY_GET_BY_CATEGORY);
       var res = await http.post(
           url,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          encoding: Encoding.getByName('utf-8'),
+          headers: HEADER,
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        List<dynamic> lstRes = jsonDecode(json["body"]);
+        List<dynamic> lstRes = jsonDecode(json[BODY]);
         for(int i = 0; i < lstRes.length; i++) {
           CategoryModel _model =  CategoryModel.map(lstRes[i]);
           listModel.add(_model);
@@ -171,21 +160,19 @@ class CategoryService extends Service{
   @override
   Future<bool>AddCategory(String userId, String locId, Map<String, String> param) async {
     try {
-      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/category/add");
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + CATEGORY_ADD);
       var res = await http.post(
           url,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          encoding: Encoding.getByName('utf-8'),
+          headers: HEADER,
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        String response = json["body"];
-        if (response == confirm) {
+        String response = json[BODY];
+        if (response == OK) {
           return true;
         } else {
           return false;
@@ -199,21 +186,19 @@ class CategoryService extends Service{
   @override
   Future<bool>UpdateCategory(String userId, String locId, Map<String, String> param) async {
     try {
-      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/category/update");
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + CATEGORY_UPDATE);
       var res = await http.post(
           url,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          encoding: Encoding.getByName('utf-8'),
+          headers: HEADER,
+          encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      if(res.statusCode != 200) {
+      if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        String response = json["body"];
-        if (response == confirm) {
+        String response = json[BODY];
+        if (response == OK) {
           return true;
         } else {
           return false;

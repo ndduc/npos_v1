@@ -15,6 +15,7 @@ abstract class Service{
   Future<int>GetProductPaginateCount(String userId, String locId, String searchType);
   Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, String searchType, int startIdx, int endIdx);
   Future<AddResponseModel> AddProduct(ProductModel productMode,  String locationIdl);
+  Future<AddResponseModel> UpdateProduct(ProductModel productModel, String locationId);
 }
 class ProductService extends Service{
   String HOST ="https://192.168.1.2:5001/";
@@ -65,6 +66,55 @@ class ProductService extends Service{
       throw Exception(e);
     }
   }
+
+  @override
+  Future<AddResponseModel> UpdateProduct(ProductModel productModel, String locationId) async {
+    ConsolePrint("Update Product", "Repo Init");
+    Map<String, dynamic> param = <String, dynamic>{
+      "uid" : productModel.uid.toString(),
+      "description" : productModel.description.toString(),
+      "second_description" : productModel.second_description.toString(),
+      "third_description" : productModel.third_description.toString(),
+      "cost" : productModel.cost.toString(),
+      "price": productModel.price.toString()
+    };
+
+    param["departmentList"] = json.encode(productModel.departmentList);
+    param["categoryList"] = json.encode(productModel.categoryList);
+    param["vendorList"] = json.encode(productModel.vendorList);
+    param["sectionList"] = json.encode(productModel.sectionList);
+    param["discountList"] = json.encode(productModel.discountList);
+    param["taxList"] = json.encode(productModel.taxList);
+    param["itemCodeList"] = json.encode(productModel.itemCodeList);
+    param["upcList"] = json.encode(productModel.upcList);
+    ConsolePrint("PARAM", param);
+
+
+    try {
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + productModel.added_by.toString() + "/" + locationId + "/product/update");
+      var res = await http.post(
+          url,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          encoding: Encoding.getByName('utf-8'),
+          body: param
+      );
+      if(res.statusCode != 200) {
+        throw Exception(res.body.toString());
+      } else {
+        var json = jsonDecode(res.body);
+        ConsolePrint("JSON", res.body);
+        Map<String, dynamic> mapRes = jsonDecode(json["body"]);
+        AddResponseModel model = AddResponseModel.map(mapRes);
+        return model;
+      }
+    } catch (e) {
+      ConsolePrint("Error", e.toString());
+      throw Exception(e);
+    }
+  }
+
 
   @override
   Future<ProductModel> GetProductByMap(String userId, String locId, Map<String, String> param) async {

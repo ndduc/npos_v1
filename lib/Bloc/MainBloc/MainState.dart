@@ -6,6 +6,7 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:equatable/equatable.dart';
+import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -115,7 +116,10 @@ class ProductPaginateLoadedState extends MainState{
 
 class ProductAddUpdateInitState extends MainState{}
 class ProductAddUpdateLoadingState extends MainState{}
-class ProductAddUpdateLoadedState extends MainState{}
+class ProductAddUpdateLoadedState extends MainState{
+  AddResponseModel responseModel;
+  ProductAddUpdateLoadedState({required this.responseModel});
+}
 class ProductAddUpdateErrorState extends MainState{
   final error;
   ProductAddUpdateErrorState({this.error});
@@ -315,7 +319,8 @@ class DialogProductAddUpdateInitState extends MainState{}
 class DialogProductAddUpdateLoadingState extends MainState{}
 class DialogProductAddUpdateLoadedState extends MainState{
   dynamic response;
-  DialogProductAddUpdateLoadedState({this.response});
+  bool sucess;
+  DialogProductAddUpdateLoadedState({required this.sucess});
 }
 class DialogProductAddUpdateErrorState extends MainState{
   final error;

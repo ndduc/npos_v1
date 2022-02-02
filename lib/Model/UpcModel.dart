@@ -4,18 +4,18 @@
 
 import 'package:npos/Debug/Debug.dart';
 
-class ItemCodeModel {
+class UpcModel {
   String? id;
   String? ItemDescription;
   String? productUid;
   String? locationUid;
-  String? itemCode;
+  String? upc;
   String? added_datetime;
   String? updated_datetime;
   String? added_by;
   String? updated_by;
 
-  ItemCodeModel.map(Map<String, dynamic> map) {
+  UpcModel.map(Map<String, dynamic> map) {
     id = map["Id"];
     ItemDescription = map["ItemDescription"];
     productUid = map["ProductUid"];
@@ -24,7 +24,7 @@ class ItemCodeModel {
     added_datetime = map["AddedDateTime"];
     updated_by = map["UpdatedBy"];
     added_by = map["AddedBy"];
-    itemCode = map["ItemCode"];
+    upc = map["Upc"];
   }
 
 

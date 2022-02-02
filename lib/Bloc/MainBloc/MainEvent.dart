@@ -108,6 +108,8 @@ enum MainEvent{
   Nav_Dialog_Product_Add_Yes,
   Nav_Dialog_Product_Add_No,
   Nav_Dialog_Product_Update,
+  Nav_Dialog_Product_Update_Yes,
+  Nav_Dialog_Product_Update_No,
   Nav_Dialog_Product_Add_Response,
   Nav_Dialog_Product_Update_Response,
   Nav_MainMenu, //Screen After Login
@@ -162,7 +164,7 @@ class MainParam {
   /// PRODUCT
   MainParam.GetProductByParam({this.eventStatus, this.productParameter, this.userData});
   MainParam.AddProduct({required this.eventStatus, required this.productData, required this.locationId});
-  MainParam.UpdateProduct({required this.eventStatus, required this.productData, required this.userData});
+  MainParam.UpdateProduct({required this.eventStatus, required this.productData, required this.locationId});
 
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
