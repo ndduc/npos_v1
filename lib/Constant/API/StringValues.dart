@@ -9,6 +9,11 @@ const String OK = "OK";
 const String SLASH = "/";
 const String BODY = "body";
 const String UTF_8 = "utf-8";
+const String GET = "get";
+const String VERIFY = "verify";
+const String AND = "&";
+const String EQUAL = "=";
+const String QUESTION = "?";
 
 //region CATEGORY
 const String CATEGORY = "/category/";
@@ -28,4 +33,21 @@ const String DEPARTMENT_GET_PAGINATE = "/department/get-department-paginate";
 const String DEPARTMENT_GET_BY_DESCRIPTION = "/department/get-by-description";
 const String DEPARTMENT_ADD = "/department/add";
 const String DEPARTMENT_UPDATE = "/department/update";
+//endregion
+
+//region ITEM CODE
+const String ITEMCODE = "/item-code/";
+const String ITEMCODE_GET_PAGINATE = "/item-code/get-with-paginate";
+const String ITEMCODE_ADD = "/item-code/add";
+const String ITEMCODE_REMOVE = "/item-code/remove";
+const String OFFSET = "offset";
+const String LIMIT = "limit";
+const String ORDER = "order";
+//endregion
+
+//region UPC
+const String UPC = "/upc/";
+const String UPC_GET_PAGINATE = "/upc/get-with-paginate";
+const String UPC_ADD = "/upc/add";
+const String UPC_REMOVE = "/upc/remove";
 //endregion

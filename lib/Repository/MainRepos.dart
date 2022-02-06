@@ -4,26 +4,76 @@
 
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/AddResponseModel.dart';
+import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
+import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
+import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
+import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/Service/Http/CategoryService.dart';
 import 'package:npos/Service/Http/DepartmentService.dart';
 import 'package:npos/Service/Http/DiscountService.dart';
+import 'package:npos/Service/Http/ItemCodeService.dart';
 import 'package:npos/Service/Http/ProductService.dart';
 import 'package:npos/Service/Http/SectionService.dart';
 import 'package:npos/Service/Http/TaxService.dart';
+import 'package:npos/Service/Http/UpcService.dart';
 import 'package:npos/Service/Http/UserService.dart' ;
 import 'package:npos/Service/Http/LocationService.dart' ;
 import 'package:npos/Service/Http/VendorService.dart';
 
 class MainRepository{
+
+  //region ITEM CODE
+  Future<ItemCodeModel> GetByItemCode(String userId, String locId, String productId, String itemCode) {
+    return ItemCodeService().GetByItemCode(userId, locId, productId, itemCode);
+  }
+
+  Future<ItemCodePaginationModel> GetItemCodePaginate(String userId, String locId, String productId, String limit, String offset, String order) {
+    return ItemCodeService().GetItemCodePaginate( userId,  locId,  productId, limit, offset, order);
+  }
+
+  Future<bool> VerifyItemCode(String userId, String locId, String productId, String ItemCode){
+    return ItemCodeService().VerifyItemCode( userId,  locId,  productId,  ItemCode);
+  }
+
+  Future<bool> AddItemCode(String userId, String locId, String productId, String ItemCode){
+    return ItemCodeService().AddItemCode( userId,  locId,  productId,  ItemCode);
+  }
+
+  Future<bool> RemoveItemCode(String userId, String locId, String productId, String ItemCode){
+    return ItemCodeService().RemoveItemCode( userId,  locId,  productId,  ItemCode);
+  }
+  //endregion
+
+  //region UPC
+  Future<UpcModel> GetByUpc(String userId, String locId, String productId, String upc) {
+    return UpcService().GetByUpc(userId, locId, productId, upc);
+  }
+
+  Future<UpcPaginationModel> GetUpcPaginate(String userId, String locId, String productId) {
+    return UpcService().GetUpcPaginate( userId,  locId,  productId);
+  }
+
+  Future<bool> VerifyUpc(String userId, String locId, String productId, String upc){
+    return UpcService().VerifyUpc( userId,  locId,  productId,  upc);
+  }
+
+  Future<bool> AddUpc(String userId, String locId, String productId, String Upc){
+    return UpcService().AddUpc( userId,  locId,  productId,  Upc);
+  }
+
+  Future<bool> RemoveUpc(String userId, String locId, String productId, String Upc){
+    return UpcService().RemoveUpc( userId,  locId,  productId,  Upc);
+  }
+  //endregion
 
   //region USER
   Future<UserModel> AuthorizingUser(String name, String password) {
