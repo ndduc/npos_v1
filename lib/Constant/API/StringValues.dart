@@ -15,6 +15,7 @@ const String AND = "&";
 const String EQUAL = "=";
 const String QUESTION = "?";
 
+
 //region CATEGORY
 const String CATEGORY = "/category/";
 const String CATEGORY_GET = "/category/get";
@@ -43,6 +44,7 @@ const String ITEMCODE_REMOVE = "/item-code/remove";
 const String OFFSET = "offset";
 const String LIMIT = "limit";
 const String ORDER = "order";
+const String ITEMCODE_QUERY = "itemCode";
 //endregion
 
 //region UPC

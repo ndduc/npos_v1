@@ -15,15 +15,29 @@ import 'package:http/http.dart' as http;
 abstract class Service{
   Future<ItemCodeModel> GetByItemCode(String userId, String locId, String productId, String itemCode);
   Future<ItemCodePaginationModel> GetItemCodePaginate(String userId, String locId, String productId, String limit, String offset, String order);
-  Future<bool> VerifyItemCode(String userId, String locId, String productId, String ItemCode);
-  Future<bool> AddItemCode(String userId, String locId, String productId, String ItemCode);
-  Future<bool> RemoveItemCode(String userId, String locId, String productId, String ItemCode);
+  Future<bool> VerifyItemCode(String userId, String locId, String productId, String itemCode);
+  Future<bool> AddItemCode(String userId, String locId, String productId, String itemCode);
+  Future<bool> RemoveItemCode(String userId, String locId, String productId, String itemCode);
 }
 class ItemCodeService extends Service{
   @override
-  Future<ItemCodeModel> GetByItemCode(String userId, String locId, String productId, String itemCode) {
-    dynamic res;
-    return res;
+  Future<ItemCodeModel> GetByItemCode(String userId, String locId, String productId, String itemCode) async {
+    try {
+      var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + ITEMCODE + itemCode + SLASH + GET);
+      var res = await http.get(
+          url,
+          headers: HEADER
+      );
+      if(res.statusCode != STATUS_OK) {
+        throw Exception(res.body.toString());
+      } else {
+        var json = jsonDecode(res.body);
+        ItemCodeModel responseModel = ItemCodeModel.map(jsonDecode(json[BODY]));
+        return responseModel;
+      }
+    } catch(e) {
+      throw Exception(e);
+    }
   }
 
   @override
@@ -48,20 +62,62 @@ class ItemCodeService extends Service{
   }
 
   @override
-  Future<bool> VerifyItemCode(String userId, String locId, String productId, String ItemCode) {
-    dynamic res;
-    return res;
+  Future<bool> VerifyItemCode(String userId, String locId, String productId, String itemCode) async {
+    try {
+      var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + ITEMCODE + itemCode + SLASH + VERIFY);
+      var res = await http.get(
+          url,
+          headers: HEADER
+      );
+      if(res.statusCode != STATUS_OK) {
+        throw Exception(res.body.toString());
+      } else {
+        var json = jsonDecode(res.body);
+        bool response = jsonDecode(json[BODY]);
+        return response;
+      }
+    } catch(e) {
+      throw Exception(e);
+    }
   }
 
   @override
-  Future<bool> AddItemCode(String userId, String locId, String productId, String ItemCode) {
-    dynamic res;
-    return res;
+  Future<bool> AddItemCode(String userId, String locId, String productId, String itemCode) async {
+    try {
+      var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + ITEMCODE_ADD + QUESTION + ITEMCODE_QUERY + EQUAL + itemCode);
+      var res = await http.get(
+          url,
+          headers: HEADER
+      );
+      if(res.statusCode != STATUS_OK) {
+        throw Exception(res.body.toString());
+      } else {
+        var json = jsonDecode(res.body);
+        bool response = jsonDecode(json[BODY]);
+        return response;
+      }
+    } catch(e) {
+      throw Exception(e);
+    }
   }
 
   @override
-  Future<bool> RemoveItemCode(String userId, String locId, String productId, String ItemCode) {
-    dynamic res;
-    return res;
+  Future<bool> RemoveItemCode(String userId, String locId, String productId, String itemCode) async {
+    try {
+      var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + ITEMCODE_REMOVE + QUESTION + ITEMCODE_QUERY + EQUAL + itemCode);
+      var res = await http.get(
+          url,
+          headers: HEADER
+      );
+      if(res.statusCode != STATUS_OK) {
+        throw Exception(res.body.toString());
+      } else {
+        var json = jsonDecode(res.body);
+        bool response = jsonDecode(json[BODY]);
+        return response;
+      }
+    } catch(e) {
+      throw Exception(e);
+    }
   }
 }
