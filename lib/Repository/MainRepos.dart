@@ -36,8 +36,8 @@ class MainRepository{
     return ItemCodeService().GetByItemCode(userId, locId, productId, itemCode);
   }
 
-  Future<ItemCodePaginationModel> GetItemCodePaginate(String userId, String locId, String productId) {
-    return ItemCodeService().GetItemCodePaginate( userId,  locId,  productId);
+  Future<ItemCodePaginationModel> GetItemCodePaginate(String userId, String locId, String productId, String limit, String offset, String order) {
+    return ItemCodeService().GetItemCodePaginate( userId,  locId,  productId, limit, offset, order);
   }
 
   Future<bool> VerifyItemCode(String userId, String locId, String productId, String ItemCode){

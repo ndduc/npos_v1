@@ -11,6 +11,9 @@ const String BODY = "body";
 const String UTF_8 = "utf-8";
 const String GET = "get";
 const String VERIFY = "verify";
+const String AND = "&";
+const String EQUAL = "=";
+const String QUESTION = "?";
 
 //region CATEGORY
 const String CATEGORY = "/category/";
@@ -37,6 +40,9 @@ const String ITEMCODE = "/item-code/";
 const String ITEMCODE_GET_PAGINATE = "/item-code/get-with-paginate";
 const String ITEMCODE_ADD = "/item-code/add";
 const String ITEMCODE_REMOVE = "/item-code/remove";
+const String OFFSET = "offset";
+const String LIMIT = "limit";
+const String ORDER = "order";
 //endregion
 
 //region UPC

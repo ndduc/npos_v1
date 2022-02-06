@@ -46,6 +46,7 @@ class Component extends State<ProductDialogBlocItemCode> {
   @override
   void initState() {
     super.initState();
+    ConsolePrint("TEST", "TEST");
     if (widget.whoAmI == EVENT_ADD_ITEMCODE) {
       model = ProductModel();
       addNewItemCode = true;
@@ -53,9 +54,19 @@ class Component extends State<ProductDialogBlocItemCode> {
       model = widget.productMode!;
       addNewItemCode = false;
     }
+    initialLoad();
     uiFunctionHandler();
   }
 
+  void initialLoad() {
+    Map<String, String> param = {
+      "limit" : "100",
+      "offset" : "0",
+      "order" : "ASC"
+    };
+    context.read<MainBloc>().add(MainParam.GetItemCodePagination(eventStatus: MainEvent.Event_GetItemCodePagination
+        , userData: widget.userModel, productData: widget.productMode, optionalParameter: param));
+  }
   void uiFunctionHandler() {
     if (addNewItemCode) {
 
@@ -115,6 +126,17 @@ class Component extends State<ProductDialogBlocItemCode> {
 
   }
 
+  void getItemCodeEvent(MainState state) {
+    if (state is ItemCodeGetInitState) {
+
+    } else if (state is ItemCodeGetLoadingState) {
+
+    } else if (state is ItemCodeGetLoadedState) {
+
+    } else if (state is ItemCodeErrorState) {
+
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +153,7 @@ class Component extends State<ProductDialogBlocItemCode> {
             appBaseEvent(state);
             app2ndGenericEvent(state);
             appSpecificEvent(state);
+            getItemCodeEvent(state);
             /**
              * Bloc Action Note
              * END

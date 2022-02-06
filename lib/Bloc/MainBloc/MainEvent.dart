@@ -88,6 +88,10 @@ enum MainEvent{
   Event_UpdateTax,
   //endregion
 
+  //region ITEM CODE REQUEST
+  Event_GetItemCodePagination,
+  //endregion
+
   //region SNACK BAR
   Show_SnackBar,
   //endregion
@@ -165,6 +169,9 @@ class MainParam {
   MainParam.GetProductByParam({this.eventStatus, this.productParameter, this.userData});
   MainParam.AddProduct({required this.eventStatus, required this.productData, required this.locationId});
   MainParam.UpdateProduct({required this.eventStatus, required this.productData, required this.locationId});
+
+  /// ITEM CODE
+  MainParam.GetItemCodePagination({required this.eventStatus, required this.productData, required this.userData, required this.optionalParameter});
 
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});

@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/AddResponseModel.dart';
+import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -48,6 +49,26 @@ class MainBloc extends Bloc<MainParam,MainState>
 
     switch(event.eventStatus)
     {
+      /// ITEM CODE HTTP EVENT
+      //region ITEM CODE HTTP EVENT
+      case MainEvent.Event_GetItemCodePagination:
+        yield ItemCodeGetInitState();
+        try {
+          yield ItemCodeGetLoadingState();
+          Map<String, String> param = event.optionalParameter as Map<String, String>;
+          ProductModel productModel = event.productData as ProductModel;
+          UserModel userModel = event.userData as UserModel;
+          LocationModel? locationModel = userModel.defaultLocation;
+          ItemCodePaginationModel response = await mainRepo.GetItemCodePaginate(userModel.uid.toString(),locationModel!.uid.toString(), productModel.uid.toString(),
+              param["limit"].toString(), param["offset"].toString(), param["order"].toString());
+          yield ItemCodeGetLoadedState(response: response);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+      break;
+      //endregion
+
+      /// PRODUCT HTTP EVENT
       //region PRODUCT HTTP EVENT
       case MainEvent.Event_GetProductByParamMap:
        yield GenericInitialState();
@@ -146,6 +167,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       //endregion
 
+      /// DEPARTMENT HTTP EVENT
       //region DEPARTMENT HTTP EVENT
       case MainEvent.Event_GetDepartmentPaginateCount:
         yield GenericInitialState();
@@ -249,6 +271,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
         //endregion
 
+      /// CATEGORY HTTP EVENT
       //region CATEGORY HTTP EVENT
       case MainEvent.Event_GetCategoryPaginateCount:
         yield GenericInitialState();
@@ -352,6 +375,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       //endregion
 
+      /// VENDOR HTTP EVENT
       //region VENDOR HTTP EVENT
       case MainEvent.Event_GetVendorPaginateCount:
         yield GenericInitialState();
@@ -455,6 +479,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       //endregion
 
+      /// SECTION HTTP EVENT
       //region SECTION HTTP EVENT
       case MainEvent.Event_GetSectionPaginateCount:
         yield GenericInitialState();
@@ -558,6 +583,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       //endregion
 
+      /// DISCOUNT HTTP EVENT
       //region DISCOUNT HTTP EVENT
       case MainEvent.Event_GetDiscountPaginateCount:
         yield GenericInitialState();
@@ -661,6 +687,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       //endregion
 
+      /// TAX HTTP EVENT
       //region TAX HTTP EVENT
       case MainEvent.Event_GetTaxPaginateCount:
         yield GenericInitialState();
@@ -764,6 +791,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       //endregion
 
+      /// USER HTTP EVENT
       //region USER HTTP EVENT
       case MainEvent.Event_VerifyUser:
         yield GenericLoadingState();
@@ -791,6 +819,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
         //endregion
 
+      /// LOCAL EVENT
       //region LOCAL EVENT
       case MainEvent.Local_Event_NewItem_Mode:
         yield GenericInitialState();
@@ -831,6 +860,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
         //endregion
 
+      /// SNACK BAR
       //region SNACK BAR
       case MainEvent.Show_SnackBar:
         yield GenericInitialState();
@@ -845,6 +875,9 @@ class MainBloc extends Bloc<MainParam,MainState>
         }
         break;
         //endregion
+
+      /// DIALOG - PRODUCT
+      /// Pop up once update or add product to confirm
       //region DIALOG PRODUCT
       case MainEvent.Nav_Dialog_Product_Add:
         dynamic val;

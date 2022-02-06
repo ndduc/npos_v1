@@ -7,6 +7,7 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:npos/Model/AddResponseModel.dart';
+import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -91,6 +92,20 @@ class CheckAuthorizeStateLoaded extends MainState {
 class GenericNavigateStateLoaded extends MainState {
   UserModel? userModel;
   GenericNavigateStateLoaded({required  this.userModel});
+}
+//endregion
+
+//region ITEM CODE
+class ItemCodeGetInitState extends MainState{}
+class ItemCodeGetLoadingState extends MainState{}
+class ItemCodeGetLoadedState extends MainState{
+  ItemCodePaginationModel response;
+  ItemCodeGetLoadedState({required this.response});
+}
+
+class ItemCodeErrorState extends MainState{
+  final error;
+  ItemCodeErrorState({this.error});
 }
 //endregion
 
