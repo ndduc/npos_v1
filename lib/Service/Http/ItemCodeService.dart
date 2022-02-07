@@ -95,7 +95,7 @@ class ItemCodeService extends Service{
         var json = jsonDecode(res.body);
         bool response = jsonDecode(json[BODY]);
         return response;
-      } //ADAWD WADD
+      }
     } catch(e) {
       throw Exception(e);
     }
