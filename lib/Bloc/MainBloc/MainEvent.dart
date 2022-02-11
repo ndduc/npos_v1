@@ -93,6 +93,7 @@ enum MainEvent{
   Event_GetItemCodePagination,
   Event_ItemCodeTableClick,
   Event_NewItemCodeClick,
+  Event_ItemCodeVerify,
   //endregion
 
   //region SNACK BAR
@@ -179,6 +180,7 @@ class MainParam {
   MainParam.GetItemCodePagination({required this.eventStatus, required this.productData, required this.userData, required this.optionalParameter});
   MainParam.ItemCodeTableLick({required this.eventStatus, required this.itemCodeData});
   MainParam.NewItemCodeClick({required this.eventStatus, required this.itemCodeParameter});
+  MainParam.ItemCodeVerify({required this.eventStatus, required this.itemCodeParameter});
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
   MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});

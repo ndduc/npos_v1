@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/API/MapValues.dart' as MapValue;
 import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiSize.dart' as UISize;
@@ -172,6 +173,12 @@ class Component extends State<ProductDialogBlocItemCode> {
       if (state.response[EVENT_NEW_ITEMCODE_MODE]) {
         setValueAddItemCode();
       }
+    } else if (state is ItemCodeVerifyInitState) {
+
+    } else if (state is ItemCodeVerifyLoadingState) {
+
+    } else if (state is ItemCodeVerifyLoadedState) {
+
     }
   }
 
@@ -237,7 +244,34 @@ class Component extends State<ProductDialogBlocItemCode> {
                                     labelText: TXT_ITEMCODE,
                                     isMask: false,
                                     isNumber:false,
-                                    mask: false
+                                    mask: false,
+                                    onChange: (value) {
+                                      ConsolePrint("On Changed", value);
+                                    },
+                                    onEdit: () {
+                                      ConsolePrint("On Edit", "");
+                                    },
+                                    onSubmit: (value) {
+                                      ConsolePrint("On Submit", value);
+                                    },
+                                    onFocusChange: (value) {
+                                      if (!value) {
+                                        ConsolePrint("On onFocusChange", value);
+                                        ConsolePrint("VALUE", etItemCode.text);
+                                        context.read<MainBloc>().add(MainParam.ItemCodeVerify(eventStatus: MainEvent.Event_ItemCodeVerify,
+                                            itemCodeParameter: {
+                                              MapValue.USER_ID: widget.userModel?.uid.toString(),
+                                              MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
+                                              MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
+                                              MapValue.ITEM_CODE: etItemCode.text
+                                            }
+                                          )
+                                        );
+                                      }
+
+                                    },
+
+
                                 ),
                               ),
                               Expanded(

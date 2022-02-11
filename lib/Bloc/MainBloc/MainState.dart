@@ -119,6 +119,14 @@ class NewItemCodeClickLoadedState extends MainState {
   NewItemCodeClickLoadedState({required this.response});
 }
 
+class ItemCodeVerifyInitState extends MainState {}
+class ItemCodeVerifyLoadingState extends MainState {}
+class ItemCodeVerifyLoadedState extends MainState {
+  bool response;
+  ItemCodeVerifyLoadedState({required this.response});
+}
+
+
 class ItemCodeErrorState extends MainState{
   final error;
   ItemCodeErrorState({this.error});

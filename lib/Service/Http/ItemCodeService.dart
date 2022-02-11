@@ -40,6 +40,7 @@ class ItemCodeService extends Service{
     }
   }
 
+  /// TESTED & VERIFIED
   @override
   Future<ItemCodePaginationModel> GetItemCodePaginate(String userId, String locId, String productId, String limit, String offset, String order) async {
     try {
@@ -74,6 +75,7 @@ class ItemCodeService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
+        ConsolePrint("Response", json);
         bool response = jsonDecode(json[BODY]);
         return response;
       }
