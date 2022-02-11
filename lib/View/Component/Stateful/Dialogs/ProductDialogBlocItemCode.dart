@@ -1,7 +1,6 @@
 // ignore_for_file: file_names
 // ignore_for_file: library_prefixes
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
@@ -14,6 +13,7 @@ import 'package:npos/Constant/UIEvent/AddUpdateUpcItemCodeEvent.dart';
 import 'package:npos/Constant/Values/NumberValues.dart';
 import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UserModel.dart';
@@ -34,6 +34,7 @@ class Component extends State<ProductDialogBlocItemCode> {
   uiImage uImage = uiImage();
   bool isLoading = false;
   bool readOnly = true;
+  bool readOnlyItemCode = true;
   TextEditingController etItemCode = TextEditingController();
   TextEditingController etDescription = TextEditingController();
   TextEditingController etPrice = TextEditingController();
@@ -43,14 +44,17 @@ class Component extends State<ProductDialogBlocItemCode> {
   TextEditingController etExtDesc = TextEditingController();
   TextEditingController etNote = TextEditingController();
   late ProductModel model;
+  late ItemCodeModel itemCodeModel;
+  ItemCodePaginationModel itemCodePaginateModel = ItemCodePaginationModel.empty();
   @override
   void initState() {
     super.initState();
-    ConsolePrint("TEST", "TEST");
+    ConsolePrint("Who Am I", widget.whoAmI);
     if (widget.whoAmI == EVENT_ADD_ITEMCODE) {
       model = ProductModel();
       addNewItemCode = true;
     } else if (widget.whoAmI == EVENT_UPDATE_ITEMCODE) {
+
       model = widget.productMode!;
       addNewItemCode = false;
     }
@@ -62,7 +66,8 @@ class Component extends State<ProductDialogBlocItemCode> {
     Map<String, String> param = {
       "limit" : "100",
       "offset" : "0",
-      "order" : "ASC"
+      "order" : "ASC",
+      "selectedItemCode" : model.itemCode.toString() //only add this on the initial load
     };
     context.read<MainBloc>().add(MainParam.GetItemCodePagination(eventStatus: MainEvent.Event_GetItemCodePagination
         , userData: widget.userModel, productData: widget.productMode, optionalParameter: param));
@@ -76,6 +81,8 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   void setValue() {
+    readOnlyItemCode = true;
+    ConsolePrint("SetValue", "Called");
     if (model.itemCode == NUMBER_NULL) {
       etItemCode.text = HINT_ITEMCODE_ADD_UPDATE;
     } else {
@@ -88,6 +95,12 @@ class Component extends State<ProductDialogBlocItemCode> {
     etNote.text = model.third_description ?? EMPTY;
     etMarkup.text = marginCalculation(double.parse(etPrice.text), double.parse(etCost.text)).toString();
     etMargin.text = marginCalculation(double.parse(etPrice.text), double.parse(etCost.text)).toString();
+  }
+
+  // Call this when dialog was init as update
+  void setValueAddItemCode() {
+    etItemCode.text = "";
+    readOnlyItemCode = false;
   }
 
   double marginCalculation(double price, double cost) {
@@ -132,11 +145,36 @@ class Component extends State<ProductDialogBlocItemCode> {
     } else if (state is ItemCodeGetLoadingState) {
 
     } else if (state is ItemCodeGetLoadedState) {
-
+      itemCodePaginateModel = state.response;
+      if (state.selectedItemCode != null) {
+        for(int i = 0; i < itemCodePaginateModel.itemCodeList.length; i++) {
+          if (itemCodePaginateModel.itemCodeList[i].itemCode == state.selectedItemCode.toString()) {
+            itemCodeModel = itemCodePaginateModel.itemCodeList[i];
+            break;
+          }
+        }
+      }
     } else if (state is ItemCodeErrorState) {
 
+    } else if (state is ItemCodeTableClickInitState) {
+
+    } else if (state is ItemCodeTableClickLoadingState) {
+
+    } else if (state is ItemCodeTableClickLoadedState) {
+      itemCodeModel = state.response;
+      model.itemCode = int.parse(state.response.itemCode.toString());
+      setValue();
+    } else if (state is NewItemCodeClickInitState) {
+
+    } else if (state is NewItemCodeClickLoadingState) {
+
+    } else if (state is NewItemCodeClickLoadedState) {
+      if (state.response[EVENT_NEW_ITEMCODE_MODE]) {
+        setValueAddItemCode();
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +233,7 @@ class Component extends State<ProductDialogBlocItemCode> {
                                 flex: 7,
                                 child: Custom_ListTile_TextField(
                                     controller: etItemCode,
-                                    read: readOnly,
+                                    read: readOnlyItemCode,
                                     labelText: TXT_ITEMCODE,
                                     isMask: false,
                                     isNumber:false,
@@ -294,11 +332,15 @@ class Component extends State<ProductDialogBlocItemCode> {
                                   child: SizedBox()
                               ),
                               Expanded(
-                                  flex: 3,
+                                  flex: 2,
                                   child: solidButton(BTN_DISMISS, EVENT_CLOSE)
                               ),
                               Expanded(
-                                  flex: 3,
+                                  flex: 2,
+                                  child: solidButton(BTN_DELETE, EVENT_DELETE_ITEMCODE)
+                              ),
+                              Expanded(
+                                  flex: 2,
                                   child: solidButton(BTN_SAVE, EVENT_SAVE_ITEMCODE)
                               )
                             ],
@@ -340,6 +382,9 @@ class Component extends State<ProductDialogBlocItemCode> {
   void solidButtonEvent(String event) {
     if(event == EVENT_CLOSE) {
       Navigator.pop(context);
+    } else if (event == EVENT_NEW_ITEMCODE_MODE) {
+      ConsolePrint("Button", "Click");
+      context.read<MainBloc>().add(MainParam.NewItemCodeClick(eventStatus: MainEvent.Event_NewItemCodeClick, itemCodeParameter: {EVENT_NEW_ITEMCODE_MODE: true}));
     }
   }
 
@@ -354,11 +399,10 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   Widget paginateTable() {
-    DataTableSource _data = TableData([], 0, context);
+    DataTableSource _data = TableData(itemCodePaginateModel.itemCodeList, itemCodePaginateModel.itemCodeList.length, context);
     return PaginatedDataTable2(
       columns: const [
-        DataColumn(label: Text(TXT_PRODUCT_ID)),
-        DataColumn(label: Text(TXT_DESCRIPTION)),
+        DataColumn(label: Text(TXT_ITEMCODE)),
         DataColumn(label: Text(TXT_CREATE_DATETIME)),
       ],
       source: _data,
@@ -376,7 +420,6 @@ class Component extends State<ProductDialogBlocItemCode> {
 
 class TableData extends DataTableSource {
   BuildContext context;
-  dynamic userData;
   int dataCount = 0;
   List<ItemCodeModel> lstModel = [];
   TableData(this.lstModel, this.dataCount, this.context);
@@ -392,18 +435,15 @@ class TableData extends DataTableSource {
     return DataRow2(
         onLongPress: () {
           ItemCodeModel selectedModel = lstModel[index];
-          Map<String, String> map = <String, String>{};
-          map["id"] = selectedModel.id!;
-          // context.read<MainBloc>().add(
-          //     MainParam.GetProductByParam(
-          //         eventStatus: MainEvent.Event_GetProductByParamMap,
-          //         userData: userData,
-          //         productParameter: map));
+          context.read<MainBloc>().add(
+              MainParam.ItemCodeTableLick(
+                  eventStatus: MainEvent.Event_ItemCodeTableClick,
+                  itemCodeData: selectedModel,
+                  ));
         },
         cells: [
-          DataCell(Text(lstModel[index].id.toString())),
           DataCell(Text(lstModel[index].itemCode.toString())),
-          DataCell(Text(lstModel[index].ItemDescription.toString()))
+          DataCell(Text(lstModel[index].added_datetime.toString()))
         ]
     );
   }

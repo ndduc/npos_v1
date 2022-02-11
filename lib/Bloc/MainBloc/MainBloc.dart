@@ -12,6 +12,7 @@ import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
+import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
@@ -61,7 +62,14 @@ class MainBloc extends Bloc<MainParam,MainState>
           LocationModel? locationModel = userModel.defaultLocation;
           ItemCodePaginationModel response = await mainRepo.GetItemCodePaginate(userModel.uid.toString(),locationModel!.uid.toString(), productModel.uid.toString(),
               param["limit"].toString(), param["offset"].toString(), param["order"].toString());
-          yield ItemCodeGetLoadedState(response: response);
+          response.print();
+          if (param["selectedItemCode"].toString() != "-1") {
+            yield ItemCodeGetLoadedState(response: response, selectedItemCode: param["selectedItemCode"].toString());
+          } else {
+            yield ItemCodeGetLoadedState(response: response);
+          }
+
+
         } catch (e) {
           yield ItemCodeErrorState(error: e);
         }
@@ -860,6 +868,27 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
         //endregion
 
+      //region LOCAL EVENT ITEM CODE
+      case MainEvent.Event_ItemCodeTableClick:
+        yield ItemCodeTableClickInitState();
+        try {
+          yield ItemCodeTableClickLoadingState();
+          yield ItemCodeTableClickLoadedState(response: event.itemCodeData as ItemCodeModel);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+      break;
+      case MainEvent.Event_NewItemCodeClick:
+        yield NewItemCodeClickInitState();
+        try {
+          yield NewItemCodeClickLoadingState();
+          yield NewItemCodeClickLoadedState(response: event.itemCodeParameter as Map<String, dynamic>);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+      break;
+      //endregion
+
       /// SNACK BAR
       //region SNACK BAR
       case MainEvent.Show_SnackBar:
@@ -1018,7 +1047,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           transitionDuration: Duration(milliseconds: 500),
           context: event.context as BuildContext,
           pageBuilder: (_, __, ___) {
-            return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: EVENT_ITEMCODE_ADD, productMode: event.productData,);
+            return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: EVENT_ITEMCODE_UPDATE, productMode: event.productData,);
           },
           transitionBuilder: (_, anim, __, child) {
             return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),

@@ -11,6 +11,7 @@ import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
+import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
@@ -100,7 +101,22 @@ class ItemCodeGetInitState extends MainState{}
 class ItemCodeGetLoadingState extends MainState{}
 class ItemCodeGetLoadedState extends MainState{
   ItemCodePaginationModel response;
-  ItemCodeGetLoadedState({required this.response});
+  String? selectedItemCode = "";
+  ItemCodeGetLoadedState({required this.response, this.selectedItemCode});
+}
+
+class ItemCodeTableClickInitState extends MainState {}
+class ItemCodeTableClickLoadingState extends MainState {}
+class ItemCodeTableClickLoadedState extends MainState {
+  ItemCodeModel response;
+  ItemCodeTableClickLoadedState({required this.response});
+}
+
+class NewItemCodeClickInitState extends MainState {}
+class NewItemCodeClickLoadingState extends MainState {}
+class NewItemCodeClickLoadedState extends MainState {
+  Map<String, dynamic> response;
+  NewItemCodeClickLoadedState({required this.response});
 }
 
 class ItemCodeErrorState extends MainState{

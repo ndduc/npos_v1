@@ -37,6 +37,7 @@ const String BTN_UPDATE_UPC = 'Modify Upc';
 const String BTN_ADD_PRODUCT = 'Add Item';
 const String BTN_UPDATE_PRODUCT = 'Update Item';
 const String BTN_SAVE = 'Save';
+const String BTN_DELETE = 'Delete';
 const String BTN_DISMISS = 'Dismiss';
 const String BTN_NEW_ITEMCODE = 'New Item Code';
 

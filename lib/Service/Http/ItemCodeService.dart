@@ -53,6 +53,7 @@ class ItemCodeService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
+        ConsolePrint("Response", json);
         ItemCodePaginationModel responseModel = ItemCodePaginationModel(jsonDecode(json[BODY]));
         return responseModel;
       }
