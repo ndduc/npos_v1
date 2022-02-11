@@ -1,7 +1,6 @@
 // ignore_for_file: file_names
 // ignore_for_file: library_prefixes
 import 'package:data_table_2/data_table_2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
@@ -35,6 +34,7 @@ class Component extends State<ProductDialogBlocItemCode> {
   uiImage uImage = uiImage();
   bool isLoading = false;
   bool readOnly = true;
+  bool readOnlyItemCode = true;
   TextEditingController etItemCode = TextEditingController();
   TextEditingController etDescription = TextEditingController();
   TextEditingController etPrice = TextEditingController();
@@ -81,6 +81,7 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   void setValue() {
+    readOnlyItemCode = true;
     ConsolePrint("SetValue", "Called");
     if (model.itemCode == NUMBER_NULL) {
       etItemCode.text = HINT_ITEMCODE_ADD_UPDATE;
@@ -94,6 +95,12 @@ class Component extends State<ProductDialogBlocItemCode> {
     etNote.text = model.third_description ?? EMPTY;
     etMarkup.text = marginCalculation(double.parse(etPrice.text), double.parse(etCost.text)).toString();
     etMargin.text = marginCalculation(double.parse(etPrice.text), double.parse(etCost.text)).toString();
+  }
+
+  // Call this when dialog was init as update
+  void setValueAddItemCode() {
+    etItemCode.text = "";
+    readOnlyItemCode = false;
   }
 
   double marginCalculation(double price, double cost) {
@@ -157,6 +164,14 @@ class Component extends State<ProductDialogBlocItemCode> {
       itemCodeModel = state.response;
       model.itemCode = int.parse(state.response.itemCode.toString());
       setValue();
+    } else if (state is NewItemCodeClickInitState) {
+
+    } else if (state is NewItemCodeClickLoadingState) {
+
+    } else if (state is NewItemCodeClickLoadedState) {
+      if (state.response[EVENT_NEW_ITEMCODE_MODE]) {
+        setValueAddItemCode();
+      }
     }
   }
 
@@ -218,7 +233,7 @@ class Component extends State<ProductDialogBlocItemCode> {
                                 flex: 7,
                                 child: Custom_ListTile_TextField(
                                     controller: etItemCode,
-                                    read: readOnly,
+                                    read: readOnlyItemCode,
                                     labelText: TXT_ITEMCODE,
                                     isMask: false,
                                     isNumber:false,
@@ -367,6 +382,9 @@ class Component extends State<ProductDialogBlocItemCode> {
   void solidButtonEvent(String event) {
     if(event == EVENT_CLOSE) {
       Navigator.pop(context);
+    } else if (event == EVENT_NEW_ITEMCODE_MODE) {
+      ConsolePrint("Button", "Click");
+      context.read<MainBloc>().add(MainParam.NewItemCodeClick(eventStatus: MainEvent.Event_NewItemCodeClick, itemCodeParameter: {EVENT_NEW_ITEMCODE_MODE: true}));
     }
   }
 

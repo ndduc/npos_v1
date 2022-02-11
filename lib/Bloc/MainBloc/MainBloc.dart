@@ -878,6 +878,15 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ItemCodeErrorState(error: e);
         }
       break;
+      case MainEvent.Event_NewItemCodeClick:
+        yield NewItemCodeClickInitState();
+        try {
+          yield NewItemCodeClickLoadingState();
+          yield NewItemCodeClickLoadedState(response: event.itemCodeParameter as Map<String, dynamic>);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+      break;
       //endregion
 
       /// SNACK BAR

@@ -92,6 +92,7 @@ enum MainEvent{
   //region ITEM CODE REQUEST
   Event_GetItemCodePagination,
   Event_ItemCodeTableClick,
+  Event_NewItemCodeClick,
   //endregion
 
   //region SNACK BAR
@@ -159,6 +160,7 @@ class MainParam {
   Map<String, dynamic>? sectionParameter;
   Map<String, dynamic>? discountParameter;
   Map<String, dynamic>? taxParameter;
+  Map<String, dynamic>? itemCodeParameter;
   Map<String, String>? optionalParameter;
   String? dropDownType;
   dynamic dropDownValue;
@@ -176,6 +178,7 @@ class MainParam {
   /// ITEM CODE
   MainParam.GetItemCodePagination({required this.eventStatus, required this.productData, required this.userData, required this.optionalParameter});
   MainParam.ItemCodeTableLick({required this.eventStatus, required this.itemCodeData});
+  MainParam.NewItemCodeClick({required this.eventStatus, required this.itemCodeParameter});
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
   MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});

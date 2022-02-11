@@ -112,6 +112,12 @@ class ItemCodeTableClickLoadedState extends MainState {
   ItemCodeTableClickLoadedState({required this.response});
 }
 
+class NewItemCodeClickInitState extends MainState {}
+class NewItemCodeClickLoadingState extends MainState {}
+class NewItemCodeClickLoadedState extends MainState {
+  Map<String, dynamic> response;
+  NewItemCodeClickLoadedState({required this.response});
+}
 
 class ItemCodeErrorState extends MainState{
   final error;
