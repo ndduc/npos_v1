@@ -11,6 +11,10 @@ class Custom_ListTile_TextField extends StatelessWidget {
   TextEditingController? controller;
   FormFieldValidator? validations;
   ValueChanged<String>? onChange;
+  ValueChanged<String>?  onSubmit;
+  VoidCallback? onEdit;
+  ValueChanged<bool>? onFocusChange;
+  AutovalidateMode? autoValidate;
   bool read;
   bool isMask;
   bool isNumber;
@@ -29,6 +33,10 @@ class Custom_ListTile_TextField extends StatelessWidget {
         this.hintText,
         this.maxLines,
         this.onChange,
+        this.onSubmit,
+        this.onEdit,
+        this.onFocusChange,
+        this.autoValidate,
         required this.isNumber
       //  required this.textInput
       }) : super(key: key);
@@ -38,25 +46,31 @@ class Custom_ListTile_TextField extends StatelessWidget {
     return
     Container(
      margin: EdgeInsets.all(2),
-     child: TextFormField(
-       onChanged: onChange ?? null,
-       maxLines: maxLines ?? 1,
-       inputFormatters:
-       isNumber ?  <TextInputFormatter>[
-         FilteringTextInputFormatter.allow(RegExp(r"[0-9.]")),
-       ] : isMask ? [TextInputMask(mask: mask, reverse: false)] : null,
-       readOnly: read,
-       // keyboardType: textInput == null ? TextInputType.text : textInput,
-       textCapitalization: TextCapitalization.sentences,
-       decoration: InputDecoration(
-           labelText: labelText,
-           hintText: hintText,
-           border:
-           OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-           // fillColor: ThemeColors.confidenceBlue,
-           filled: read ? true : false),
-       controller: controller,
-       validator: validations,
+     child: FocusScope(
+       onFocusChange: onFocusChange ?? null,
+       child: TextFormField(
+         autovalidateMode: autoValidate ?? null,
+         onChanged: onChange ?? null,
+         onFieldSubmitted: onSubmit ?? null,
+         onEditingComplete: onEdit ?? null,
+         maxLines: maxLines ?? 1,
+         inputFormatters:
+         isNumber ?  <TextInputFormatter>[
+           FilteringTextInputFormatter.allow(RegExp(r"[0-9.]")),
+         ] : isMask ? [TextInputMask(mask: mask, reverse: false)] : null,
+         readOnly: read,
+         // keyboardType: textInput == null ? TextInputType.text : textInput,
+         textCapitalization: TextCapitalization.sentences,
+         decoration: InputDecoration(
+             labelText: labelText,
+             hintText: hintText,
+             border:
+             OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
+             // fillColor: ThemeColors.confidenceBlue,
+             filled: read ? true : false),
+         controller: controller,
+         validator: validations,
+       )
      )
     )
 

@@ -57,3 +57,4 @@ const String HINT_ITEMCODE_ADD_UPDATE = "This Item Does Not Have ItemCode";
 const String VALIDATE_DESCRIPTION = 'Please Provide Description';
 const String VALIDATE_COST = 'Please Provide Cost For The Item. Enter 0 if Item Does Not Have Cost';
 const String VALIDATE_PRICE = 'Please Provide Price For The Item';
+const String VALIDATE_ITEMCODE = 'Selected Item Code Already Existed';

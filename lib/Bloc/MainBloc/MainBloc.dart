@@ -5,6 +5,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:npos/Constant/API/MapValues.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/AddResponseModel.dart';
@@ -68,12 +69,47 @@ class MainBloc extends Bloc<MainParam,MainState>
           } else {
             yield ItemCodeGetLoadedState(response: response);
           }
-
-
         } catch (e) {
           yield ItemCodeErrorState(error: e);
         }
       break;
+      case MainEvent.Event_ItemCodeVerify:
+        yield ItemCodeVerifyInitState();
+        try {
+          yield ItemCodeVerifyLoadingState();
+          Map<String, dynamic> param = event.itemCodeParameter as Map<String, dynamic>;
+
+          bool response = await mainRepo.VerifyItemCode(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[ITEM_CODE]);
+          
+          
+          yield ItemCodeVerifyLoadedState(response: response);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_ItemCodeAdd:
+        yield ItemCodeAddInitState();
+        try {
+          yield ItemCodeAddLoadingState();
+          Map<String, dynamic> param = event.itemCodeParameter as Map<String, dynamic>;
+          bool response = await mainRepo.AddItemCode(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[ITEM_CODE]);
+          yield ItemCodeAddLoadedState(response: response);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+        break;
+
+      case MainEvent.Event_ItemCodeDelete:
+        yield ItemCodeDeleteInitState();
+        try {
+          yield ItemCodeDeleteLoadingState();
+          Map<String, dynamic> param = event.itemCodeParameter as Map<String, dynamic>;
+          bool response = await mainRepo.RemoveItemCode(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[ITEM_CODE]);
+          yield ItemCodeDeleteLoadedState(response: response);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+        break;
       //endregion
 
       /// PRODUCT HTTP EVENT
