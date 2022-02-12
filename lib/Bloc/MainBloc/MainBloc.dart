@@ -87,6 +87,29 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ItemCodeErrorState(error: e);
         }
         break;
+      case MainEvent.Event_ItemCodeAdd:
+        yield ItemCodeAddInitState();
+        try {
+          yield ItemCodeAddLoadingState();
+          Map<String, dynamic> param = event.itemCodeParameter as Map<String, dynamic>;
+          bool response = await mainRepo.AddItemCode(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[ITEM_CODE]);
+          yield ItemCodeAddLoadedState(response: response);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+        break;
+
+      case MainEvent.Event_ItemCodeDelete:
+        yield ItemCodeDeleteInitState();
+        try {
+          yield ItemCodeDeleteLoadingState();
+          Map<String, dynamic> param = event.itemCodeParameter as Map<String, dynamic>;
+          bool response = await mainRepo.RemoveItemCode(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[ITEM_CODE]);
+          yield ItemCodeDeleteLoadedState(response: response);
+        } catch (e) {
+          yield ItemCodeErrorState(error: e);
+        }
+        break;
       //endregion
 
       /// PRODUCT HTTP EVENT

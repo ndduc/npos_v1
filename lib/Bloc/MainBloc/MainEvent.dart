@@ -94,6 +94,8 @@ enum MainEvent{
   Event_ItemCodeTableClick,
   Event_NewItemCodeClick,
   Event_ItemCodeVerify,
+  Event_ItemCodeAdd,
+  Event_ItemCodeDelete,
   //endregion
 
   //region SNACK BAR
@@ -181,6 +183,8 @@ class MainParam {
   MainParam.ItemCodeTableLick({required this.eventStatus, required this.itemCodeData});
   MainParam.NewItemCodeClick({required this.eventStatus, required this.itemCodeParameter});
   MainParam.ItemCodeVerify({required this.eventStatus, required this.itemCodeParameter});
+  MainParam.AddItemCode({required this.eventStatus, required this.itemCodeParameter});
+  MainParam.DeleteItemCode({required this.eventStatus, required this.itemCodeParameter});
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
   MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});

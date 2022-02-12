@@ -7,6 +7,7 @@ import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
 import 'package:npos/Constant/API/MapValues.dart' as MapValue;
+import 'package:npos/Constant/API/MapValues.dart';
 import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiSize.dart' as UISize;
@@ -33,6 +34,7 @@ class ProductDialogBlocItemCode extends StatefulWidget {
 
 class Component extends State<ProductDialogBlocItemCode> {
   var formKey = GlobalKey<FormState>();
+  bool isModifying = false;
   bool isValidateOn = true;
   bool isItemCodeExist = false;
   bool allowSave = true;
@@ -151,6 +153,7 @@ class Component extends State<ProductDialogBlocItemCode> {
   void getItemCodeEvent(MainState state) {
 
     /// Item Code Get
+    //region Get Item Code Pagination
     if (state is ItemCodeGetInitState) {
 
     } else if (state is ItemCodeGetLoadingState) {
@@ -166,7 +169,9 @@ class Component extends State<ProductDialogBlocItemCode> {
         }
       }
     }
+    //endregion
     /// Item Code Table Click
+    //region Item Code Table Click
     else if (state is ItemCodeTableClickInitState) {
 
     } else if (state is ItemCodeTableClickLoadingState) {
@@ -178,7 +183,9 @@ class Component extends State<ProductDialogBlocItemCode> {
       allowDelete = true;
       setValue();
     }
+    //endregion
     /// New Item Code Click
+    //region New Item Code
     else if (state is NewItemCodeClickInitState) {
 
     } else if (state is NewItemCodeClickLoadingState) {
@@ -190,7 +197,9 @@ class Component extends State<ProductDialogBlocItemCode> {
         allowDelete = false;
       }
     }
+    //endregion
     /// Verify Item Code
+    //region Verify Item Code
     else if (state is ItemCodeVerifyInitState) {
 
     } else if (state is ItemCodeVerifyLoadingState) {
@@ -206,6 +215,23 @@ class Component extends State<ProductDialogBlocItemCode> {
         allowSave = true;
       }
       isComponentLoading = false;
+    }
+    //endregion
+  }
+
+  void modifyItemCodeEvent(MainState state) {
+    if (state is ItemCodeAddInitState) {
+
+    } else if (state is ItemCodeAddLoadingState) {
+
+    } else if (state is ItemCodeAddLoadedState) {
+
+    } else if (state is ItemCodeDeleteInitState) {
+
+    } else if (state is ItemCodeDeleteLoadingState) {
+
+    } else if (state is ItemCodeDeleteLoadedState) {
+
     }
   }
 
@@ -470,9 +496,13 @@ class Component extends State<ProductDialogBlocItemCode> {
     if(event == EVENT_CLOSE) {
       Navigator.pop(context);
     } else if (event == EVENT_NEW_ITEMCODE_MODE) {
-      ConsolePrint("Button", "Click");
       context.read<MainBloc>().add(MainParam.NewItemCodeClick(eventStatus: MainEvent.Event_NewItemCodeClick, itemCodeParameter: {EVENT_NEW_ITEMCODE_MODE: true}));
+    } else if (event == EVENT_SAVE_ITEMCODE) {
+      addItemCode();
+    } else if (event == EVENT_DELETE_ITEMCODE) {
+      deleteItemCode();
     }
+
   }
 
 
@@ -501,6 +531,32 @@ class Component extends State<ProductDialogBlocItemCode> {
       fit: FlexFit.tight,
       initialFirstRowIndex: 0,
 
+    );
+  }
+
+  void addItemCode() {
+    ConsolePrint("Event", "Save Item Code");
+    context.read<MainBloc>().add(MainParam.AddItemCode(eventStatus: MainEvent.Event_ItemCodeAdd,
+        itemCodeParameter: {
+          MapValue.USER_ID: widget.userModel?.uid.toString(),
+          MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
+          MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
+          MapValue.ITEM_CODE: etItemCode.text
+        }
+      )
+    );
+
+  }
+
+  void deleteItemCode() {
+    context.read<MainBloc>().add(MainParam.DeleteItemCode(eventStatus: MainEvent.Event_ItemCodeDelete,
+        itemCodeParameter: {
+          MapValue.USER_ID: widget.userModel?.uid.toString(),
+          MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
+          MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
+          MapValue.ITEM_CODE: etItemCode.text
+        }
+      )
     );
   }
 }

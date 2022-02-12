@@ -126,6 +126,19 @@ class ItemCodeVerifyLoadedState extends MainState {
   ItemCodeVerifyLoadedState({required this.response});
 }
 
+class ItemCodeAddInitState extends MainState {}
+class ItemCodeAddLoadingState extends MainState {}
+class ItemCodeAddLoadedState extends MainState {
+  bool response;
+  ItemCodeAddLoadedState({required this.response});
+}
+
+class ItemCodeDeleteInitState extends MainState {}
+class ItemCodeDeleteLoadingState extends MainState {}
+class ItemCodeDeleteLoadedState extends MainState {
+  bool response;
+  ItemCodeDeleteLoadedState({required this.response});
+}
 
 class ItemCodeErrorState extends MainState{
   final error;
