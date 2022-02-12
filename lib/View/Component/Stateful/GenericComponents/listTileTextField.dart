@@ -14,6 +14,7 @@ class Custom_ListTile_TextField extends StatelessWidget {
   ValueChanged<String>?  onSubmit;
   VoidCallback? onEdit;
   ValueChanged<bool>? onFocusChange;
+  AutovalidateMode? autoValidate;
   bool read;
   bool isMask;
   bool isNumber;
@@ -35,6 +36,7 @@ class Custom_ListTile_TextField extends StatelessWidget {
         this.onSubmit,
         this.onEdit,
         this.onFocusChange,
+        this.autoValidate,
         required this.isNumber
       //  required this.textInput
       }) : super(key: key);
@@ -47,6 +49,7 @@ class Custom_ListTile_TextField extends StatelessWidget {
      child: FocusScope(
        onFocusChange: onFocusChange ?? null,
        child: TextFormField(
+         autovalidateMode: autoValidate ?? null,
          onChanged: onChange ?? null,
          onFieldSubmitted: onSubmit ?? null,
          onEditingComplete: onEdit ?? null,

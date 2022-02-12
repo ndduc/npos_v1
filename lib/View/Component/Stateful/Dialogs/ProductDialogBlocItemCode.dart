@@ -18,6 +18,7 @@ import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 import 'package:provider/src/provider.dart';
 
@@ -31,9 +32,15 @@ class ProductDialogBlocItemCode extends StatefulWidget {
 }
 
 class Component extends State<ProductDialogBlocItemCode> {
+  var formKey = GlobalKey<FormState>();
+  bool isValidateOn = true;
+  bool isItemCodeExist = false;
+  bool allowSave = true;
+  bool allowDelete = true;
   bool addNewItemCode = false;
   uiImage uImage = uiImage();
   bool isLoading = false;
+  bool isComponentLoading = false;
   bool readOnly = true;
   bool readOnlyItemCode = true;
   TextEditingController etItemCode = TextEditingController();
@@ -73,6 +80,7 @@ class Component extends State<ProductDialogBlocItemCode> {
     context.read<MainBloc>().add(MainParam.GetItemCodePagination(eventStatus: MainEvent.Event_GetItemCodePagination
         , userData: widget.userModel, productData: widget.productMode, optionalParameter: param));
   }
+
   void uiFunctionHandler() {
     if (addNewItemCode) {
 
@@ -141,6 +149,8 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   void getItemCodeEvent(MainState state) {
+
+    /// Item Code Get
     if (state is ItemCodeGetInitState) {
 
     } else if (state is ItemCodeGetLoadingState) {
@@ -155,30 +165,55 @@ class Component extends State<ProductDialogBlocItemCode> {
           }
         }
       }
-    } else if (state is ItemCodeErrorState) {
-
-    } else if (state is ItemCodeTableClickInitState) {
+    }
+    /// Item Code Table Click
+    else if (state is ItemCodeTableClickInitState) {
 
     } else if (state is ItemCodeTableClickLoadingState) {
 
     } else if (state is ItemCodeTableClickLoadedState) {
       itemCodeModel = state.response;
       model.itemCode = int.parse(state.response.itemCode.toString());
+      allowSave = true;
+      allowDelete = true;
       setValue();
-    } else if (state is NewItemCodeClickInitState) {
+    }
+    /// New Item Code Click
+    else if (state is NewItemCodeClickInitState) {
 
     } else if (state is NewItemCodeClickLoadingState) {
 
     } else if (state is NewItemCodeClickLoadedState) {
       if (state.response[EVENT_NEW_ITEMCODE_MODE]) {
         setValueAddItemCode();
+        allowSave = false;
+        allowDelete = false;
       }
-    } else if (state is ItemCodeVerifyInitState) {
+    }
+    /// Verify Item Code
+    else if (state is ItemCodeVerifyInitState) {
 
     } else if (state is ItemCodeVerifyLoadingState) {
-
+      isComponentLoading = true;
     } else if (state is ItemCodeVerifyLoadedState) {
+      if (state.response) {
+        //Item Code Exist
+        isItemCodeExist = true;
+        allowSave = false;
+      } else {
+        //Item Code Not Exist
+        isItemCodeExist = false;
+        allowSave = true;
+      }
+      isComponentLoading = false;
+    }
+  }
 
+  void itemCodeErrorState(MainState state) {
+    if (state is ItemCodeErrorState) {
+      isComponentLoading = false;
+      isLoading = false;
+      //Trigger some sort of snack bar to notify user about the error here
     }
   }
 
@@ -199,6 +234,7 @@ class Component extends State<ProductDialogBlocItemCode> {
             app2ndGenericEvent(state);
             appSpecificEvent(state);
             getItemCodeEvent(state);
+            itemCodeErrorState(state);
             /**
              * Bloc Action Note
              * END
@@ -227,11 +263,13 @@ class Component extends State<ProductDialogBlocItemCode> {
               borderRadius: const BorderRadius.all(Radius.circular(GENERIC_BORDER_RADIUS)),
               border: Border.all(color: Colors.blueAccent),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                    flex: 5,
-                    child:
+            child: Form(
+              key: formKey,
+              child: Row(
+                children: [
+                  Expanded(
+                      flex: 5,
+                      child:
                       Column(
                         children: [
                           Row(
@@ -239,50 +277,59 @@ class Component extends State<ProductDialogBlocItemCode> {
                               Expanded(
                                 flex: 7,
                                 child: Custom_ListTile_TextField(
-                                    controller: etItemCode,
-                                    read: readOnlyItemCode,
-                                    labelText: TXT_ITEMCODE,
-                                    isMask: false,
-                                    isNumber:false,
-                                    mask: false,
-                                    onChange: (value) {
-                                      ConsolePrint("On Changed", value);
-                                    },
-                                    onEdit: () {
-                                      ConsolePrint("On Edit", "");
-                                    },
-                                    onSubmit: (value) {
-                                      ConsolePrint("On Submit", value);
-                                    },
-                                    onFocusChange: (value) {
-                                      if (!value) {
-                                        ConsolePrint("On onFocusChange", value);
-                                        ConsolePrint("VALUE", etItemCode.text);
-                                        context.read<MainBloc>().add(MainParam.ItemCodeVerify(eventStatus: MainEvent.Event_ItemCodeVerify,
-                                            itemCodeParameter: {
-                                              MapValue.USER_ID: widget.userModel?.uid.toString(),
-                                              MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
-                                              MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
-                                              MapValue.ITEM_CODE: etItemCode.text
-                                            }
-                                          )
-                                        );
-                                      }
+                                  autoValidate: AutovalidateMode.onUserInteraction,
+                                  controller: etItemCode,
+                                  read: readOnlyItemCode,
+                                  labelText: TXT_ITEMCODE,
+                                  isMask: false,
+                                  isNumber:false,
+                                  mask: false,
+                                  validations: (value) {
+                                    if (isItemCodeExist) {
+                                      return VALIDATE_ITEMCODE;
+                                    } else {
+                                      return null;
+                                    }
 
-                                    },
+                                  },
+                                  onChange: (value) {
+                                    ConsolePrint("On Changed", value);
+                                  },
+                                  onEdit: () {
+                                    ConsolePrint("On Edit", "");
+                                  },
+                                  onSubmit: (value) {
+                                    ConsolePrint("On Submit", value);
+                                  },
+                                  onFocusChange: (value) {
+                                    if (!value) {
+                                      ConsolePrint("On onFocusChange", value);
+                                      ConsolePrint("VALUE", etItemCode.text);
+                                      context.read<MainBloc>().add(MainParam.ItemCodeVerify(eventStatus: MainEvent.Event_ItemCodeVerify,
+                                          itemCodeParameter: {
+                                            MapValue.USER_ID: widget.userModel?.uid.toString(),
+                                            MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
+                                            MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
+                                            MapValue.ITEM_CODE: etItemCode.text
+                                          }
+                                      )
+                                      );
+                                    }
+
+                                  },
 
 
                                 ),
                               ),
                               Expanded(
                                   flex: 3,
-                                  child: solidButton(BTN_NEW_ITEMCODE, EVENT_NEW_ITEMCODE_MODE)
+                                  child: isComponentLoading ? ShareSpinner() :  solidButton(BTN_NEW_ITEMCODE, EVENT_NEW_ITEMCODE_MODE)
                               )
                             ],
                           ),
 
                           Custom_ListTile_TextField(
-                            controller: etDescription,
+                              controller: etDescription,
                               read: readOnly,
                               labelText: TXT_DESCRIPTION,
                               isMask: false,
@@ -294,7 +341,7 @@ class Component extends State<ProductDialogBlocItemCode> {
                               Expanded(
                                 flex: 5,
                                 child: Custom_ListTile_TextField(
-                                  controller: etPrice,
+                                    controller: etPrice,
                                     read: readOnly,
                                     labelText:TXT_PRICE,
                                     isMask: false,
@@ -305,7 +352,7 @@ class Component extends State<ProductDialogBlocItemCode> {
                               Expanded(
                                 flex: 5,
                                 child: Custom_ListTile_TextField(
-                                  controller: etCost,
+                                    controller: etCost,
                                     read: readOnly,
                                     labelText: TXT_COST,
                                     isMask: false,
@@ -320,7 +367,7 @@ class Component extends State<ProductDialogBlocItemCode> {
                               Expanded(
                                 flex: 5,
                                 child: Custom_ListTile_TextField(
-                                  controller: etMargin,
+                                    controller: etMargin,
                                     read: readOnly,
                                     labelText: TXT_MARGIN,
                                     isMask: false,
@@ -331,7 +378,7 @@ class Component extends State<ProductDialogBlocItemCode> {
                               Expanded(
                                 flex: 5,
                                 child: Custom_ListTile_TextField(
-                                  controller: etMarkup,
+                                    controller: etMarkup,
                                     read: readOnly,
                                     labelText: TXT_MARKUP,
                                     isMask: false,
@@ -371,24 +418,26 @@ class Component extends State<ProductDialogBlocItemCode> {
                               ),
                               Expanded(
                                   flex: 2,
-                                  child: solidButton(BTN_DELETE, EVENT_DELETE_ITEMCODE)
+                                  child: allowDelete? solidButton(BTN_DELETE, EVENT_DELETE_ITEMCODE) : solidButton(BTN_DELETE, EMPTY)
                               ),
                               Expanded(
                                   flex: 2,
-                                  child: solidButton(BTN_SAVE, EVENT_SAVE_ITEMCODE)
+                                  child: allowSave? solidButton(BTN_SAVE, EVENT_SAVE_ITEMCODE) : solidButton(BTN_SAVE, EMPTY)
                               )
                             ],
                           )
                         ],
                       )
 
-                ),
-                Expanded(
-                    flex: 5,
-                    child:    paginateTable()
-                )
-              ],
-            ),
+                  ),
+                  Expanded(
+                      flex: 5,
+                      child:    paginateTable()
+                  )
+                ],
+              ),
+            )
+
 
         ));
   }
@@ -408,9 +457,13 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   VoidCallback? solidBtnOnClick(String text, String event) {
-    return () {
-      solidButtonEvent(event);
-    };
+    if (event.isEmpty) {
+      return null;
+    } else {
+      return () {
+        solidButtonEvent(event);
+      };
+    }
   }
 
   void solidButtonEvent(String event) {
