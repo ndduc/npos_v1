@@ -67,6 +67,7 @@ class ItemCodeService extends Service{
   Future<bool> VerifyItemCode(String userId, String locId, String productId, String itemCode) async {
     try {
       var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + ITEMCODE + itemCode + SLASH + VERIFY);
+      ConsolePrint("VerifyItemCode", url);
       var res = await http.get(
           url,
           headers: HEADER
@@ -116,12 +117,18 @@ class ItemCodeService extends Service{
 
   @override
   Future<bool> RemoveItemCode(String userId, String locId, String productId, String itemCode) async {
+    Map<String, dynamic> body = {
+      ITEM_CODE : itemCode
+    };
     try {
-      var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + ITEMCODE_REMOVE + QUESTION + ITEMCODE_QUERY + EQUAL + itemCode);
-      var res = await http.get(
+      var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + ITEMCODE_REMOVE);
+      var res = await http.post(
           url,
-          headers: HEADER
+          headers: HEADER,
+          encoding: Encoding.getByName('utf-8'),
+          body: body
       );
+      ConsolePrint("URL DELETE ITEMCODE", url);
       if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {

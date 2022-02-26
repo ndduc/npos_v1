@@ -549,6 +549,7 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   void deleteItemCode() {
+    ConsolePrint("Delete", "ItemCode");
     context.read<MainBloc>().add(MainParam.DeleteItemCode(eventStatus: MainEvent.Event_ItemCodeDelete,
         itemCodeParameter: {
           MapValue.USER_ID: widget.userModel?.uid.toString(),
