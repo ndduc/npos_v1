@@ -6,6 +6,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/ProductModel.dart';
+import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
 
 enum MainEvent{
@@ -98,6 +99,15 @@ enum MainEvent{
   Event_ItemCodeDelete,
   //endregion
 
+  //region UPC REQUEST
+  Event_GetUpcPagination,
+  Event_UpcTableClick,
+  Event_NewUpcClick,
+  Event_UpcVerify,
+  Event_UpcAdd,
+  Event_UpcDelete,
+  //endregion
+
   //region SNACK BAR
   Show_SnackBar,
   //endregion
@@ -113,7 +123,8 @@ enum MainEvent{
   //region NAVIGATION
   Nav_Dialog_ItemCode_Add,
   Nav_Dialog_ItemCode_Update,
-  Nav_Dialog_Upc,
+  Nav_Dialog_Upc_Add,
+  Nav_Dialog_Upc_Update,
   Nav_Dialog_Product_Add,
   Nav_Dialog_Product_Add_Yes,
   Nav_Dialog_Product_Add_No,
@@ -155,6 +166,7 @@ class MainParam {
   UserModel? userData;
   ProductModel? productData;
   ItemCodeModel? itemCodeData;
+  UpcModel? upcData;
   int? index;
   Map<String, dynamic>? productParameter;
   Map<String, dynamic>? departmentParameter;
@@ -164,6 +176,7 @@ class MainParam {
   Map<String, dynamic>? discountParameter;
   Map<String, dynamic>? taxParameter;
   Map<String, dynamic>? itemCodeParameter;
+  Map<String, dynamic>? upcParameter;
   Map<String, String>? optionalParameter;
   String? dropDownType;
   dynamic dropDownValue;
@@ -185,6 +198,15 @@ class MainParam {
   MainParam.ItemCodeVerify({required this.eventStatus, required this.itemCodeParameter});
   MainParam.AddItemCode({required this.eventStatus, required this.itemCodeParameter});
   MainParam.DeleteItemCode({required this.eventStatus, required this.itemCodeParameter});
+
+  /// UPC
+  MainParam.GetUpcPagination({required this.eventStatus, required this.productData, required this.userData, required this.optionalParameter});
+  MainParam.UpcTableLick({required this.eventStatus, required this.upcData});
+  MainParam.NewUpcClick({required this.eventStatus, required this.upcParameter});
+  MainParam.UpcVerify({required this.eventStatus, required this.upcParameter});
+  MainParam.AddUpc({required this.eventStatus, required this.upcParameter});
+  MainParam.DeleteUpc({required this.eventStatus, required this.upcParameter});
+
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
   MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});

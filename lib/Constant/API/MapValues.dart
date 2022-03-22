@@ -14,3 +14,4 @@ const String USER_ID = "userId";
 const String LOCATION_ID = "locId";
 const String PRODUCT_ID = "productId";
 const String ITEM_CODE = "itemCode";
+const String UPC_STR = "upc";

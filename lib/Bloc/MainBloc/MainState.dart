@@ -8,6 +8,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
+import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -15,6 +16,7 @@ import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
+import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 
@@ -143,6 +145,56 @@ class ItemCodeDeleteLoadedState extends MainState {
 class ItemCodeErrorState extends MainState{
   final error;
   ItemCodeErrorState({this.error});
+}
+//endregion
+
+//region UPC
+class UpcGetInitState extends MainState{}
+class UpcGetLoadingState extends MainState{}
+class UpcGetLoadedState extends MainState{
+  UpcPaginationModel response;
+  String? selectedUpc = "";
+  UpcGetLoadedState({required this.response, this.selectedUpc});
+}
+
+class UpcTableClickInitState extends MainState {}
+class UpcTableClickLoadingState extends MainState {}
+class UpcTableClickLoadedState extends MainState {
+  UpcModel response;
+  UpcTableClickLoadedState({required this.response});
+}
+
+class NewUpcClickInitState extends MainState {}
+class NewUpcClickLoadingState extends MainState {}
+class NewUpcClickLoadedState extends MainState {
+  Map<String, dynamic> response;
+  NewUpcClickLoadedState({required this.response});
+}
+
+class UpcVerifyLoadingState extends MainState {}
+class UpcVerifyInitState extends MainState {}
+class UpcVerifyLoadedState extends MainState {
+  bool response;
+  UpcVerifyLoadedState({required this.response});
+}
+
+class UpcAddInitState extends MainState {}
+class UpcAddLoadingState extends MainState {}
+class UpcAddLoadedState extends MainState {
+  bool response;
+  UpcAddLoadedState({required this.response});
+}
+
+class UpcDeleteInitState extends MainState {}
+class UpcDeleteLoadingState extends MainState {}
+class UpcDeleteLoadedState extends MainState {
+  bool response;
+  UpcDeleteLoadedState({required this.response});
+}
+
+class UpcErrorState extends MainState{
+  final error;
+  UpcErrorState({this.error});
 }
 //endregion
 

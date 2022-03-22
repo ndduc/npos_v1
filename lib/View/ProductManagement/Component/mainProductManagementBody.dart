@@ -1293,6 +1293,12 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     } else if (event == EVENT_ITEMCODE_ADD) {
       context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode_Add
           , userData: widget.userData, productData: mainProductModel, context: context));
+    } else if (event == EVENT_UPC_UPDATE) {
+      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode_Update
+          , userData: widget.userData, productData: mainProductModel, context: context));
+    } else if (event == EVENT_UPC_ADD) {
+      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode_Add
+          , userData: widget.userData, productData: mainProductModel, context: context));
     }
   }
 

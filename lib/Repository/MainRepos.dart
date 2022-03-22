@@ -54,24 +54,24 @@ class MainRepository{
   //endregion
 
   //region UPC
-  Future<UpcModel> GetByUpc(String userId, String locId, String productId, String upc) {
-    return UpcService().GetByUpc(userId, locId, productId, upc);
+  Future<UpcModel> GetByUpc(String userId, String locId, String productId, String itemCode) {
+    return UpcService().GetByUpc(userId, locId, productId, itemCode);
   }
 
-  Future<UpcPaginationModel> GetUpcPaginate(String userId, String locId, String productId) {
-    return UpcService().GetUpcPaginate( userId,  locId,  productId);
+  Future<UpcPaginationModel> GetUpcPaginate(String userId, String locId, String productId, String limit, String offset, String order) {
+    return UpcService().GetUpcPaginate( userId,  locId,  productId, limit, offset, order);
   }
 
-  Future<bool> VerifyUpc(String userId, String locId, String productId, String upc){
-    return UpcService().VerifyUpc( userId,  locId,  productId,  upc);
+  Future<bool> VerifyUpc(String userId, String locId, String productId, String ItemCode){
+    return UpcService().VerifyUpc( userId,  locId,  productId,  ItemCode);
   }
 
-  Future<bool> AddUpc(String userId, String locId, String productId, String Upc){
-    return UpcService().AddUpc( userId,  locId,  productId,  Upc);
+  Future<bool> AddUpc(String userId, String locId, String productId, String ItemCode){
+    return UpcService().AddUpc( userId,  locId,  productId,  ItemCode);
   }
 
-  Future<bool> RemoveUpc(String userId, String locId, String productId, String Upc){
-    return UpcService().RemoveUpc( userId,  locId,  productId,  Upc);
+  Future<bool> RemoveUpc(String userId, String locId, String productId, String ItemCode){
+    return UpcService().RemoveUpc( userId,  locId,  productId,  ItemCode);
   }
   //endregion
 
