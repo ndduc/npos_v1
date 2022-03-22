@@ -225,13 +225,13 @@ class Component extends State<ProductDialogBlocItemCode> {
     } else if (state is ItemCodeAddLoadingState) {
 
     } else if (state is ItemCodeAddLoadedState) {
-
+      initialLoad();
     } else if (state is ItemCodeDeleteInitState) {
 
     } else if (state is ItemCodeDeleteLoadingState) {
 
     } else if (state is ItemCodeDeleteLoadedState) {
-
+      initialLoad();
     }
   }
 
@@ -261,6 +261,7 @@ class Component extends State<ProductDialogBlocItemCode> {
             appSpecificEvent(state);
             getItemCodeEvent(state);
             itemCodeErrorState(state);
+            modifyItemCodeEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -545,7 +546,6 @@ class Component extends State<ProductDialogBlocItemCode> {
         }
       )
     );
-
   }
 
   void deleteItemCode() {
