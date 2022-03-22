@@ -8,9 +8,7 @@ import 'package:npos/Constant/API/MapValues.dart';
 import 'package:npos/Constant/API/NumberValues.dart';
 import 'package:npos/Constant/API/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
-import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
-import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:npos/Model/UpcModel.dart';
 

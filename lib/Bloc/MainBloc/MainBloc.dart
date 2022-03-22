@@ -19,6 +19,7 @@ import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
+import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocAddUpdate.dart';
@@ -987,6 +988,27 @@ class MainBloc extends Bloc<MainParam,MainState>
         }
       break;
       //endregion
+
+      //region LOCAL EVENT UPC
+      case MainEvent.Event_UpcTableClick:
+        yield UpcTableClickInitState();
+        try {
+          yield UpcTableClickLoadingState();
+          yield UpcTableClickLoadedState(response: event.upcData as UpcModel);
+        } catch (e) {
+          yield UpcErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_NewUpcClick:
+        yield NewUpcClickInitState();
+        try {
+          yield NewUpcClickLoadingState();
+          yield NewUpcClickLoadedState(response: event.upcParameter as Map<String, dynamic>);
+        } catch (e) {
+          yield UpcErrorState(error: e);
+        }
+        break;
+    //endregion
 
       /// SNACK BAR
       //region SNACK BAR

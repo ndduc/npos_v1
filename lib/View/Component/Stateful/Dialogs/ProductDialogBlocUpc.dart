@@ -156,8 +156,8 @@ class Component extends State<ProductDialogBlocUpc> {
 
   void getUpcEvent(MainState state) {
 
-    /// Item Code Get
-    //region Get Item Code Pagination
+    /// Upc Get
+    //region Get Upc Pagination
     if (state is UpcGetInitState) {
 
     } else if (state is UpcGetLoadingState) {
@@ -174,8 +174,8 @@ class Component extends State<ProductDialogBlocUpc> {
       }
     }
     //endregion
-    /// Item Code Table Click
-    //region Item Code Table Click
+    /// Upc Table Click
+    //region Upc Table Click
     else if (state is UpcTableClickInitState) {
 
     } else if (state is UpcTableClickLoadingState) {
@@ -188,8 +188,8 @@ class Component extends State<ProductDialogBlocUpc> {
       setValue();
     }
     //endregion
-    /// New Item Code Click
-    //region New Item Code
+    /// New Upc Click
+    //region New Upc
     else if (state is NewUpcClickInitState) {
 
     } else if (state is NewUpcClickLoadingState) {
@@ -202,19 +202,19 @@ class Component extends State<ProductDialogBlocUpc> {
       }
     }
     //endregion
-    /// Verify Item Code
-    //region Verify Item Code
+    /// Verify Upc
+    //region Verify Upc
     else if (state is UpcVerifyInitState) {
 
     } else if (state is UpcVerifyLoadingState) {
       isComponentLoading = true;
     } else if (state is UpcVerifyLoadedState) {
       if (state.response) {
-        //Item Code Exist
+        //Upc Exist
         isUpcExist = true;
         allowSave = false;
       } else {
-        //Item Code Not Exist
+        //Upc Not Exist
         isUpcExist = false;
         allowSave = true;
       }
@@ -341,7 +341,7 @@ class Component extends State<ProductDialogBlocUpc> {
                                             MapValue.USER_ID: widget.userModel?.uid.toString(),
                                             MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
                                             MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
-                                            MapValue.ITEM_CODE: etUpc.text
+                                            MapValue.UPC_STR: etUpc.text
                                           }
                                       )
                                       );
@@ -501,6 +501,7 @@ class Component extends State<ProductDialogBlocUpc> {
     if(event == EVENT_CLOSE) {
       Navigator.pop(context);
     } else if (event == EVENT_NEW_UPC_MODE) {
+      ConsolePrint("NEW UPC", "CLICKED");
       context.read<MainBloc>().add(MainParam.NewUpcClick(eventStatus: MainEvent.Event_NewUpcClick, upcParameter: {EVENT_NEW_UPC_MODE: true}));
     } else if (event == EVENT_SAVE_UPC) {
       addUpc();
@@ -540,13 +541,13 @@ class Component extends State<ProductDialogBlocUpc> {
   }
 
   void addUpc() {
-    ConsolePrint("Event", "Save Item Code");
+    ConsolePrint("Event", "Save Upc");
     context.read<MainBloc>().add(MainParam.AddUpc(eventStatus: MainEvent.Event_UpcAdd,
         upcParameter: {
           MapValue.USER_ID: widget.userModel?.uid.toString(),
           MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
           MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
-          MapValue.ITEM_CODE: etUpc.text
+          MapValue.UPC_STR: etUpc.text
         }
       )
     );
@@ -559,7 +560,7 @@ class Component extends State<ProductDialogBlocUpc> {
           MapValue.USER_ID: widget.userModel?.uid.toString(),
           MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
           MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
-          MapValue.ITEM_CODE: etUpc.text
+          MapValue.UPC_STR: etUpc.text
         }
       )
     );
