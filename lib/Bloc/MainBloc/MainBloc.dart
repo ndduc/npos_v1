@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Constant/API/MapValues.dart';
+import 'package:npos/Constant/API/StringValues.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/AddResponseModel.dart';
@@ -118,6 +119,7 @@ class MainBloc extends Bloc<MainParam,MainState>
     /// UPC HTTP EVENT
       //region UPC HTTP EVENT
         case MainEvent.Event_GetUpcPagination:
+          print('MainEvent.Event_GetUpcPagination');
           yield UpcGetInitState();
           try {
             yield UpcGetLoadingState();
@@ -138,14 +140,12 @@ class MainBloc extends Bloc<MainParam,MainState>
           }
           break;
         case MainEvent.Event_UpcVerify:
+
           yield UpcVerifyInitState();
           try {
             yield UpcVerifyLoadingState();
-            Map<String, dynamic> param = event.itemCodeParameter as Map<String, dynamic>;
-
-            bool response = await mainRepo.VerifyUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[ITEM_CODE]);
-
-
+            Map<String, dynamic> param = event.upcParameter as Map<String, dynamic>;
+            bool response = await mainRepo.VerifyUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[UPC_STR]);
             yield UpcVerifyLoadedState(response: response);
           } catch (e) {
             yield UpcErrorState(error: e);
@@ -156,7 +156,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           try {
             yield UpcAddLoadingState();
             Map<String, dynamic> param = event.upcParameter as Map<String, dynamic>;
-            bool response = await mainRepo.AddUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[ITEM_CODE]);
+            bool response = await mainRepo.AddUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[UPC_STR]);
             yield UpcAddLoadedState(response: response);
           } catch (e) {
             yield UpcErrorState(error: e);
@@ -168,7 +168,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           try {
             yield UpcDeleteLoadingState();
             Map<String, dynamic> param = event.upcParameter as Map<String, dynamic>;
-            bool response = await mainRepo.RemoveUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[ITEM_CODE]);
+            bool response = await mainRepo.RemoveUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[UPC_STR]);
             yield UpcDeleteLoadedState(response: response);
           } catch (e) {
             yield UpcErrorState(error: e);

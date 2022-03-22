@@ -45,6 +45,7 @@ class UpcService extends Service{
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + UPC_GET_PAGINATE
           + QUESTION + LIMIT + EQUAL + limit + AND + OFFSET + EQUAL + offset +  AND + ORDER + EQUAL + order );
+      print(url);
       var res = await http.get(
           url,
           headers: HEADER
@@ -66,7 +67,6 @@ class UpcService extends Service{
   Future<bool> VerifyUpc(String userId, String locId, String productId, String upc) async {
     try {
       var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + UPC + upc + SLASH + VERIFY);
-      ConsolePrint("VerifyUpc", url);
       var res = await http.get(
           url,
           headers: HEADER
@@ -75,7 +75,6 @@ class UpcService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        ConsolePrint("Response", json);
         bool response = jsonDecode(json[BODY]);
         return response;
       }
@@ -86,30 +85,25 @@ class UpcService extends Service{
 
   @override
   Future<bool> AddUpc(String userId, String locId, String productId, String upc) async {
-    ConsolePrint("AddUpc", "Request");
     Map<String, dynamic> body = {
       UPC_STR : upc
     };
     try {
       var url =  Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + UPC_ADD);
-      print("url\t\t" + url.toString());
       var res = await http.post(
           url,
           headers: HEADER,
           encoding: Encoding.getByName('utf-8'),
           body: body
       );
-      print(res.body.toString());
       if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        ConsolePrint("upc Add Response", json);
         bool response = jsonDecode(json[BODY]);
         return response;
       }
     } catch(e) {
-      print(e.toString());
       throw Exception(e);
     }
   }

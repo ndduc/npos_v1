@@ -163,7 +163,9 @@ class Component extends State<ProductDialogBlocUpc> {
     } else if (state is UpcGetLoadingState) {
 
     } else if (state is UpcGetLoadedState) {
+      print("LOADED STATE");
       upcPaginateModel = state.response;
+      print(upcPaginateModel);
       if (state.selectedUpc != null) {
         for(int i = 0; i < upcPaginateModel.upcList.length; i++) {
           if (upcPaginateModel.upcList[i].upc == state.selectedUpc.toString()) {
@@ -205,7 +207,7 @@ class Component extends State<ProductDialogBlocUpc> {
     /// Verify Upc
     //region Verify Upc
     else if (state is UpcVerifyInitState) {
-
+      print("INIT UPC VERIFY");
     } else if (state is UpcVerifyLoadingState) {
       isComponentLoading = true;
     } else if (state is UpcVerifyLoadedState) {
@@ -501,7 +503,6 @@ class Component extends State<ProductDialogBlocUpc> {
     if(event == EVENT_CLOSE) {
       Navigator.pop(context);
     } else if (event == EVENT_NEW_UPC_MODE) {
-      ConsolePrint("NEW UPC", "CLICKED");
       context.read<MainBloc>().add(MainParam.NewUpcClick(eventStatus: MainEvent.Event_NewUpcClick, upcParameter: {EVENT_NEW_UPC_MODE: true}));
     } else if (event == EVENT_SAVE_UPC) {
       addUpc();
