@@ -1294,10 +1294,11 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode_Add
           , userData: widget.userData, productData: mainProductModel, context: context));
     } else if (event == EVENT_UPC_UPDATE) {
-      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode_Update
+      ConsolePrint("UPC", "CLICK");
+      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_Upc_Update
           , userData: widget.userData, productData: mainProductModel, context: context));
     } else if (event == EVENT_UPC_ADD) {
-      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_ItemCode_Add
+      context.read<MainBloc>().add(MainParam.NavDialog(eventStatus: MainEvent.Nav_Dialog_Upc_Add
           , userData: widget.userData, productData: mainProductModel, context: context));
     }
   }
