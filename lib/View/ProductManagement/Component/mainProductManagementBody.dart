@@ -135,7 +135,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   }
 
   loadOnInit() {
-    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetAllDependency, userData: widget.userData, productParameter: {}));
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetAllDependency, userData: widget.userData, productParameter: { "searchText": "" }));
   }
 
   void appBaseEvent(MainState state) {
@@ -230,7 +230,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     } else if (state is Generic2ndLoadedState) {
       Map<String, dynamic> res = state.genericData;
       setDropDownData(res);
-      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: {"searchType": "test", "searchText":""}));
     } else if (state is Generic2ndErrorState) {
 
     }
@@ -276,6 +276,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       readOnlyMode = false;
       isLoading = false;
       parsingProductDataToUI(state.productModel!);
+      ConsolePrint("Search Text", eTSearchTopBy.text);
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 1, dropDownType: EVENT_MODE_PRODUCT_UPDATE));
     } else if (state is DropDownLoadedState) {
       if (state.dropDownType == EVENT_DROPDOWN_SEARCH_MAP) {
@@ -308,6 +309,16 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
           // UPDATE ITEM MODE WHERE PRODUCT MODEL IS NULL
         }
         updateItemMode(state.dropDownValue);
+
+        Map<String, dynamic> map = <String, dynamic>{};
+        if (searchOptionValue == 3) {
+          map["searchText"] = eTSearchTopBy.text;
+        } else {
+          map["searchText"] = "";
+        }
+        ConsolePrint("TEST", map);
+        context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: map));
+
       }
     }  else if (state is ProductPaginateLoadingState) {
       isLoadingTable = true;
@@ -318,11 +329,19 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       isLoadingTable = false;
       // Invoke Load Paginate Product After Count is Completed
       DataCount = state.count!;
-      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginate, userData: widget.userData, productParameter: {
+
+      Map<String, dynamic> map = <String, dynamic>{
         "searchType": "test",
         "startIdx": 1,
-        "endIdx": 10
-      }));
+        "endIdx": 10,
+      };
+      if (searchOptionValue == 3) {
+        map["searchText"] = eTSearchTopBy.text;
+      } else {
+        map["searchText"] = "";
+      }
+
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginate, userData: widget.userData, productParameter: map));
     }
   }
 
@@ -1265,7 +1284,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     if(event ==  EVENT_SEARCH) {
 
       ConsolePrint("SEARCH EVENT", searchOptionValue);
-      Map<String, String> map = Map<String, String>();
+      Map<String, String> map = <String, String>{};
+      map["searchText"] = "";
       if(searchOptionValue == 0) {
         String uid = eTSearchTopBy.text;
         map["uid"] = uid;
@@ -1278,6 +1298,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       } else if (searchOptionValue == 3) {
         String searchText = eTSearchTopBy.text;
         map["searchText"] = searchText;
+       // context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: map));
+
       } else {
         throw new Exception("Invalid Dropdown Value Selected");
       }
@@ -1536,6 +1558,7 @@ class TableData extends DataTableSource {
         ProductModel selectedModel = lstProductModel[index];
         Map<String, String> map = <String, String>{};
         map["uid"] = selectedModel.uid!;
+        map["searchText"] = "";
         context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductByParamMap, userData: userData, productParameter: map));
       },
         cells: [

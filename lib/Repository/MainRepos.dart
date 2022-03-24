@@ -92,12 +92,13 @@ class MainRepository{
     return ProductService().GetProductByMap(userId, locId, param);
   }
 
-  Future<int> GetProductPaginateCount(String userId, String locId, String searchType) {
-    return ProductService().GetProductPaginateCount(userId, locId, searchType);
+  Future<int> GetProductPaginateCount(String userId, String locId, Map<String, dynamic> optionalParameter) {
+    return ProductService().GetProductPaginateCount(userId, locId, optionalParameter);
   }
 
-  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, String searchType, int startIdx, int endIdx) {
-    return ProductService().GetProductPaginateByIndex(userId, locId, searchType, startIdx, endIdx);
+  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, Map<String, dynamic> optionalParameter) {
+    print(optionalParameter);
+    return ProductService().GetProductPaginateByIndex(userId, locId, optionalParameter);
   }
 
   Future<AddResponseModel> AddProduct(ProductModel productModel, String locationId) {

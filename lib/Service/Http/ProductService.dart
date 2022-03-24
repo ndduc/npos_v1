@@ -12,8 +12,8 @@ import 'package:npos/Model/UserModel.dart';
 
 abstract class Service{
   Future<ProductModel>GetProductByMap(String userId, String locId, Map<String, String> param);
-  Future<int>GetProductPaginateCount(String userId, String locId, String searchType);
-  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, String searchType, int startIdx, int endIdx);
+  Future<int>GetProductPaginateCount(String userId, String locId, Map<String, dynamic> optionalParameter);
+  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, Map<String, dynamic> optionalParameter);
   Future<AddResponseModel> AddProduct(ProductModel productMode,  String locationIdl);
   Future<AddResponseModel> UpdateProduct(ProductModel productModel, String locationId);
 }
@@ -80,7 +80,6 @@ class ProductService extends Service{
     param["itemCodeList"] = json.encode(productModel.itemCodeList);
     param["upcList"] = json.encode(productModel.upcList);
 
-    ConsolePrint("PARAM ADD", param);
 
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + productModel.added_by.toString() + "/" + locationId + "/product/update");
@@ -119,7 +118,6 @@ class ProductService extends Service{
           encoding: Encoding.getByName('utf-8'),
           body: param
       );
-      ConsolePrint("RES", res.body);
       if(res.statusCode != 200) {
         throw Exception(res.body.toString());
       } else {
@@ -134,11 +132,19 @@ class ProductService extends Service{
   }
 
   @override
-  Future<int> GetProductPaginateCount(String userId, String locId, String searchType) async {
+  Future<int>GetProductPaginateCount(String userId, String locId, Map<String, dynamic> optionalParameter) async {
     ProductModel model;
     Map<String, String> param = {
-      "searchType" : searchType
+      "searchType" : optionalParameter["searchType"]
     };
+
+    if(optionalParameter["searchText"].toString().isNotEmpty) {
+      param["searchText"] =  optionalParameter["searchText"];
+    } else {
+      param["searchText"] =  "";
+    }
+    ConsolePrint("PARAM ADD", param);
+
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/product/get-count");
       var res = await http.post(
@@ -163,13 +169,24 @@ class ProductService extends Service{
   }
 
   @override
-  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, String searchType, int startIdx, int endIdx) async {
+  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, Map<String, dynamic> optionalParameter) async {
     List<ProductModel> listModel = [];
+
     Map<String, String> param = {
-      "searchType": searchType,
-      "startIdx" : startIdx.toString(),
-      "endIdx" : endIdx.toString()
+      "searchType" : optionalParameter["searchType"],
+      "startIdx" : optionalParameter["startIdx"].toString(),
+      "endIdx" : optionalParameter["endIdx"].toString(),
     };
+
+    if(optionalParameter["searchText"].toString().isNotEmpty) {
+      param["searchText"] =  optionalParameter["searchText"];
+    } else {
+      param["searchText"] =  "";
+    }
+
+    ConsolePrint("PARAM ADD", param);
+
+
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/product/get-product-paginate");
       var res = await http.post(

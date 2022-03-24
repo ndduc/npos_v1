@@ -198,8 +198,11 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ProductPaginateLoadingState();
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          String searchType = event.productParameter!["searchType"];
-          int count = await mainRepo.GetProductPaginateCount(userId, locId!, searchType);
+          Map<String, dynamic> optionalParam = {
+            "searchType": event.productParameter!["searchType"].toString(),
+            "searchText": event.productParameter!["searchText"].toString()
+          };
+          int count = await mainRepo.GetProductPaginateCount(userId, locId!, optionalParam);
           yield ProductPaginateCountLoadedState(count: count);
         } catch (e) {
           yield GenericErrorState(error: e);
@@ -211,10 +214,15 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ProductPaginateLoadingState();
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          String searchType = event.productParameter!["searchType"];
-          int startIdx = event.productParameter!["startIdx"];
-          int endIdx = event.productParameter!["endIdx"];
-          List<ProductModel> listModel = await mainRepo.GetProductPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          Map<String, dynamic> optionalParam = {
+            "searchType": event.productParameter!["searchType"].toString(),
+            "startIdx": event.productParameter!["startIdx"],
+            "endIdx": event.productParameter!["endIdx"],
+            "searchText": event.productParameter!["searchText"].toString()
+          };
+
+
+          List<ProductModel> listModel = await mainRepo.GetProductPaginateByIndex(userId, locId!,optionalParam);
           yield ProductPaginateLoadedState(listProductModel: listModel);
         } catch (e) {
           yield GenericErrorState(error: e);
