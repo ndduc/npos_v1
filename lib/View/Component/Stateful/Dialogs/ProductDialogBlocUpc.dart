@@ -99,7 +99,7 @@ class Component extends State<ProductDialogBlocUpc> {
     if (model.upc == NUMBER_NULL) {
       etUpc.text = HINT_UPC_ADD_UPDATE;
     } else {
-      etUpc.text = model.upc.toString();
+      etUpc.text = model.str_upc.toString();
     }
     etDescription.text = model.description!;
     etPrice.text = model.price.toString();
@@ -181,7 +181,12 @@ class Component extends State<ProductDialogBlocUpc> {
 
     } else if (state is UpcTableClickLoadedState) {
       upcModel = state.response;
-      model.upc = int.parse(state.response.upc.toString());
+      if (state.response.upc.toString().isNotEmpty) {
+        model.upc = 1;
+        model.str_upc = state.response.upc;
+      } else {
+        model.upc = -1;
+      }
       allowSave = true;
       allowDelete = true;
       setValue();
