@@ -1263,6 +1263,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
 
   void solidButtonEvent(String event) {
     if(event ==  EVENT_SEARCH) {
+
+      ConsolePrint("SEARCH EVENT", searchOptionValue);
       Map<String, String> map = Map<String, String>();
       if(searchOptionValue == 0) {
         String uid = eTSearchTopBy.text;
@@ -1273,6 +1275,9 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       } else if (searchOptionValue == 2) {
         String uid = eTSearchTopBy.text;
         map["upc"] = uid;
+      } else if (searchOptionValue == 3) {
+        String searchText = eTSearchTopBy.text;
+        map["searchText"] = searchText;
       } else {
         throw new Exception("Invalid Dropdown Value Selected");
       }
