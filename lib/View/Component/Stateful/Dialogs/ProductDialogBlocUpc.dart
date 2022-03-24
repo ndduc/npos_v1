@@ -37,6 +37,7 @@ class ProductDialogBlocUpc extends StatefulWidget {
 
 class Component extends State<ProductDialogBlocUpc> {
   var formKey = GlobalKey<FormState>();
+  bool isPaginationLoading = true;
   bool isModifying = false;
   bool isValidateOn = true;
   bool isUpcExist = false;
@@ -62,7 +63,6 @@ class Component extends State<ProductDialogBlocUpc> {
   @override
   void initState() {
     super.initState();
-    ConsolePrint("Who Am I", widget.whoAmI);
     if (widget.whoAmI == EVENT_ADD_UPC) {
       model = ProductModel();
       addNewUpc = true;
@@ -76,7 +76,6 @@ class Component extends State<ProductDialogBlocUpc> {
   }
 
   void initialLoad() {
-    ConsolePrint("UPC", "PRINT");
     Map<String, String> param = {
       "limit" : "100",
       "offset" : "0",
@@ -97,7 +96,6 @@ class Component extends State<ProductDialogBlocUpc> {
 
   void setValue() {
     readOnlyUpc = true;
-    ConsolePrint("SetValue", "Called");
     if (model.upc == NUMBER_NULL) {
       etUpc.text = HINT_UPC_ADD_UPDATE;
     } else {
@@ -161,11 +159,9 @@ class Component extends State<ProductDialogBlocUpc> {
     if (state is UpcGetInitState) {
 
     } else if (state is UpcGetLoadingState) {
-
+      isPaginationLoading = true;
     } else if (state is UpcGetLoadedState) {
-      print("LOADED STATE");
       upcPaginateModel = state.response;
-      print(upcPaginateModel);
       if (state.selectedUpc != null) {
         for(int i = 0; i < upcPaginateModel.upcList.length; i++) {
           if (upcPaginateModel.upcList[i].upc == state.selectedUpc.toString()) {
@@ -174,6 +170,7 @@ class Component extends State<ProductDialogBlocUpc> {
           }
         }
       }
+      isPaginationLoading = false;
     }
     //endregion
     /// Upc Table Click
@@ -207,7 +204,6 @@ class Component extends State<ProductDialogBlocUpc> {
     /// Verify Upc
     //region Verify Upc
     else if (state is UpcVerifyInitState) {
-      print("INIT UPC VERIFY");
     } else if (state is UpcVerifyLoadingState) {
       isComponentLoading = true;
     } else if (state is UpcVerifyLoadedState) {
@@ -326,18 +322,13 @@ class Component extends State<ProductDialogBlocUpc> {
 
                                   },
                                   onChange: (value) {
-                                    ConsolePrint("On Changed", value);
                                   },
                                   onEdit: () {
-                                    ConsolePrint("On Edit", "");
                                   },
                                   onSubmit: (value) {
-                                    ConsolePrint("On Submit", value);
                                   },
                                   onFocusChange: (value) {
                                     if (!value) {
-                                      ConsolePrint("On onFocusChange", value);
-                                      ConsolePrint("VALUE", etUpc.text);
                                       context.read<MainBloc>().add(MainParam.UpcVerify(eventStatus: MainEvent.Event_UpcVerify,
                                           upcParameter: {
                                             MapValue.USER_ID: widget.userModel?.uid.toString(),
@@ -465,7 +456,7 @@ class Component extends State<ProductDialogBlocUpc> {
                   ),
                   Expanded(
                       flex: 5,
-                      child:    paginateTable()
+                      child: isPaginationLoading ? ShareSpinner() : paginateTable()
                   )
                 ],
               ),
@@ -523,6 +514,9 @@ class Component extends State<ProductDialogBlocUpc> {
   }
 
   Widget paginateTable() {
+    for(int i = 0; i < upcPaginateModel.upcList.length; i++) {
+      upcPaginateModel.upcList[i].print();
+    }
     DataTableSource _data = TableData(upcPaginateModel.upcList, upcPaginateModel.upcList.length, context);
     return PaginatedDataTable2(
       columns: const [
@@ -542,7 +536,6 @@ class Component extends State<ProductDialogBlocUpc> {
   }
 
   void addUpc() {
-    ConsolePrint("Event", "Save Upc");
     context.read<MainBloc>().add(MainParam.AddUpc(eventStatus: MainEvent.Event_UpcAdd,
         upcParameter: {
           MapValue.USER_ID: widget.userModel?.uid.toString(),
@@ -555,7 +548,6 @@ class Component extends State<ProductDialogBlocUpc> {
   }
 
   void deleteUpc() {
-    ConsolePrint("Delete", "Upc");
     context.read<MainBloc>().add(MainParam.DeleteUpc(eventStatus: MainEvent.Event_UpcDelete,
         upcParameter: {
           MapValue.USER_ID: widget.userModel?.uid.toString(),

@@ -129,7 +129,7 @@ class MainBloc extends Bloc<MainParam,MainState>
             LocationModel? locationModel = userModel.defaultLocation;
             UpcPaginationModel response = await mainRepo.GetUpcPaginate(userModel.uid.toString(),locationModel!.uid.toString(), productModel.uid.toString(),
                 param["limit"].toString(), param["offset"].toString(), param["order"].toString());
-            response.print();
+
             if (param["selectedUpc"].toString() != "-1") {
               yield UpcGetLoadedState(response: response, selectedUpc: param["selectedUpc"].toString());
             } else {

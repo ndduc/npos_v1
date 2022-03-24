@@ -27,6 +27,17 @@ class UpcModel {
     upc = map["Upc"];
   }
 
+  print() {
+    ConsolePrint("Id", id);
+    ConsolePrint("ItemDescription", ItemDescription);
+    ConsolePrint("productUid", productUid);
+    ConsolePrint("locationUid", locationUid);
+    ConsolePrint("upc", upc);
+    ConsolePrint("added_datetime", added_datetime);
+    ConsolePrint("updated_datetime", updated_datetime);
+    ConsolePrint("added_by", added_by);
+    ConsolePrint("updated_by", updated_by);
+  }
 
   DiscountModel() {
 

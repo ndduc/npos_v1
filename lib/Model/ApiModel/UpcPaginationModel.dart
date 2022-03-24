@@ -18,11 +18,12 @@ class UpcPaginationModel {
     List<UpcModel> itemList = [];
     for(int i = 0; i < tmpUpcList.length; i++) {
       UpcModel model = UpcModel.map(tmpUpcList[i]);
+      model.print();
       itemList.add(model);
     }
 
     if (itemList.isNotEmpty) {
-      tmpUpcList = itemList;
+      upcList = itemList;
     }
   }
 
