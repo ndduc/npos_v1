@@ -23,7 +23,6 @@ class ProductService extends Service{
 
   @override
   Future<AddResponseModel> AddProduct(ProductModel productModel, String locationId) async {
-    ConsolePrint("Add Product", "Repo Init");
     Map<String, dynamic> param = <String, dynamic>{
       "description" : productModel.description.toString(),
       "second_description" : productModel.second_description.toString(),
@@ -31,7 +30,6 @@ class ProductService extends Service{
       "cost" : productModel.cost.toString(),
       "price": productModel.price.toString()
     };
-
     param["departmentList"] = json.encode(productModel.departmentList);
     param["categoryList"] = json.encode(productModel.categoryList);
     param["vendorList"] = json.encode(productModel.vendorList);
@@ -40,9 +38,6 @@ class ProductService extends Service{
     param["taxList"] = json.encode(productModel.taxList);
     param["itemCodeList"] = json.encode(productModel.itemCodeList);
     param["upcList"] = json.encode(productModel.upcList);
-    ConsolePrint("PARAM", param);
-
-
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + productModel.added_by.toString() + "/" + locationId + "/product/add");
       var res = await http.post(
@@ -62,14 +57,12 @@ class ProductService extends Service{
         return model;
       }
     } catch (e) {
-      ConsolePrint("Error", e.toString());
       throw Exception(e);
     }
   }
 
   @override
   Future<AddResponseModel> UpdateProduct(ProductModel productModel, String locationId) async {
-    ConsolePrint("Update Product", "Repo Init");
     Map<String, dynamic> param = <String, dynamic>{
       "uid" : productModel.uid.toString(),
       "description" : productModel.description.toString(),
@@ -78,7 +71,6 @@ class ProductService extends Service{
       "cost" : productModel.cost.toString(),
       "price": productModel.price.toString()
     };
-
     param["departmentList"] = json.encode(productModel.departmentList);
     param["categoryList"] = json.encode(productModel.categoryList);
     param["vendorList"] = json.encode(productModel.vendorList);
@@ -87,9 +79,6 @@ class ProductService extends Service{
     param["taxList"] = json.encode(productModel.taxList);
     param["itemCodeList"] = json.encode(productModel.itemCodeList);
     param["upcList"] = json.encode(productModel.upcList);
-    ConsolePrint("PARAM", param);
-
-
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + productModel.added_by.toString() + "/" + locationId + "/product/update");
       var res = await http.post(
@@ -104,13 +93,11 @@ class ProductService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        ConsolePrint("JSON", res.body);
         Map<String, dynamic> mapRes = jsonDecode(json["body"]);
         AddResponseModel model = AddResponseModel.map(mapRes);
         return model;
       }
     } catch (e) {
-      ConsolePrint("Error", e.toString());
       throw Exception(e);
     }
   }
@@ -129,7 +116,7 @@ class ProductService extends Service{
           encoding: Encoding.getByName('utf-8'),
           body: param
       );
-      List<LocationModel> locationList = [];
+      ConsolePrint("RES", res.body);
       if(res.statusCode != 200) {
         throw Exception(res.body.toString());
       } else {

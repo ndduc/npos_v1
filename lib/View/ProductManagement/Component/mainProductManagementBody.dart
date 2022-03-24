@@ -407,7 +407,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
 
     if ( productModel.upcList.isNotEmpty) {
       upcList = productModel.upcList;
-      mainProductModel?.upc = int.parse(upcList![0]);
+      mainProductModel?.upc = NUMBER_NOT_NULL;
+      mainProductModel?.str_upc = upcList![0].toString();
     } else {
       upcList =  [ITEM_NOT_FOUND];
       mainProductModel?.upc = NUMBER_NULL;

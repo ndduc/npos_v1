@@ -45,7 +45,6 @@ class UpcService extends Service{
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + productId + UPC_GET_PAGINATE
           + QUESTION + LIMIT + EQUAL + limit + AND + OFFSET + EQUAL + offset +  AND + ORDER + EQUAL + order );
-      print(url);
       var res = await http.get(
           url,
           headers: HEADER
@@ -54,7 +53,6 @@ class UpcService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        ConsolePrint("Response", json);
         UpcPaginationModel responseModel = UpcPaginationModel(jsonDecode(json[BODY]));
         return responseModel;
       }
@@ -121,8 +119,6 @@ class UpcService extends Service{
           encoding: Encoding.getByName('utf-8'),
           body: body
       );
-      ConsolePrint("URL DELETE UPC", url);
-      ConsolePrint("URL DELETE UPC RES", res.body);
       if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
