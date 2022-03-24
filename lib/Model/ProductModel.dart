@@ -10,6 +10,7 @@ class ProductModel {
   String? second_description;
   String? third_description;
   int? upc;
+  String? str_upc;
   int? itemCode;
   double? cost;
   double? price;

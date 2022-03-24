@@ -6,10 +6,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Constant/API/MapValues.dart';
+import 'package:npos/Constant/API/StringValues.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
+import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -18,10 +20,12 @@ import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
+import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocAddUpdate.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocItemCode.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocUpc.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
 import 'package:npos/View/DiscTaxManagement/disTaxManagement.dart';
 import 'package:npos/View/Home/homeMenu.dart';
@@ -51,7 +55,7 @@ class MainBloc extends Bloc<MainParam,MainState>
 
     switch(event.eventStatus)
     {
-      /// ITEM CODE HTTP EVENT
+    /// ITEM CODE HTTP EVENT
       //region ITEM CODE HTTP EVENT
       case MainEvent.Event_GetItemCodePagination:
         yield ItemCodeGetInitState();
@@ -112,7 +116,68 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       //endregion
 
-      /// PRODUCT HTTP EVENT
+    /// UPC HTTP EVENT
+      //region UPC HTTP EVENT
+        case MainEvent.Event_GetUpcPagination:
+          print('MainEvent.Event_GetUpcPagination');
+          yield UpcGetInitState();
+          try {
+            yield UpcGetLoadingState();
+            Map<String, String> param = event.optionalParameter as Map<String, String>;
+            ProductModel productModel = event.productData as ProductModel;
+            UserModel userModel = event.userData as UserModel;
+            LocationModel? locationModel = userModel.defaultLocation;
+            UpcPaginationModel response = await mainRepo.GetUpcPaginate(userModel.uid.toString(),locationModel!.uid.toString(), productModel.uid.toString(),
+                param["limit"].toString(), param["offset"].toString(), param["order"].toString());
+
+            if (param["selectedUpc"].toString() != "-1") {
+              yield UpcGetLoadedState(response: response, selectedUpc: param["selectedUpc"].toString());
+            } else {
+              yield UpcGetLoadedState(response: response);
+            }
+          } catch (e) {
+            yield UpcErrorState(error: e);
+          }
+          break;
+        case MainEvent.Event_UpcVerify:
+
+          yield UpcVerifyInitState();
+          try {
+            yield UpcVerifyLoadingState();
+            Map<String, dynamic> param = event.upcParameter as Map<String, dynamic>;
+            bool response = await mainRepo.VerifyUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[UPC_STR]);
+            yield UpcVerifyLoadedState(response: response);
+          } catch (e) {
+            yield UpcErrorState(error: e);
+          }
+          break;
+        case MainEvent.Event_UpcAdd:
+          yield UpcAddInitState();
+          try {
+            yield UpcAddLoadingState();
+            Map<String, dynamic> param = event.upcParameter as Map<String, dynamic>;
+            bool response = await mainRepo.AddUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[UPC_STR]);
+            yield UpcAddLoadedState(response: response);
+          } catch (e) {
+            yield UpcErrorState(error: e);
+          }
+          break;
+
+        case MainEvent.Event_UpcDelete:
+          yield UpcDeleteInitState();
+          try {
+            yield UpcDeleteLoadingState();
+            Map<String, dynamic> param = event.upcParameter as Map<String, dynamic>;
+            ConsolePrint("DELETE", param);
+            bool response = await mainRepo.RemoveUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[UPC_STR]);
+            yield UpcDeleteLoadedState(response: response);
+          } catch (e) {
+            yield UpcErrorState(error: e);
+          }
+          break;
+      //endregion
+
+    /// PRODUCT HTTP EVENT
       //region PRODUCT HTTP EVENT
       case MainEvent.Event_GetProductByParamMap:
        yield GenericInitialState();
@@ -133,8 +198,11 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ProductPaginateLoadingState();
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          String searchType = event.productParameter!["searchType"];
-          int count = await mainRepo.GetProductPaginateCount(userId, locId!, searchType);
+          Map<String, dynamic> optionalParam = {
+            "searchType": event.productParameter!["searchType"].toString(),
+            "searchText": event.productParameter!["searchText"].toString()
+          };
+          int count = await mainRepo.GetProductPaginateCount(userId, locId!, optionalParam);
           yield ProductPaginateCountLoadedState(count: count);
         } catch (e) {
           yield GenericErrorState(error: e);
@@ -146,10 +214,15 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ProductPaginateLoadingState();
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          String searchType = event.productParameter!["searchType"];
-          int startIdx = event.productParameter!["startIdx"];
-          int endIdx = event.productParameter!["endIdx"];
-          List<ProductModel> listModel = await mainRepo.GetProductPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          Map<String, dynamic> optionalParam = {
+            "searchType": event.productParameter!["searchType"].toString(),
+            "startIdx": event.productParameter!["startIdx"],
+            "endIdx": event.productParameter!["endIdx"],
+            "searchText": event.productParameter!["searchText"].toString()
+          };
+
+
+          List<ProductModel> listModel = await mainRepo.GetProductPaginateByIndex(userId, locId!,optionalParam);
           yield ProductPaginateLoadedState(listProductModel: listModel);
         } catch (e) {
           yield GenericErrorState(error: e);
@@ -925,6 +998,27 @@ class MainBloc extends Bloc<MainParam,MainState>
       break;
       //endregion
 
+      //region LOCAL EVENT UPC
+      case MainEvent.Event_UpcTableClick:
+        yield UpcTableClickInitState();
+        try {
+          yield UpcTableClickLoadingState();
+          yield UpcTableClickLoadedState(response: event.upcData as UpcModel);
+        } catch (e) {
+          yield UpcErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_NewUpcClick:
+        yield NewUpcClickInitState();
+        try {
+          yield NewUpcClickLoadingState();
+          yield NewUpcClickLoadedState(response: event.upcParameter as Map<String, dynamic>);
+        } catch (e) {
+          yield UpcErrorState(error: e);
+        }
+        break;
+    //endregion
+
       /// SNACK BAR
       //region SNACK BAR
       case MainEvent.Show_SnackBar:
@@ -1103,7 +1197,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           transitionDuration: Duration(milliseconds: 500),
           context: event.context as BuildContext,
           pageBuilder: (_, __, ___) {
-            return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: EVENT_ITEMCODE_UPDATE, productMode: event.productData,);
+            return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: EVENT_ITEMCODE_ADD, productMode: event.productData,);
           },
           transitionBuilder: (_, anim, __, child) {
             return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
@@ -1115,7 +1209,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           },
         );
         break;
-      case MainEvent.Nav_Dialog_Upc:
+      case MainEvent.Nav_Dialog_Upc_Update:
         showGeneralDialog(
           barrierLabel: "Barrier",
           barrierDismissible: false,
@@ -1123,7 +1217,27 @@ class MainBloc extends Bloc<MainParam,MainState>
           transitionDuration: Duration(milliseconds: 500),
           context: event.context as BuildContext,
           pageBuilder: (_, __, ___) {
-            return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: 'UPC', productMode: event.productData,);
+            return ProductDialogBlocUpc(userModel: event.userData, whoAmI: EVENT_UPC_UPDATE, productMode: event.productData,);
+          },
+          transitionBuilder: (_, anim, __, child) {
+            return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                child:SlideTransition(
+                  position:
+                  Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                  child: child,
+                ));
+          },
+        );
+        break;
+      case MainEvent.Nav_Dialog_Upc_Add:
+        showGeneralDialog(
+          barrierLabel: "Barrier",
+          barrierDismissible: false,
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 500),
+          context: event.context as BuildContext,
+          pageBuilder: (_, __, ___) {
+            return ProductDialogBlocUpc(userModel: event.userData, whoAmI: EVENT_UPC_ADD, productMode: event.productData,);
           },
           transitionBuilder: (_, anim, __, child) {
             return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),

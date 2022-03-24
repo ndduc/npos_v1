@@ -12,8 +12,8 @@ import 'package:npos/Model/UserModel.dart';
 
 abstract class Service{
   Future<ProductModel>GetProductByMap(String userId, String locId, Map<String, String> param);
-  Future<int>GetProductPaginateCount(String userId, String locId, String searchType);
-  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, String searchType, int startIdx, int endIdx);
+  Future<int>GetProductPaginateCount(String userId, String locId, Map<String, dynamic> optionalParameter);
+  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, Map<String, dynamic> optionalParameter);
   Future<AddResponseModel> AddProduct(ProductModel productMode,  String locationIdl);
   Future<AddResponseModel> UpdateProduct(ProductModel productModel, String locationId);
 }
@@ -23,7 +23,6 @@ class ProductService extends Service{
 
   @override
   Future<AddResponseModel> AddProduct(ProductModel productModel, String locationId) async {
-    ConsolePrint("Add Product", "Repo Init");
     Map<String, dynamic> param = <String, dynamic>{
       "description" : productModel.description.toString(),
       "second_description" : productModel.second_description.toString(),
@@ -31,7 +30,6 @@ class ProductService extends Service{
       "cost" : productModel.cost.toString(),
       "price": productModel.price.toString()
     };
-
     param["departmentList"] = json.encode(productModel.departmentList);
     param["categoryList"] = json.encode(productModel.categoryList);
     param["vendorList"] = json.encode(productModel.vendorList);
@@ -40,9 +38,6 @@ class ProductService extends Service{
     param["taxList"] = json.encode(productModel.taxList);
     param["itemCodeList"] = json.encode(productModel.itemCodeList);
     param["upcList"] = json.encode(productModel.upcList);
-    ConsolePrint("PARAM", param);
-
-
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + productModel.added_by.toString() + "/" + locationId + "/product/add");
       var res = await http.post(
@@ -62,14 +57,12 @@ class ProductService extends Service{
         return model;
       }
     } catch (e) {
-      ConsolePrint("Error", e.toString());
       throw Exception(e);
     }
   }
 
   @override
   Future<AddResponseModel> UpdateProduct(ProductModel productModel, String locationId) async {
-    ConsolePrint("Update Product", "Repo Init");
     Map<String, dynamic> param = <String, dynamic>{
       "uid" : productModel.uid.toString(),
       "description" : productModel.description.toString(),
@@ -78,7 +71,6 @@ class ProductService extends Service{
       "cost" : productModel.cost.toString(),
       "price": productModel.price.toString()
     };
-
     param["departmentList"] = json.encode(productModel.departmentList);
     param["categoryList"] = json.encode(productModel.categoryList);
     param["vendorList"] = json.encode(productModel.vendorList);
@@ -87,7 +79,6 @@ class ProductService extends Service{
     param["taxList"] = json.encode(productModel.taxList);
     param["itemCodeList"] = json.encode(productModel.itemCodeList);
     param["upcList"] = json.encode(productModel.upcList);
-    ConsolePrint("PARAM", param);
 
 
     try {
@@ -104,13 +95,11 @@ class ProductService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        ConsolePrint("JSON", res.body);
         Map<String, dynamic> mapRes = jsonDecode(json["body"]);
         AddResponseModel model = AddResponseModel.map(mapRes);
         return model;
       }
     } catch (e) {
-      ConsolePrint("Error", e.toString());
       throw Exception(e);
     }
   }
@@ -129,7 +118,6 @@ class ProductService extends Service{
           encoding: Encoding.getByName('utf-8'),
           body: param
       );
-      List<LocationModel> locationList = [];
       if(res.statusCode != 200) {
         throw Exception(res.body.toString());
       } else {
@@ -144,11 +132,19 @@ class ProductService extends Service{
   }
 
   @override
-  Future<int> GetProductPaginateCount(String userId, String locId, String searchType) async {
+  Future<int>GetProductPaginateCount(String userId, String locId, Map<String, dynamic> optionalParameter) async {
     ProductModel model;
     Map<String, String> param = {
-      "searchType" : searchType
+      "searchType" : optionalParameter["searchType"]
     };
+
+    if(optionalParameter["searchText"].toString().isNotEmpty) {
+      param["searchText"] =  optionalParameter["searchText"];
+    } else {
+      param["searchText"] =  "";
+    }
+    ConsolePrint("PARAM ADD", param);
+
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/product/get-count");
       var res = await http.post(
@@ -173,13 +169,24 @@ class ProductService extends Service{
   }
 
   @override
-  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, String searchType, int startIdx, int endIdx) async {
+  Future<List<ProductModel>>GetProductPaginateByIndex(String userId, String locId, Map<String, dynamic> optionalParameter) async {
     List<ProductModel> listModel = [];
+
     Map<String, String> param = {
-      "searchType": searchType,
-      "startIdx" : startIdx.toString(),
-      "endIdx" : endIdx.toString()
+      "searchType" : optionalParameter["searchType"],
+      "startIdx" : optionalParameter["startIdx"].toString(),
+      "endIdx" : optionalParameter["endIdx"].toString(),
     };
+
+    if(optionalParameter["searchText"].toString().isNotEmpty) {
+      param["searchText"] =  optionalParameter["searchText"];
+    } else {
+      param["searchText"] =  "";
+    }
+
+    ConsolePrint("PARAM ADD", param);
+
+
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/product/get-product-paginate");
       var res = await http.post(

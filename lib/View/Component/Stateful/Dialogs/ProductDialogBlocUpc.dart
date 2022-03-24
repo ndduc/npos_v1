@@ -15,37 +15,41 @@ import 'package:npos/Constant/UIEvent/AddUpdateUpcItemCodeEvent.dart';
 import 'package:npos/Constant/Values/NumberValues.dart';
 import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
-import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
-import 'package:npos/Model/ItemCodeModel.dart';
+import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
+import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
+import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/ProductModel.dart';
+import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 import 'package:provider/src/provider.dart';
 
-class ProductDialogBlocItemCode extends StatefulWidget {
+// ignore: must_be_immutable
+class ProductDialogBlocUpc extends StatefulWidget {
   UserModel? userModel;
   ProductModel? productMode;
   String? whoAmI;
-  ProductDialogBlocItemCode({Key? key, required this.userModel, required this.productMode, required this.whoAmI}) : super(key: key);
+  ProductDialogBlocUpc({Key? key, required this.userModel, required this.productMode, required this.whoAmI}) : super(key: key);
   @override
   Component createState() => Component();
 }
 
-class Component extends State<ProductDialogBlocItemCode> {
+class Component extends State<ProductDialogBlocUpc> {
   var formKey = GlobalKey<FormState>();
+  bool isPaginationLoading = true;
   bool isModifying = false;
   bool isValidateOn = true;
-  bool isItemCodeExist = false;
+  bool isUpcExist = false;
   bool allowSave = true;
   bool allowDelete = true;
-  bool addNewItemCode = false;
+  bool addNewUpc = false;
   uiImage uImage = uiImage();
   bool isLoading = false;
   bool isComponentLoading = false;
   bool readOnly = true;
-  bool readOnlyItemCode = true;
-  TextEditingController etItemCode = TextEditingController();
+  bool readOnlyUpc = true;
+  TextEditingController etUpc = TextEditingController();
   TextEditingController etDescription = TextEditingController();
   TextEditingController etPrice = TextEditingController();
   TextEditingController etCost = TextEditingController();
@@ -54,19 +58,18 @@ class Component extends State<ProductDialogBlocItemCode> {
   TextEditingController etExtDesc = TextEditingController();
   TextEditingController etNote = TextEditingController();
   late ProductModel model;
-  late ItemCodeModel itemCodeModel;
-  ItemCodePaginationModel itemCodePaginateModel = ItemCodePaginationModel.empty();
+  late UpcModel upcModel;
+  UpcPaginationModel upcPaginateModel = UpcPaginationModel.empty();
   @override
   void initState() {
     super.initState();
-    ConsolePrint("Who Am I", widget.whoAmI);
-    if (widget.whoAmI == EVENT_ADD_ITEMCODE) {
+    if (widget.whoAmI == EVENT_ADD_UPC) {
       model = ProductModel();
-      addNewItemCode = true;
-    } else if (widget.whoAmI == EVENT_UPDATE_ITEMCODE) {
+      addNewUpc = true;
+    } else if (widget.whoAmI == EVENT_UPDATE_UPC) {
 
       model = widget.productMode!;
-      addNewItemCode = false;
+      addNewUpc = false;
     }
     initialLoad();
     uiFunctionHandler();
@@ -77,14 +80,14 @@ class Component extends State<ProductDialogBlocItemCode> {
       "limit" : "100",
       "offset" : "0",
       "order" : "ASC",
-      "selectedItemCode" : model.itemCode.toString() //only add this on the initial load
+      "selectedUpc" : model.upc.toString() //only add this on the initial load
     };
-    context.read<MainBloc>().add(MainParam.GetItemCodePagination(eventStatus: MainEvent.Event_GetItemCodePagination
+    context.read<MainBloc>().add(MainParam.GetUpcPagination(eventStatus: MainEvent.Event_GetUpcPagination
         , userData: widget.userModel, productData: widget.productMode, optionalParameter: param));
   }
 
   void uiFunctionHandler() {
-    if (addNewItemCode) {
+    if (addNewUpc) {
 
     } else {
       setValue();
@@ -92,12 +95,11 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   void setValue() {
-    readOnlyItemCode = true;
-    ConsolePrint("SetValue", "Called");
-    if (model.itemCode == NUMBER_NULL) {
-      etItemCode.text = HINT_ITEMCODE_ADD_UPDATE;
+    readOnlyUpc = true;
+    if (model.upc == NUMBER_NULL) {
+      etUpc.text = HINT_UPC_ADD_UPDATE;
     } else {
-      etItemCode.text = model.itemCode.toString();
+      etUpc.text = model.str_upc.toString();
     }
     etDescription.text = model.description!;
     etPrice.text = model.price.toString();
@@ -109,9 +111,9 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   // Call this when dialog was init as update
-  void setValueAddItemCode() {
-    etItemCode.text = "";
-    readOnlyItemCode = false;
+  void setValueAddUpc() {
+    etUpc.text = "";
+    readOnlyUpc = false;
   }
 
   double marginCalculation(double price, double cost) {
@@ -150,68 +152,73 @@ class Component extends State<ProductDialogBlocItemCode> {
 
   }
 
-  void getItemCodeEvent(MainState state) {
+  void getUpcEvent(MainState state) {
 
-    /// Item Code Get
-    //region Get Item Code Pagination
-    if (state is ItemCodeGetInitState) {
+    /// Upc Get
+    //region Get Upc Pagination
+    if (state is UpcGetInitState) {
 
-    } else if (state is ItemCodeGetLoadingState) {
-
-    } else if (state is ItemCodeGetLoadedState) {
-      itemCodePaginateModel = state.response;
-      if (state.selectedItemCode != null) {
-        for(int i = 0; i < itemCodePaginateModel.itemCodeList.length; i++) {
-          if (itemCodePaginateModel.itemCodeList[i].itemCode == state.selectedItemCode.toString()) {
-            itemCodeModel = itemCodePaginateModel.itemCodeList[i];
+    } else if (state is UpcGetLoadingState) {
+      isPaginationLoading = true;
+    } else if (state is UpcGetLoadedState) {
+      upcPaginateModel = state.response;
+      if (state.selectedUpc != null) {
+        for(int i = 0; i < upcPaginateModel.upcList.length; i++) {
+          if (upcPaginateModel.upcList[i].upc == state.selectedUpc.toString()) {
+            upcModel = upcPaginateModel.upcList[i];
             break;
           }
         }
       }
+      isPaginationLoading = false;
     }
     //endregion
-    /// Item Code Table Click
-    //region Item Code Table Click
-    else if (state is ItemCodeTableClickInitState) {
+    /// Upc Table Click
+    //region Upc Table Click
+    else if (state is UpcTableClickInitState) {
 
-    } else if (state is ItemCodeTableClickLoadingState) {
+    } else if (state is UpcTableClickLoadingState) {
 
-    } else if (state is ItemCodeTableClickLoadedState) {
-      itemCodeModel = state.response;
-      model.itemCode = int.parse(state.response.itemCode.toString());
+    } else if (state is UpcTableClickLoadedState) {
+      upcModel = state.response;
+      if (state.response.upc.toString().isNotEmpty) {
+        model.upc = 1;
+        model.str_upc = state.response.upc;
+      } else {
+        model.upc = -1;
+      }
       allowSave = true;
       allowDelete = true;
       setValue();
     }
     //endregion
-    /// New Item Code Click
-    //region New Item Code
-    else if (state is NewItemCodeClickInitState) {
+    /// New Upc Click
+    //region New Upc
+    else if (state is NewUpcClickInitState) {
 
-    } else if (state is NewItemCodeClickLoadingState) {
+    } else if (state is NewUpcClickLoadingState) {
 
-    } else if (state is NewItemCodeClickLoadedState) {
-      if (state.response[EVENT_NEW_ITEMCODE_MODE]) {
-        setValueAddItemCode();
+    } else if (state is NewUpcClickLoadedState) {
+      if (state.response[EVENT_NEW_UPC_MODE]) {
+        setValueAddUpc();
         allowSave = false;
         allowDelete = false;
       }
     }
     //endregion
-    /// Verify Item Code
-    //region Verify Item Code
-    else if (state is ItemCodeVerifyInitState) {
-
-    } else if (state is ItemCodeVerifyLoadingState) {
+    /// Verify Upc
+    //region Verify Upc
+    else if (state is UpcVerifyInitState) {
+    } else if (state is UpcVerifyLoadingState) {
       isComponentLoading = true;
-    } else if (state is ItemCodeVerifyLoadedState) {
+    } else if (state is UpcVerifyLoadedState) {
       if (state.response) {
-        //Item Code Exist
-        isItemCodeExist = true;
+        //Upc Exist
+        isUpcExist = true;
         allowSave = false;
       } else {
-        //Item Code Not Exist
-        isItemCodeExist = false;
+        //Upc Not Exist
+        isUpcExist = false;
         allowSave = true;
       }
       isComponentLoading = false;
@@ -219,24 +226,24 @@ class Component extends State<ProductDialogBlocItemCode> {
     //endregion
   }
 
-  void modifyItemCodeEvent(MainState state) {
-    if (state is ItemCodeAddInitState) {
+  void modifyUpcEvent(MainState state) {
+    if (state is UpcAddInitState) {
 
-    } else if (state is ItemCodeAddLoadingState) {
+    } else if (state is UpcAddLoadingState) {
 
-    } else if (state is ItemCodeAddLoadedState) {
+    } else if (state is UpcAddLoadedState) {
       initialLoad();
-    } else if (state is ItemCodeDeleteInitState) {
+    } else if (state is UpcDeleteInitState) {
 
-    } else if (state is ItemCodeDeleteLoadingState) {
+    } else if (state is UpcDeleteLoadingState) {
 
-    } else if (state is ItemCodeDeleteLoadedState) {
+    } else if (state is UpcDeleteLoadedState) {
       initialLoad();
     }
   }
 
-  void itemCodeErrorState(MainState state) {
-    if (state is ItemCodeErrorState) {
+  void upcErrorState(MainState state) {
+    if (state is UpcErrorState) {
       isComponentLoading = false;
       isLoading = false;
       //Trigger some sort of snack bar to notify user about the error here
@@ -259,9 +266,9 @@ class Component extends State<ProductDialogBlocItemCode> {
             appBaseEvent(state);
             app2ndGenericEvent(state);
             appSpecificEvent(state);
-            getItemCodeEvent(state);
-            itemCodeErrorState(state);
-            modifyItemCodeEvent(state);
+            getUpcEvent(state);
+            upcErrorState(state);
+            modifyUpcEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -305,39 +312,34 @@ class Component extends State<ProductDialogBlocItemCode> {
                                 flex: 7,
                                 child: Custom_ListTile_TextField(
                                   autoValidate: AutovalidateMode.onUserInteraction,
-                                  controller: etItemCode,
-                                  read: readOnlyItemCode,
-                                  labelText: TXT_ITEMCODE,
+                                  controller: etUpc,
+                                  read: readOnlyUpc,
+                                  labelText: TXT_UPC,
                                   isMask: false,
                                   isNumber:false,
                                   mask: false,
                                   validations: (value) {
-                                    if (isItemCodeExist) {
-                                      return VALIDATE_ITEMCODE;
+                                    if (isUpcExist) {
+                                      return VALIDATE_UPC;
                                     } else {
                                       return null;
                                     }
 
                                   },
                                   onChange: (value) {
-                                    ConsolePrint("On Changed", value);
                                   },
                                   onEdit: () {
-                                    ConsolePrint("On Edit", "");
                                   },
                                   onSubmit: (value) {
-                                    ConsolePrint("On Submit", value);
                                   },
                                   onFocusChange: (value) {
                                     if (!value) {
-                                      ConsolePrint("On onFocusChange", value);
-                                      ConsolePrint("VALUE", etItemCode.text);
-                                      context.read<MainBloc>().add(MainParam.ItemCodeVerify(eventStatus: MainEvent.Event_ItemCodeVerify,
-                                          itemCodeParameter: {
+                                      context.read<MainBloc>().add(MainParam.UpcVerify(eventStatus: MainEvent.Event_UpcVerify,
+                                          upcParameter: {
                                             MapValue.USER_ID: widget.userModel?.uid.toString(),
                                             MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
                                             MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
-                                            MapValue.ITEM_CODE: etItemCode.text
+                                            MapValue.UPC_STR: etUpc.text
                                           }
                                       )
                                       );
@@ -350,7 +352,7 @@ class Component extends State<ProductDialogBlocItemCode> {
                               ),
                               Expanded(
                                   flex: 3,
-                                  child: isComponentLoading ? ShareSpinner() :  solidButton(BTN_NEW_ITEMCODE, EVENT_NEW_ITEMCODE_MODE)
+                                  child: isComponentLoading ? ShareSpinner() :  solidButton(BTN_NEW_UPC, EVENT_NEW_UPC_MODE)
                               )
                             ],
                           ),
@@ -445,11 +447,11 @@ class Component extends State<ProductDialogBlocItemCode> {
                               ),
                               Expanded(
                                   flex: 2,
-                                  child: allowDelete? solidButton(BTN_DELETE, EVENT_DELETE_ITEMCODE) : solidButton(BTN_DELETE, EMPTY)
+                                  child: allowDelete? solidButton(BTN_DELETE, EVENT_DELETE_UPC) : solidButton(BTN_DELETE, EMPTY)
                               ),
                               Expanded(
                                   flex: 2,
-                                  child: allowSave? solidButton(BTN_SAVE, EVENT_SAVE_ITEMCODE) : solidButton(BTN_SAVE, EMPTY)
+                                  child: allowSave? solidButton(BTN_SAVE, EVENT_SAVE_UPC) : solidButton(BTN_SAVE, EMPTY)
                               )
                             ],
                           )
@@ -459,7 +461,7 @@ class Component extends State<ProductDialogBlocItemCode> {
                   ),
                   Expanded(
                       flex: 5,
-                      child:    paginateTable()
+                      child: isPaginationLoading ? ShareSpinner() : paginateTable()
                   )
                 ],
               ),
@@ -496,12 +498,12 @@ class Component extends State<ProductDialogBlocItemCode> {
   void solidButtonEvent(String event) {
     if(event == EVENT_CLOSE) {
       Navigator.pop(context);
-    } else if (event == EVENT_NEW_ITEMCODE_MODE) {
-      context.read<MainBloc>().add(MainParam.NewItemCodeClick(eventStatus: MainEvent.Event_NewItemCodeClick, itemCodeParameter: {EVENT_NEW_ITEMCODE_MODE: true}));
-    } else if (event == EVENT_SAVE_ITEMCODE) {
-      addItemCode();
-    } else if (event == EVENT_DELETE_ITEMCODE) {
-      deleteItemCode();
+    } else if (event == EVENT_NEW_UPC_MODE) {
+      context.read<MainBloc>().add(MainParam.NewUpcClick(eventStatus: MainEvent.Event_NewUpcClick, upcParameter: {EVENT_NEW_UPC_MODE: true}));
+    } else if (event == EVENT_SAVE_UPC) {
+      addUpc();
+    } else if (event == EVENT_DELETE_UPC) {
+      deleteUpc();
     }
 
   }
@@ -517,10 +519,10 @@ class Component extends State<ProductDialogBlocItemCode> {
   }
 
   Widget paginateTable() {
-    DataTableSource _data = TableData(itemCodePaginateModel.itemCodeList, itemCodePaginateModel.itemCodeList.length, context);
+    DataTableSource _data = TableData(upcPaginateModel.upcList, upcPaginateModel.upcList.length, context);
     return PaginatedDataTable2(
       columns: const [
-        DataColumn(label: Text(TXT_ITEMCODE)),
+        DataColumn(label: Text(TXT_UPC)),
         DataColumn(label: Text(TXT_CREATE_DATETIME)),
       ],
       source: _data,
@@ -535,27 +537,25 @@ class Component extends State<ProductDialogBlocItemCode> {
     );
   }
 
-  void addItemCode() {
-    ConsolePrint("Event", "Save Item Code");
-    context.read<MainBloc>().add(MainParam.AddItemCode(eventStatus: MainEvent.Event_ItemCodeAdd,
-        itemCodeParameter: {
+  void addUpc() {
+    context.read<MainBloc>().add(MainParam.AddUpc(eventStatus: MainEvent.Event_UpcAdd,
+        upcParameter: {
           MapValue.USER_ID: widget.userModel?.uid.toString(),
           MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
           MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
-          MapValue.ITEM_CODE: etItemCode.text
+          MapValue.UPC_STR: etUpc.text
         }
       )
     );
   }
 
-  void deleteItemCode() {
-    ConsolePrint("Delete", "ItemCode");
-    context.read<MainBloc>().add(MainParam.DeleteItemCode(eventStatus: MainEvent.Event_ItemCodeDelete,
-        itemCodeParameter: {
+  void deleteUpc() {
+    context.read<MainBloc>().add(MainParam.DeleteUpc(eventStatus: MainEvent.Event_UpcDelete,
+        upcParameter: {
           MapValue.USER_ID: widget.userModel?.uid.toString(),
           MapValue.LOCATION_ID: widget.userModel?.defaultLocation?.uid.toString(),
           MapValue.PRODUCT_ID: widget.productMode?.uid.toString(),
-          MapValue.ITEM_CODE: etItemCode.text
+          MapValue.UPC_STR: etUpc.text
         }
       )
     );
@@ -565,7 +565,7 @@ class Component extends State<ProductDialogBlocItemCode> {
 class TableData extends DataTableSource {
   BuildContext context;
   int dataCount = 0;
-  List<ItemCodeModel> lstModel = [];
+  List<UpcModel> lstModel = [];
   TableData(this.lstModel, this.dataCount, this.context);
 
   @override
@@ -578,15 +578,15 @@ class TableData extends DataTableSource {
   DataRow getRow(int index) {
     return DataRow2(
         onLongPress: () {
-          ItemCodeModel selectedModel = lstModel[index];
+          UpcModel selectedModel = lstModel[index];
           context.read<MainBloc>().add(
-              MainParam.ItemCodeTableLick(
-                  eventStatus: MainEvent.Event_ItemCodeTableClick,
-                  itemCodeData: selectedModel,
+              MainParam.UpcTableLick(
+                  eventStatus: MainEvent.Event_UpcTableClick,
+                  upcData: selectedModel,
                   ));
         },
         cells: [
-          DataCell(Text(lstModel[index].itemCode.toString())),
+          DataCell(Text(lstModel[index].upc.toString())),
           DataCell(Text(lstModel[index].added_datetime.toString()))
         ]
     );
