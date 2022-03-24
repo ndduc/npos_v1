@@ -168,6 +168,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           try {
             yield UpcDeleteLoadingState();
             Map<String, dynamic> param = event.upcParameter as Map<String, dynamic>;
+            ConsolePrint("DELETE", param);
             bool response = await mainRepo.RemoveUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[UPC_STR]);
             yield UpcDeleteLoadedState(response: response);
           } catch (e) {

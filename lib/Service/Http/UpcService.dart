@@ -122,6 +122,7 @@ class UpcService extends Service{
           body: body
       );
       ConsolePrint("URL DELETE UPC", url);
+      ConsolePrint("URL DELETE UPC RES", res.body);
       if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {

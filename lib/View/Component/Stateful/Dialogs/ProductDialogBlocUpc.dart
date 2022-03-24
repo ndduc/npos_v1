@@ -519,9 +519,6 @@ class Component extends State<ProductDialogBlocUpc> {
   }
 
   Widget paginateTable() {
-    for(int i = 0; i < upcPaginateModel.upcList.length; i++) {
-      upcPaginateModel.upcList[i].print();
-    }
     DataTableSource _data = TableData(upcPaginateModel.upcList, upcPaginateModel.upcList.length, context);
     return PaginatedDataTable2(
       columns: const [
