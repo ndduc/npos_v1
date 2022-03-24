@@ -387,6 +387,8 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   void parsingProductDataToUI(ProductModel productModel) {
     mainProductModel = productModel;
     eTDescription.text = productModel.description!;
+    etDescription2.text = productModel.second_description!;
+    etDescription3.text = productModel.third_description!;
     etCost.text = productModel.cost.toString();
     etPrice.text = productModel.price!.toString();
     etCreatedBy.text = productModel.added_by! + " On " + productModel.added_datetime!;

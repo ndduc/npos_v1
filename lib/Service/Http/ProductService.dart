@@ -79,6 +79,9 @@ class ProductService extends Service{
     param["taxList"] = json.encode(productModel.taxList);
     param["itemCodeList"] = json.encode(productModel.itemCodeList);
     param["upcList"] = json.encode(productModel.upcList);
+
+    ConsolePrint("PARAM ADD", param);
+
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + productModel.added_by.toString() + "/" + locationId + "/product/update");
       var res = await http.post(
