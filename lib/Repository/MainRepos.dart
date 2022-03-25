@@ -88,7 +88,7 @@ class MainRepository{
   //endregion
 
   //region PRODUCT
-  Future<ProductModel> GetProductByParamMap(String userId, String locId, Map<String, String> param) {
+  Future<ProductModel> GetProductByParamMap(String userId, String locId, Map<String, dynamic> param) {
     return ProductService().GetProductByMap(userId, locId, param);
   }
 
