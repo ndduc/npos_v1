@@ -45,6 +45,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   String? dropdownValue = PRODUCT_SEARCH_OPTION[0];
   bool isChecked = false;
 
+  String eTSearchTopByOld = "";
   TextEditingController eTSearchTopBy = TextEditingController();
   TextEditingController eTDescription = TextEditingController();
   TextEditingController etDescription2 = TextEditingController();
@@ -62,6 +63,7 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
   
   
   int searchOptionValue = 1;
+  int searchOptionValueOld = -1;
   Map<int, String> searchOptionByParam = PRODUCT_SEARCH_OPTION;
 
   bool perReadOnly = true;
@@ -230,7 +232,13 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
     } else if (state is Generic2ndLoadedState) {
       Map<String, dynamic> res = state.genericData;
       setDropDownData(res);
-      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: {"searchType": "test", "searchText":""}));
+      Map<String, dynamic> param = {
+        "searchText":"",
+        "uid":"",
+        "upc":"",
+        "itemCode":""
+      };
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: param));
     } else if (state is Generic2ndErrorState) {
 
     }
@@ -276,7 +284,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       readOnlyMode = false;
       isLoading = false;
       parsingProductDataToUI(state.productModel!);
-      ConsolePrint("Search Text", eTSearchTopBy.text);
       context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: 1, dropDownType: EVENT_MODE_PRODUCT_UPDATE));
     } else if (state is DropDownLoadedState) {
       if (state.dropDownType == EVENT_DROPDOWN_SEARCH_MAP) {
@@ -310,15 +317,26 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
         }
         updateItemMode(state.dropDownValue);
 
-        Map<String, dynamic> map = <String, dynamic>{};
-        if (searchOptionValue == 3) {
-          map["searchText"] = eTSearchTopBy.text;
-        } else {
-          map["searchText"] = "";
+        Map<String, dynamic> map = <String, dynamic>{
+          "searchText" : "",
+          "uid" : "",
+          "itemCode" : "",
+          "upc" : "",
+        };
+        if (eTSearchTopByOld != eTSearchTopBy.text || searchOptionValueOld != searchOptionValue) {
+          if (searchOptionValue == 3 ) {
+            map["searchText"] = eTSearchTopBy.text;
+          } else if (searchOptionValue == 0) {
+            map["uid"] = eTSearchTopBy.text;
+          } else if (searchOptionValue == 1) {
+            map["itemCode"] = eTSearchTopBy.text;
+          } else if (searchOptionValue == 2) {
+            map["upc"] = eTSearchTopBy.text;
+          }
+          eTSearchTopByOld = eTSearchTopBy.text;
+          searchOptionValueOld = searchOptionValue;
+          context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: map));
         }
-        ConsolePrint("TEST", map);
-        context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: map));
-
       }
     }  else if (state is ProductPaginateLoadingState) {
       isLoadingTable = true;
@@ -331,14 +349,21 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       DataCount = state.count!;
 
       Map<String, dynamic> map = <String, dynamic>{
-        "searchType": "test",
         "startIdx": 1,
         "endIdx": 10,
+        "searchText":"",
+        "uid":"",
+        "upc":"",
+        "itemCode":""
       };
       if (searchOptionValue == 3) {
         map["searchText"] = eTSearchTopBy.text;
-      } else {
-        map["searchText"] = "";
+      } else if (searchOptionValue == 0){
+        map["uid"] = eTSearchTopBy.text;
+      } else if (searchOptionValue == 1){
+        map["itemCode"] = eTSearchTopBy.text;
+      } else if (searchOptionValue == 2){
+        map["upc"] = eTSearchTopBy.text;
       }
 
       context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginate, userData: widget.userData, productParameter: map));
@@ -405,70 +430,74 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
 
   void parsingProductDataToUI(ProductModel productModel) {
     mainProductModel = productModel;
-    eTDescription.text = productModel.description!;
-    etDescription2.text = productModel.second_description!;
-    etDescription3.text = productModel.third_description!;
-    etCost.text = productModel.cost.toString();
-    etPrice.text = productModel.price!.toString();
-    etCreatedBy.text = productModel.added_by! + " On " + productModel.added_datetime!;
-    etUpdatedBy.text = productModel.updated_by == null ? NOT_AVAILABLe : productModel.updated_by! + " On " + productModel.updated_by!;
-    etProductUid.text = productModel.uid!;
-    double? margin =  marginCalculation(productModel.price!, productModel.cost!);
-    etMargin.text = margin.toString();
-    double? markup = markupCalculation(productModel.price!, productModel.cost!);
-    etMarkup.text = markup.toString();
+    if (!productModel.isEmpty) {
+      eTDescription.text = productModel.description!;
+      etDescription2.text = productModel.second_description!;
+      etDescription3.text = productModel.third_description!;
+      etCost.text = productModel.cost.toString();
+      etPrice.text = productModel.price!.toString();
+      etCreatedBy.text = productModel.added_by! + " On " + productModel.added_datetime!;
+      etUpdatedBy.text = productModel.updated_by == null ? NOT_AVAILABLe : productModel.updated_by! + " On " + productModel.updated_by!;
+      etProductUid.text = productModel.uid!;
+      double? margin =  marginCalculation(productModel.price!, productModel.cost!);
+      etMargin.text = margin.toString();
+      double? markup = markupCalculation(productModel.price!, productModel.cost!);
+      etMarkup.text = markup.toString();
 
-    if ( productModel.itemCodeList.isNotEmpty) {
-      itemCodeList = productModel.itemCodeList;
-      mainProductModel?.itemCode = int.parse(itemCodeList![0]);
-    } else {
-      itemCodeList =  [ITEM_NOT_FOUND];
-      mainProductModel?.itemCode = NUMBER_NULL;
-    }
+      if ( productModel.itemCodeList.isNotEmpty) {
+        itemCodeList = productModel.itemCodeList;
+        mainProductModel?.itemCode = int.parse(itemCodeList![0]);
+      } else {
+        itemCodeList =  [ITEM_NOT_FOUND];
+        mainProductModel?.itemCode = NUMBER_NULL;
+      }
 
-    if ( productModel.upcList.isNotEmpty) {
-      upcList = productModel.upcList;
-      mainProductModel?.upc = NUMBER_NOT_NULL;
-      mainProductModel?.str_upc = upcList![0].toString();
-    } else {
-      upcList =  [ITEM_NOT_FOUND];
-      mainProductModel?.upc = NUMBER_NULL;
-    }
+      if ( productModel.upcList.isNotEmpty) {
+        upcList = productModel.upcList;
+        mainProductModel?.upc = NUMBER_NOT_NULL;
+        mainProductModel?.str_upc = upcList![0].toString();
+      } else {
+        upcList =  [ITEM_NOT_FOUND];
+        mainProductModel?.upc = NUMBER_NULL;
+      }
 
-    if ( productModel.departmentList.isNotEmpty) {
-      departmentDefault = productModel.departmentList[0].toString();
-    } else {
-      departmentDefault =  STRING_NULL;
-    }
+      if ( productModel.departmentList.isNotEmpty) {
+        departmentDefault = productModel.departmentList[0].toString();
+      } else {
+        departmentDefault =  STRING_NULL;
+      }
 
-    if ( productModel.sectionList.isNotEmpty) {
-      sectionDefault = productModel.sectionList[0].toString();
-    } else {
-      sectionDefault =  STRING_NULL;
-    }
+      if ( productModel.sectionList.isNotEmpty) {
+        sectionDefault = productModel.sectionList[0].toString();
+      } else {
+        sectionDefault =  STRING_NULL;
+      }
 
-    if ( productModel.categoryList.isNotEmpty) {
-      categoryDefault = productModel.categoryList[0].toString();
-    } else {
-      categoryDefault =  STRING_NULL;
-    }
+      if ( productModel.categoryList.isNotEmpty) {
+        categoryDefault = productModel.categoryList[0].toString();
+      } else {
+        categoryDefault =  STRING_NULL;
+      }
 
-    if ( productModel.vendorList.isNotEmpty) {
-      vendorDefault = productModel.vendorList[0].toString();
-    } else {
-      vendorDefault =  STRING_NULL;
-    }
+      if ( productModel.vendorList.isNotEmpty) {
+        vendorDefault = productModel.vendorList[0].toString();
+      } else {
+        vendorDefault =  STRING_NULL;
+      }
 
-    if ( productModel.discountList.isNotEmpty) {
-      discountDefault = productModel.discountList[0].toString();
-    } else {
-      discountDefault =  STRING_NULL;
-    }
+      if ( productModel.discountList.isNotEmpty) {
+        discountDefault = productModel.discountList[0].toString();
+      } else {
+        discountDefault =  STRING_NULL;
+      }
 
-    if ( productModel.taxList.isNotEmpty) {
-      taxDefault = productModel.taxList[0].toString();
+      if ( productModel.taxList.isNotEmpty) {
+        taxDefault = productModel.taxList[0].toString();
+      } else {
+        taxDefault =  STRING_NULL;
+      }
     } else {
-      taxDefault =  STRING_NULL;
+      clearProductDataUI();
     }
   }
 
@@ -1282,10 +1311,12 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
 
   void solidButtonEvent(String event) {
     if(event ==  EVENT_SEARCH) {
-
-      ConsolePrint("SEARCH EVENT", searchOptionValue);
-      Map<String, String> map = <String, String>{};
-      map["searchText"] = "";
+      Map<String, String> map = <String, String>{
+        "searchText" : "",
+        "uid" : "",
+        "itemCode" : "",
+        "upc" : ""
+      };
       if(searchOptionValue == 0) {
         String uid = eTSearchTopBy.text;
         map["uid"] = uid;
@@ -1298,8 +1329,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       } else if (searchOptionValue == 3) {
         String searchText = eTSearchTopBy.text;
         map["searchText"] = searchText;
-       // context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductPaginateCount, userData: widget.userData, productParameter: map));
-
       } else {
         throw new Exception("Invalid Dropdown Value Selected");
       }

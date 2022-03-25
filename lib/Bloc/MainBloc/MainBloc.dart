@@ -183,7 +183,7 @@ class MainBloc extends Bloc<MainParam,MainState>
        yield GenericInitialState();
         try {
           yield ProductLoadingState();
-          Map<String, String> param = event.productParameter as Map<String, String>;
+          Map<String, dynamic> param = event.productParameter as Map<String, dynamic>;
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
           ProductModel model = await mainRepo.GetProductByParamMap(userId, locId!, param);
@@ -198,11 +198,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ProductPaginateLoadingState();
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          Map<String, dynamic> optionalParam = {
-            "searchType": event.productParameter!["searchType"].toString(),
-            "searchText": event.productParameter!["searchText"].toString()
-          };
-          int count = await mainRepo.GetProductPaginateCount(userId, locId!, optionalParam);
+          int count = await mainRepo.GetProductPaginateCount(userId, locId!, event.productParameter!);
           yield ProductPaginateCountLoadedState(count: count);
         } catch (e) {
           yield GenericErrorState(error: e);
@@ -214,15 +210,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield ProductPaginateLoadingState();
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          Map<String, dynamic> optionalParam = {
-            "searchType": event.productParameter!["searchType"].toString(),
-            "startIdx": event.productParameter!["startIdx"],
-            "endIdx": event.productParameter!["endIdx"],
-            "searchText": event.productParameter!["searchText"].toString()
-          };
-
-
-          List<ProductModel> listModel = await mainRepo.GetProductPaginateByIndex(userId, locId!,optionalParam);
+          List<ProductModel> listModel = await mainRepo.GetProductPaginateByIndex(userId, locId!,event.productParameter!);
           yield ProductPaginateLoadedState(listProductModel: listModel);
         } catch (e) {
           yield GenericErrorState(error: e);

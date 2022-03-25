@@ -18,6 +18,7 @@ class ProductModel {
   String? updated_datetime;
   String? added_by;
   String? updated_by;
+  bool isEmpty = false;  // set to true once api return empty object
 
   late List<String> itemCodeList;
   late List<String> categoryList;
