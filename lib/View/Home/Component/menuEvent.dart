@@ -28,6 +28,7 @@ import 'package:npos/View/VenSupManagement/venSupManagement.dart';
 GestureTapCallback menuClickEvent(int index, BuildContext context, UserModel userData) {
   return () {
     String event = UIItem.menuItem[index]["event"];
+    
     switch(event){
       case MENU_MAN_PROD:
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Product, context: context, userData: userData));

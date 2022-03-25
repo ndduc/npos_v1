@@ -168,7 +168,6 @@ class MainBloc extends Bloc<MainParam,MainState>
           try {
             yield UpcDeleteLoadingState();
             Map<String, dynamic> param = event.upcParameter as Map<String, dynamic>;
-            ConsolePrint("DELETE", param);
             bool response = await mainRepo.RemoveUpc(param[USER_ID], param[LOCATION_ID], param[PRODUCT_ID], param[UPC_STR]);
             yield UpcDeleteLoadedState(response: response);
           } catch (e) {
@@ -245,7 +244,6 @@ class MainBloc extends Bloc<MainParam,MainState>
       case MainEvent.Event_AddProduct:
         yield ProductAddUpdateInitState();
         try {
-          ConsolePrint("Add Product", "Init");
           yield ProductAddUpdateLoadingState();
           ProductModel productModel = event.productData!;
           String locationId = event.locationId!;
@@ -259,12 +257,10 @@ class MainBloc extends Bloc<MainParam,MainState>
       case MainEvent.Event_UpdateProduct:
         yield ProductAddUpdateInitState();
         try {
-          ConsolePrint("Update Product", "Init");
           yield ProductAddUpdateLoadingState();
           ProductModel productModel = event.productData!;
           String locationId = event.locationId!;
           AddResponseModel addEventResponse = await mainRepo.UpdateProduct(productModel, locationId);
-          // addEventResponse.print();
           yield ProductAddUpdateLoadedState(responseModel: addEventResponse);
         } catch (e) {
           yield ProductAddUpdateErrorState(error: e);

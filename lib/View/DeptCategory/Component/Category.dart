@@ -93,14 +93,12 @@ class Component extends State<Category> {
     } else if (state is CategoryByDescriptionLoadedState) {
       parsingProductDateByDescription(state.listCategoryModel!);
     } else if (state is AddItemModeLoaded) {
-      ConsolePrint("MODE TEST", state.isAdded!);
       isAdded = state.isAdded!;
       if (isAdded) {
         eTCategoryId.text = "Category Id Will Be Generated Once The Process Is Completed";
         clearEditText();
       }
     } else if (state is AddUpdateCategoryLoaded) {
-      ConsolePrint("RESPONSE", state.isSuccess.toString());
       if(state.isSuccess!) {
         loadOnInit();
       } else {

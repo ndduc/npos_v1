@@ -169,13 +169,11 @@ class Component extends State<DisTaxBody> {
                                       case OPTION_DISCOUNT:
                                       // Switch Main Container On Click
                                       // Clear Data State of the current screen
-                                        print("DISC OPT");
                                         context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "DISCOUNT", userData: widget.userData));
                                         break;
                                     // Switch Main Container On Click
                                     // Clear Data State of the current screen
                                       case OPTION_TAX:
-                                        print("TAX OPT");
                                         context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "TAX", userData: widget.userData));
                                         break;
                                       default:

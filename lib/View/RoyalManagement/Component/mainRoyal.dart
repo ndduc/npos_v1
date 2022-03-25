@@ -70,8 +70,6 @@ class _RoyalBody extends State<RoyalBody> {
                               return InkWell(
                                 onTap: () {
                                   if(  UIItem.menuItemLeft[index]["event"] == "PC") {
-                                    print("TEST");
-
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(builder: (context) => ClientView()));
                                     setState(() {

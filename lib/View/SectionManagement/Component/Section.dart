@@ -93,14 +93,12 @@ class Component extends State<Section> {
     } else if (state is SectionByDescriptionLoadedState) {
       parsingProductDateByDescription(state.listSectionModel!);
     } else if (state is AddItemModeLoaded) {
-      ConsolePrint("MODE TEST", state.isAdded!);
       isAdded = state.isAdded!;
       if (isAdded) {
         eTSectionId.text = "Section Id Will Be Generated Once The Process Is Completed";
         clearEditText();
       }
     } else if (state is AddUpdateSectionLoaded) {
-      ConsolePrint("RESPONSE", state.isSuccess.toString());
       if(state.isSuccess!) {
         loadOnInit();
       } else {
