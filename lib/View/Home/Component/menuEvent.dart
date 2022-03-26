@@ -74,7 +74,7 @@ GestureTapCallback menuClickEvent(int index, BuildContext context, UserModel use
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_ManEmp, context: context, userData: userData));
         break;
       case MENU_MAN_LOC:
-
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_ManLoc, context: context, userData: userData));
         break;
       case MENU_SETUP:
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Setup, context: context, userData: userData));

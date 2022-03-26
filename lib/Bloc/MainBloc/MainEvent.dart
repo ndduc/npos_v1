@@ -150,6 +150,7 @@ enum MainEvent{
   Nav_ManEmp,
   Nav_Setup,
   Nav_POS_Client,
+  Nav_ManLoc,
   Nav_Logout,
   Nav_EOD
   //endregion

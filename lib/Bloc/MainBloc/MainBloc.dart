@@ -30,6 +30,7 @@ import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
 import 'package:npos/View/DiscTaxManagement/disTaxManagement.dart';
 import 'package:npos/View/EmployeeManagement/employeeManagement.dart';
 import 'package:npos/View/Home/homeMenu.dart';
+import 'package:npos/View/LocationManagement/locationManagement.dart';
 import 'package:npos/View/ProductManagement/productManagement.dart';
 import 'package:npos/View/SectionManagement/sectionManagement.dart';
 import 'package:npos/View/VenSupManagement/venSupManagement.dart';
@@ -1152,6 +1153,14 @@ class MainBloc extends Bloc<MainParam,MainState>
             MaterialPageRoute(builder: (context) {
               return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
                   child:EmployeeManagement(userData: event.userData));
+            }));
+        break;
+      case MainEvent.Nav_ManLoc:
+        Navigator.push(
+            event.context as BuildContext,
+            MaterialPageRoute(builder: (context) {
+              return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                  child:LocationManagement(userData: event.userData));
             }));
         break;
       case MainEvent.Nav_Man_Sec:
