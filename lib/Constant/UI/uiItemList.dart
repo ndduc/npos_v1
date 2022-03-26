@@ -69,3 +69,8 @@ List<Map<dynamic, dynamic>> discountTaxOptionList = [
 List<Map<dynamic, dynamic>> vendorOptionList = [
   {"id" : 0, "name" : "vendor", "event" : "VENDOR"},
 ];
+
+
+List<Map<dynamic, dynamic>> employeeOptionList = [
+  {"id" : 0, "name" : "Employee Setting", "event" : "EMPLOYEE"},
+];

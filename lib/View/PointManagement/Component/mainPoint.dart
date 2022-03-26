@@ -70,8 +70,6 @@ class _PointBody extends State<PointBody> {
                               return InkWell(
                                 onTap: () {
                                   if(  UIItem.menuItemLeft[index]["event"] == "PC") {
-                                    print("TEST");
-
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(builder: (context) => ClientView()));
                                     setState(() {

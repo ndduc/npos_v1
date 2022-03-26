@@ -99,7 +99,6 @@ class DiscountService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        ConsolePrint("RES", json);
         List<dynamic> lstRes = jsonDecode(json["body"]);
         for(int i = 0; i < lstRes.length; i++) {
           DiscountModel _model =  DiscountModel.map(lstRes[i]);

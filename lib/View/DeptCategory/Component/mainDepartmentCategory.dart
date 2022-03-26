@@ -168,13 +168,11 @@ class _MainDeptCateBody extends State<MainDeptCateBody> {
                                       case OPTION_DEPARTMENT:
                                         // Switch Main Container On Click
                                         // Clear Data State of the current screen
-                                        print("DEPT OPT");
                                         context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "DEPARTMENT", userData: widget.userData));
                                         break;
                                         // Switch Main Container On Click
                                         // Clear Data State of the current screen
                                       case OPTION_CATEGORY:
-                                        print("CATE OPT");
                                         context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "CATEGORY", userData: widget.userData));
                                         break;
                                       default:

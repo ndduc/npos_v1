@@ -267,8 +267,6 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       } else {
 
       }
-
-      ConsolePrint("DialogProductAddUpdateLoadedState", "LOADED");
       ConsolePrint("STATE", state.response);
 
     } else if (state is DialogProductAddUpdateErrorState) {

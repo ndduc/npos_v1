@@ -70,8 +70,6 @@ class _SocialBody extends State<SocialBody> {
                               return InkWell(
                                 onTap: () {
                                   if(  UIItem.menuItemLeft[index]["event"] == "PC") {
-                                    print("TEST");
-
                                     Navigator.of(context)
                                         .push(MaterialPageRoute(builder: (context) => ClientView()));
                                     setState(() {

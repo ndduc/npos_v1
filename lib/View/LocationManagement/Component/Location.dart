@@ -8,30 +8,30 @@ import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
 import 'package:npos/Debug/Debug.dart';
-import 'package:npos/Model/CategoryModel.dart';
+import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
-class Category extends StatefulWidget {
+class Location extends StatefulWidget {
   UserModel? userData;
-  Category({Key? key, required this.userData}) : super(key: key);
+  Location({Key? key, required this.userData}) : super(key: key);
 
   @override
   Component createState() => Component();
 }
 
-class Component extends State<Category> {
+class Component extends State<Location> {
   String dropdownValue = 'Search By Product Id';
   bool isChecked = false;
   TextEditingController eTSearchTopBy = TextEditingController();
-  TextEditingController eTCategoryName = TextEditingController();
-  TextEditingController eTCategoryNote = TextEditingController();
+  TextEditingController eTVendorName = TextEditingController();
+  TextEditingController eTVendorNote = TextEditingController();
   TextEditingController eTCreated = TextEditingController();
   TextEditingController eTUpdated = TextEditingController();
-  TextEditingController eTCategoryId = TextEditingController();
+  TextEditingController eTVendorId = TextEditingController();
   int searchOptionValue = 0;
   Map<int, String> searchOptionByParam = <int, String>{
-    0:"Search By Category Name"
+    0:"Search By Vendor Name"
   };
   int defaultProductMode = 0;
   bool isLoading = false;
@@ -63,42 +63,44 @@ class Component extends State<Category> {
   }
 
   loadOnInit() {
-    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetVendorPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
   }
 
-  List<CategoryModel> listCategoryPaginate = [];
+  List<VendorModel> listVendorPaginate = [];
   int dataCount = 0;
-  CategoryModel? currentModel;
+  VendorModel? currentModel;
   bool isAdded = false;
   void appSpecificEvent(MainState state) {
     // Executing Specific State
-    if (state is CategoryPaginateLoadingState) {
+    if (state is VendorPaginateLoadingState) {
       isLoadingTable = true;
-    } else if (state is CategoryPaginateLoadedState) {
+    } else if (state is VendorPaginateLoadedState) {
       isLoadingTable = false;
-      listCategoryPaginate = state.listCategoryModel!;
-    } else if (state is CategoryPaginateCountLoadedState) {
+      listVendorPaginate = state.listVendorModel!;
+    } else if (state is VendorPaginateCountLoadedState) {
       isLoadingTable = false;
       // Invoke Load Paginate Product After Count is Completed
       dataCount = state.count!;
-      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginate, userData: widget.userData, productParameter: {
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetVendorPaginate, userData: widget.userData, productParameter: {
         "searchType": "test",
         "startIdx": 1,
         "endIdx": 10
       }));
-    } else if (state is CategoryLoadedState) {
-      currentModel = state.categoryModel;
+    } else if (state is VendorLoadedState) {
+      currentModel = state.vendorModel;
       parsingProductDataToUI(currentModel!);
       context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: false));
-    } else if (state is CategoryByDescriptionLoadedState) {
-      parsingProductDateByDescription(state.listCategoryModel!);
+    } else if (state is VendorByDescriptionLoadedState) {
+      parsingProductDateByDescription(state.listVendorModel!);
     } else if (state is AddItemModeLoaded) {
+      ConsolePrint("MODE TEST", state.isAdded!);
       isAdded = state.isAdded!;
       if (isAdded) {
-        eTCategoryId.text = "Category Id Will Be Generated Once The Process Is Completed";
+        eTVendorId.text = "Vendor Id Will Be Generated Once The Process Is Completed";
         clearEditText();
       }
-    } else if (state is AddUpdateCategoryLoaded) {
+    } else if (state is AddUpdateVendorLoaded) {
+      ConsolePrint("RESPONSE", state.isSuccess.toString());
       if(state.isSuccess!) {
         loadOnInit();
       } else {
@@ -108,22 +110,22 @@ class Component extends State<Category> {
   }
 
   void clearEditText() {
-    eTCategoryNote = TextEditingController();
-    eTCategoryName = TextEditingController();
+    eTVendorNote = TextEditingController();
+    eTVendorName = TextEditingController();
     eTCreated = TextEditingController();
     eTUpdated = TextEditingController();
   }
-  void parsingProductDateByDescription (List<CategoryModel> modelList) {
+  void parsingProductDateByDescription (List<VendorModel> modelList) {
     dataCount = modelList.length;
-    listCategoryPaginate = modelList;
+    listVendorPaginate = modelList;
     isLoadingTable = false;
   }
-  void parsingProductDataToUI(CategoryModel model) {
-    eTCategoryName.text = model.description!;
-    eTCategoryNote.text = model.second_description == null ? "" : model.second_description!;
+  void parsingProductDataToUI(VendorModel model) {
+    eTVendorName.text = model.description!;
+    eTVendorNote.text = model.second_description == null ? "" : model.second_description!;
     eTCreated.text = model.added_by! + " On " + model.added_datetime!;
     eTUpdated.text = model.updated_by == null ? "Not Available" : model.updated_by! + " On " + model.updated_by!;
-    eTCategoryId.text = model.uid!;
+    eTVendorId.text = model.uid!;
   }
   @override
   Widget build(BuildContext context) {
@@ -191,7 +193,7 @@ class Component extends State<Category> {
       children: [
         Expanded(
             flex: 2,
-            child: solidButton("New Category", "NEW-CATEGORY")
+            child: solidButton("New Vendor", "NEW-VENDOR")
         ),
 
         Expanded(
@@ -254,22 +256,22 @@ class Component extends State<Category> {
               children: [
                 Custom_ListTile_TextField(
                   read: true,
-                  controller: eTCategoryId,
-                  labelText: "Category Id",
-                  hintText: "Category Id",
+                  controller: eTVendorId,
+                  labelText: "Vendor Id",
+                  hintText: "Vendor Id",
                   isMask: false, isNumber:false,
                   mask: false,
 
                 ),
                 Custom_ListTile_TextField(
                   read: false,
-                  controller: eTCategoryName,
-                  labelText: "Category Name",
-                  hintText: "Category Name",
+                  controller: eTVendorName,
+                  labelText: "Vendor Name",
+                  hintText: "Vendor Name",
                   isMask: false, isNumber:false,
                   mask: false,
                   validations: (value) {
-                    if(eTCategoryName.text.isNotEmpty) {
+                    if(eTVendorName.text.isNotEmpty) {
                       return null;
                     } else {
                       return "Please Provide Description";
@@ -279,7 +281,7 @@ class Component extends State<Category> {
                 ),
                 Custom_ListTile_TextField(
                   read: false,
-                  controller: eTCategoryNote,
+                  controller: eTVendorNote,
                   labelText: "User's Note",
                   hintText: "User's Note",
                   isMask: false, isNumber:false,
@@ -311,7 +313,7 @@ class Component extends State<Category> {
                   ),
                   Expanded(
                       flex: 3,
-                      child:  isAdded? solidButton("Add New Category", "ADD") : solidButton("Save Category", "UPDATE")
+                      child:  isAdded? solidButton("Add New Vendor", "ADD") : solidButton("Save Vendor", "UPDATE")
                   )
                 ],
               ),
@@ -365,7 +367,7 @@ class Component extends State<Category> {
   }
 
   Widget paginateTable() {
-    DataTableSource _data = TableData(listCategoryPaginate, dataCount, context, widget.userData);
+    DataTableSource _data = TableData(listVendorPaginate, dataCount, context, widget.userData);
     return PaginatedDataTable2(
       columns: const [
         DataColumn(label: Text('Product Id')),
@@ -418,17 +420,17 @@ class Component extends State<Category> {
 
   void solidButtonEvent(String event) {
     if (event == "SEARCH") {
-      context.read<MainBloc>().add(MainParam.GetCategoryByParam(eventStatus: MainEvent.Event_GetCategoryByDescription, userData: widget.userData, categoryParameter: {"description" : eTSearchTopBy.text}));
-    } else if (event == "NEW-CATEGORY") {
+      context.read<MainBloc>().add(MainParam.GetVendorByParam(eventStatus: MainEvent.Event_GetVendorByDescription, userData: widget.userData, vendorParameter: {"description" : eTSearchTopBy.text}));
+    } else if (event == "NEW-VENDOR") {
       context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: true));
     } else if (event == "UPDATE") {
       bool val = formKey.currentState!.validate();
       ConsolePrint("Validate", val);
       if (val) {
-        context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_UpdateCategory, userData: widget.userData, categoryParameter: {
-          "desc": eTCategoryName.text,
-          "note": eTCategoryNote.text,
-          "id": eTCategoryId.text
+        context.read<MainBloc>().add(MainParam.AddUpdateVendor(eventStatus: MainEvent.Event_UpdateVendor, userData: widget.userData, vendorParameter: {
+          "desc": eTVendorName.text,
+          "note": eTVendorNote.text,
+          "id": eTVendorId.text
         }));
       }
 
@@ -436,9 +438,9 @@ class Component extends State<Category> {
       bool val = formKey.currentState!.validate();
       ConsolePrint("Validate", val);
       if (val) {
-        context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_AddCategory, userData: widget.userData, categoryParameter: {
-          "desc": eTCategoryName.text,
-          "note": eTCategoryNote.text,
+        context.read<MainBloc>().add(MainParam.AddUpdateVendor(eventStatus: MainEvent.Event_AddVendor, userData: widget.userData, vendorParameter: {
+          "desc": eTVendorName.text,
+          "note": eTVendorNote.text,
         }));
       }
     }
@@ -451,7 +453,7 @@ class TableData extends DataTableSource {
   BuildContext context;
   dynamic userData;
   int dataCount = 0;
-  List<CategoryModel> lstModel = [];
+  List<VendorModel> lstModel = [];
   TableData(this.lstModel, this.dataCount, this.context, this.userData);
 
   @override
@@ -464,10 +466,10 @@ class TableData extends DataTableSource {
   DataRow getRow(int index) {
     return DataRow2(
         onLongPress: () {
-          CategoryModel selectedModel = lstModel[index];
+          VendorModel selectedModel = lstModel[index];
           Map<String, String> map = <String, String>{};
-          map["categoryId"] = selectedModel.uid!;
-          context.read<MainBloc>().add(MainParam.GetCategoryByParam(eventStatus: MainEvent.Event_GetCategoryById, userData: userData, categoryParameter: map));
+          map["vendorId"] = selectedModel.uid!;
+          context.read<MainBloc>().add(MainParam.GetVendorByParam(eventStatus: MainEvent.Event_GetVendorById, userData: userData, vendorParameter: map));
         },
         cells: [
           DataCell(Text(lstModel[index].uid.toString())),

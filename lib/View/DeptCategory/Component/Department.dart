@@ -93,14 +93,12 @@ class Component extends State<Department> {
     } else if (state is DepartmentByDescriptionLoadedState) {
        parsingProductDateByDescription(state.listDepartmentModel!);
     } else if (state is AddItemModeLoaded) {
-       ConsolePrint("MODE TEST", state.isAdded!);
        isAdded = state.isAdded!;
        if (isAdded) {
          eTDepartmentId.text = "Department Id Will Be Generated Once The Process Is Completed";
          clearEditText();
        }
      } else if (state is AddUpdateDepartmentLoaded) {
-       ConsolePrint("RESPONSE", state.isSuccess.toString());
        if(state.isSuccess!) {
          loadOnInit();
        } else {
@@ -425,7 +423,6 @@ class Component extends State<Department> {
       context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: true));
     } else if (event == "UPDATE") {
       bool val = formKey.currentState!.validate();
-      ConsolePrint("Validate", val);
       if (val) {
         context.read<MainBloc>().add(MainParam.AddUpdateDepartment(eventStatus: MainEvent.Event_UpdateDepartment, userData: widget.userData, departmentParameter: {
           "desc": eTDepartmentName.text,
@@ -436,7 +433,6 @@ class Component extends State<Department> {
 
     } else if (event == "ADD") {
       bool val = formKey.currentState!.validate();
-      ConsolePrint("Validate", val);
       if (val) {
         context.read<MainBloc>().add(MainParam.AddUpdateDepartment(eventStatus: MainEvent.Event_AddDepartment, userData: widget.userData, departmentParameter: {
           "desc": eTDepartmentName.text,

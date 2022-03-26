@@ -8,6 +8,7 @@ import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Constant/UIEvent/menuEvent.dart';
+import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/DailyReport/dailyReport.dart';
 import 'package:npos/View/DeptCategory/deptCategoryManagement.dart';
@@ -28,6 +29,7 @@ import 'package:npos/View/VenSupManagement/venSupManagement.dart';
 GestureTapCallback menuClickEvent(int index, BuildContext context, UserModel userData) {
   return () {
     String event = UIItem.menuItem[index]["event"];
+    ConsolePrint("EVENT", event);
     switch(event){
       case MENU_MAN_PROD:
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Man_Product, context: context, userData: userData));
@@ -72,7 +74,7 @@ GestureTapCallback menuClickEvent(int index, BuildContext context, UserModel use
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_ManEmp, context: context, userData: userData));
         break;
       case MENU_MAN_LOC:
-
+        context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_ManLoc, context: context, userData: userData));
         break;
       case MENU_SETUP:
         context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_Setup, context: context, userData: userData));

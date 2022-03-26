@@ -59,7 +59,6 @@ class Component extends State<ProductDialogBlocItemCode> {
   @override
   void initState() {
     super.initState();
-    ConsolePrint("Who Am I", widget.whoAmI);
     if (widget.whoAmI == EVENT_ADD_ITEMCODE) {
       model = ProductModel();
       addNewItemCode = true;
@@ -93,7 +92,6 @@ class Component extends State<ProductDialogBlocItemCode> {
 
   void setValue() {
     readOnlyItemCode = true;
-    ConsolePrint("SetValue", "Called");
     if (model.itemCode == NUMBER_NULL) {
       etItemCode.text = HINT_ITEMCODE_ADD_UPDATE;
     } else {
@@ -331,7 +329,6 @@ class Component extends State<ProductDialogBlocItemCode> {
                                   onFocusChange: (value) {
                                     if (!value) {
                                       ConsolePrint("On onFocusChange", value);
-                                      ConsolePrint("VALUE", etItemCode.text);
                                       context.read<MainBloc>().add(MainParam.ItemCodeVerify(eventStatus: MainEvent.Event_ItemCodeVerify,
                                           itemCodeParameter: {
                                             MapValue.USER_ID: widget.userModel?.uid.toString(),

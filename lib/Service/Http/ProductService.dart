@@ -106,7 +106,6 @@ class ProductService extends Service{
   @override
   Future<ProductModel> GetProductByMap(String userId, String locId, Map<String, dynamic> param) async {
     ProductModel model;
-    ConsolePrint("PARAM", param);
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + "/" + locId + "/product/get-by-map");
       var res = await http.post(
