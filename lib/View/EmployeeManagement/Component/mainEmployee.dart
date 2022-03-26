@@ -27,7 +27,7 @@ class Component extends State<MainEmployeeBody> {
   uiText uIText = uiText();
   uiImage uImage = uiImage();
   bool isLoading = false;
-  String currentScreen = "DEPARTMENT";
+  String currentScreen = "EMPLOYEE";
   @override
   void initState() {
     super.initState();
@@ -53,9 +53,7 @@ class Component extends State<MainEmployeeBody> {
   void appSpecificEvent(MainState state) {
     // Executing Specific State
     if (state is SwitchScreenLoadedState) {
-      if (state.toWhere == "DEPARTMENT") {
-        currentScreen = state.toWhere;
-      } else if (state.toWhere == "CATEGORY") {
+      if (state.toWhere == "EMPLOYEE") {
         currentScreen = state.toWhere;
       }
     }
@@ -152,11 +150,11 @@ class Component extends State<MainEmployeeBody> {
                         child: ListView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
-                            itemCount: UIItem.vendorOptionList.length,
+                            itemCount: UIItem.employeeOptionList.length,
                             itemBuilder: (context, index) {
                               return InkWell(
                                   onTap: () {
-                                    String event = UIItem.vendorOptionList[index]["event"];   // POS Menu
+                                    String event = UIItem.employeeOptionList[index]["event"];   // POS Menu
                                     switch(event) {
                                     // Set this up in the similar way with Department option
                                       default:
@@ -174,7 +172,7 @@ class Component extends State<MainEmployeeBody> {
                                       height: MediaQuery.of(context).size.height * 0.10,
                                       child: Center(
                                           child: Text(
-                                            UIItem.vendorOptionList[index]["name"],
+                                            UIItem.employeeOptionList[index]["name"],
                                             textAlign: TextAlign.center,
                                             style: const TextStyle(
                                                 fontSize: 25,

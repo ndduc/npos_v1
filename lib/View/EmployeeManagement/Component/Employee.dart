@@ -21,7 +21,7 @@ class Employee extends StatefulWidget {
 }
 
 class Component extends State<Employee> {
-  String dropdownValue = 'Search By Product Id';
+  String dropdownValue = 'Search By Employee Name';
   bool isChecked = false;
   TextEditingController eTSearchTopBy = TextEditingController();
   TextEditingController eTVendorName = TextEditingController();
@@ -31,7 +31,7 @@ class Component extends State<Employee> {
   TextEditingController eTVendorId = TextEditingController();
   int searchOptionValue = 0;
   Map<int, String> searchOptionByParam = <int, String>{
-    0:"Search By Vendor Name"
+    0:"Search By Employee Name"
   };
   int defaultProductMode = 0;
   bool isLoading = false;
