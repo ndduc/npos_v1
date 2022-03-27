@@ -12,7 +12,8 @@ List<UserModel> userFromJson(String str) => List<UserModel>.from(json.decode(str
 //String albumsToJson(List<User> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class UserModel {
-  UserModel({
+  UserModel();
+  UserModel.required({
     required this.uid,
     required this.userName,
     this.password,
@@ -26,7 +27,6 @@ class UserModel {
     this.addedDateTime,
     this.updatedDateTime,
     required this.isAuthorized
-
   });
 
   UserModel.fromMap(Map<String, dynamic> map) {
@@ -60,7 +60,7 @@ class UserModel {
   List<LocationModel>? locationList;
   LocationModel? defaultLocation;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel.required(
       uid: json["UId"],
       userName: json["UserName"],
       firstName: json["FirstName"],
