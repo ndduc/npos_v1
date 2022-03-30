@@ -2,6 +2,8 @@
 // ignore_for_file: library_prefixes
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:npos/Debug/Debug.dart';
+
 class LocationModel {
   String? uid;
   String? name;
@@ -29,5 +31,26 @@ class LocationModel {
     isError = map["isError"];
     error = map["error"];
     relation = map["relationReason"];
+  }
+
+  LocationModel.mapJsonStyle2(Map<String, dynamic> map) {
+    uid = map["UId"];
+    name = map["Name"];
+    address = map["Address"];
+    zipcode = map["ZipCode"];
+    state = map["State"];
+    phonenumber = map["PhoneNumber"];
+    added_datetime = map["AddedDateTime"];
+    updated_datetime = map["UpdatedDateTime"];
+    isError = map["IsError"];
+    error = map["Error"];
+    relation = map["RelationReason"];
+  }
+
+  print() {
+    ConsolePrint("Uid", uid);
+    ConsolePrint("name", name);
+    ConsolePrint("address", address);
+    ConsolePrint("zipcode", zipcode);
   }
 }

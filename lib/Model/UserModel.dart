@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:npos/Debug/Debug.dart';
+
 import 'LocationModel.dart';
 
 List<UserModel> userFromJson(String str) => List<UserModel>.from(json.decode(str).map((x) => UserModel.fromJson(x)));
@@ -12,7 +14,8 @@ List<UserModel> userFromJson(String str) => List<UserModel>.from(json.decode(str
 //String albumsToJson(List<User> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class UserModel {
-  UserModel({
+  UserModel();
+  UserModel.required({
     required this.uid,
     required this.userName,
     this.password,
@@ -26,7 +29,6 @@ class UserModel {
     this.addedDateTime,
     this.updatedDateTime,
     required this.isAuthorized
-
   });
 
   UserModel.fromMap(Map<String, dynamic> map) {
@@ -56,11 +58,13 @@ class UserModel {
   late String? userType;
   late String? addedDateTime;
   late String? updatedDateTime;
+  late String? addedBy;
+  late String? updatedBy;
   late bool isAuthorized = false;
   List<LocationModel>? locationList;
   LocationModel? defaultLocation;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel.required(
       uid: json["UId"],
       userName: json["UserName"],
       firstName: json["FirstName"],
@@ -74,6 +78,18 @@ class UserModel {
       userType: json["UserType"],
       isAuthorized: json["IsAuthorize"]
   );
+
+  print() {
+    ConsolePrint("uid", uid);
+    ConsolePrint("userName", userName);
+    ConsolePrint("firstName", firstName);
+    ConsolePrint("lastName", lastName);
+    ConsolePrint("email", email);
+    ConsolePrint("email2", email2);
+    ConsolePrint("phone", phone);
+    ConsolePrint("address", address);
+
+  }
 
 
   // Map<String, dynamic> toJson() => {

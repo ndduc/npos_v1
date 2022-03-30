@@ -9,6 +9,7 @@ import 'package:equatable/equatable.dart';
 import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
+import 'package:npos/Model/ApiModel/UserPaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -197,6 +198,20 @@ class UpcErrorState extends MainState{
   UpcErrorState({this.error});
 }
 //endregion
+
+//region USER
+class UserPaginationInitState extends MainState {}
+class UserPaginationLoadingState extends MainState {}
+class UserPaginationLoadedState extends MainState {
+  UserPaginationModel? response;
+  UserPaginationLoadedState({required this.response});
+}
+class UserPaginationLoadedErrorState extends MainState{
+  final error;
+  UserPaginationLoadedErrorState({this.error});
+}
+
+//endregion USER
 
 //region PRODUCT
 class ProductLoadingState extends MainState {}

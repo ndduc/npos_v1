@@ -138,7 +138,6 @@ class ProductService extends Service{
 
   @override
   Future<int>GetProductPaginateCount(String userId, String locId, Map<String, dynamic> optionalParameter) async {
-    print(optionalParameter);
     Map<String, String> param = {};
     if(optionalParameter["searchText"].toString().isNotEmpty) {
       param["searchText"] =  optionalParameter["searchText"];

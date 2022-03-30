@@ -6,6 +6,7 @@ import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
+import 'package:npos/Model/ApiModel/UserPaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -78,6 +79,10 @@ class MainRepository{
   //region USER
   Future<UserModel> AuthorizingUser(String name, String password) {
     return UserService().AuthorizingUser(name, password);
+  }
+
+  Future<UserPaginationModel> GetUserPagination(String userId, String locationId, Map<String, dynamic> optionalParameter) {
+    return UserService().GetUserPagination(userId, locationId, optionalParameter);
   }
   //endregion
 
