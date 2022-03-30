@@ -15,6 +15,9 @@ enum MainEvent{
   //region USER REQUEST
   Event_VerifyUser,
   Check_Authorization,
+  Event_GetUserPagination,
+  Event_GetUserById,
+  Event_UpsertUser,
   //endregion
 
   //region LOCATION REQUEST
@@ -179,10 +182,14 @@ class MainParam {
   Map<String, dynamic>? itemCodeParameter;
   Map<String, dynamic>? upcParameter;
   Map<String, String>? optionalParameter;
+  Map<String, dynamic>? userParameter;
   String? dropDownType;
   dynamic dropDownValue;
   String? toWhere;
   bool? isAdded;
+
+  /// USER
+  MainParam.GetUserPagination({required this.eventStatus, required this.userData, required this.userParameter});
 
   /// DIALOG
   MainParam.NavDialog({this.userData, this.productData, this.eventStatus, this.context, this.optionalParameter});

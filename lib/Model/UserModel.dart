@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:npos/Debug/Debug.dart';
+
 import 'LocationModel.dart';
 
 List<UserModel> userFromJson(String str) => List<UserModel>.from(json.decode(str).map((x) => UserModel.fromJson(x)));
@@ -56,6 +58,8 @@ class UserModel {
   late String? userType;
   late String? addedDateTime;
   late String? updatedDateTime;
+  late String? addedBy;
+  late String? updatedBy;
   late bool isAuthorized = false;
   List<LocationModel>? locationList;
   LocationModel? defaultLocation;
@@ -74,6 +78,18 @@ class UserModel {
       userType: json["UserType"],
       isAuthorized: json["IsAuthorize"]
   );
+
+  print() {
+    ConsolePrint("uid", uid);
+    ConsolePrint("userName", userName);
+    ConsolePrint("firstName", firstName);
+    ConsolePrint("lastName", lastName);
+    ConsolePrint("email", email);
+    ConsolePrint("email2", email2);
+    ConsolePrint("phone", phone);
+    ConsolePrint("address", address);
+
+  }
 
 
   // Map<String, dynamic> toJson() => {

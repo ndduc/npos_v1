@@ -12,6 +12,7 @@ import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/ApiModel/UpcPaginationModel.dart';
+import 'package:npos/Model/ApiModel/UserPaginationModel.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
@@ -57,8 +58,8 @@ class MainBloc extends Bloc<MainParam,MainState>
 
     switch(event.eventStatus)
     {
-    /// ITEM CODE HTTP EVENT
-      //region ITEM CODE HTTP EVENT
+      /// USER HTTP EVENT
+      //region USER HTTP EVENT
       case MainEvent.Event_GetItemCodePagination:
         yield ItemCodeGetInitState();
         try {
@@ -77,6 +78,24 @@ class MainBloc extends Bloc<MainParam,MainState>
           }
         } catch (e) {
           yield ItemCodeErrorState(error: e);
+        }
+        break;
+      //endregion USER HTTP EVENT
+      /// ITEM CODE HTTP EVENT
+      //region ITEM CODE HTTP EVENT
+      case MainEvent.Event_GetUserPagination:
+        yield UserPaginationInitState();
+        ConsolePrint("EVENT", "USER PAGINATION");
+        try {
+          yield UserPaginationLoadingState();
+          Map<String, dynamic> param = event.userParameter as Map<String, dynamic>;
+          UserModel userModel = event.userData as UserModel;
+          LocationModel? locationModel = userModel.defaultLocation;
+          UserPaginationModel response = await mainRepo.GetUserPagination(userModel.uid.toString(),locationModel!.uid.toString(), param);
+          yield UserPaginationLoadedState(response: response);
+
+        } catch (e) {
+          yield UserPaginationLoadedErrorState(error: e);
         }
       break;
       case MainEvent.Event_ItemCodeVerify:
@@ -118,7 +137,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       //endregion
 
-    /// UPC HTTP EVENT
+      /// UPC HTTP EVENT
       //region UPC HTTP EVENT
         case MainEvent.Event_GetUpcPagination:
           print('MainEvent.Event_GetUpcPagination');
@@ -178,7 +197,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           break;
       //endregion
 
-    /// PRODUCT HTTP EVENT
+      /// PRODUCT HTTP EVENT
       //region PRODUCT HTTP EVENT
       case MainEvent.Event_GetProductByParamMap:
        yield GenericInitialState();

@@ -8,7 +8,8 @@ import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
 import 'package:npos/Debug/Debug.dart';
-import 'package:npos/Model/VendorModel.dart';
+import 'package:npos/Model/ApiModel/UserPaginationModel.dart';
+import 'package:npos/Model/UserRelationModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
@@ -63,49 +64,25 @@ class Component extends State<Employee> {
   }
 
   loadOnInit() {
-    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetVendorPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+   // context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetVendorPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+    context.read<MainBloc>().add(MainParam.GetUserPagination(eventStatus: MainEvent.Event_GetUserPagination, userData: widget.userData, userParameter: {"startIdx": "0", "endIdx": "100" , "userFullName": ""}));
   }
 
-  List<VendorModel> listVendorPaginate = [];
+  List<UserRelationModel> listUserPaginate = [];
   int dataCount = 0;
-  VendorModel? currentModel;
+  UserRelationModel? currentModel;
   bool isAdded = false;
   void appSpecificEvent(MainState state) {
     // Executing Specific State
-    if (state is VendorPaginateLoadingState) {
+    if (state is UserPaginationLoadingState) {
       isLoadingTable = true;
-    } else if (state is VendorPaginateLoadedState) {
+    } else if (state is UserPaginationLoadedState) {
       isLoadingTable = false;
-      listVendorPaginate = state.listVendorModel!;
-    } else if (state is VendorPaginateCountLoadedState) {
+      UserPaginationModel response = state.response!;
+      response.print();
+      listUserPaginate = response.userRelationModels;
+    } else if (state is UserPaginationLoadedErrorState) {
       isLoadingTable = false;
-      // Invoke Load Paginate Product After Count is Completed
-      dataCount = state.count!;
-      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetVendorPaginate, userData: widget.userData, productParameter: {
-        "searchType": "test",
-        "startIdx": 1,
-        "endIdx": 10
-      }));
-    } else if (state is VendorLoadedState) {
-      currentModel = state.vendorModel;
-      parsingProductDataToUI(currentModel!);
-      context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: false));
-    } else if (state is VendorByDescriptionLoadedState) {
-      parsingProductDateByDescription(state.listVendorModel!);
-    } else if (state is AddItemModeLoaded) {
-      ConsolePrint("MODE TEST", state.isAdded!);
-      isAdded = state.isAdded!;
-      if (isAdded) {
-        eTVendorId.text = "Vendor Id Will Be Generated Once The Process Is Completed";
-        clearEditText();
-      }
-    } else if (state is AddUpdateVendorLoaded) {
-      ConsolePrint("RESPONSE", state.isSuccess.toString());
-      if(state.isSuccess!) {
-        loadOnInit();
-      } else {
-        // Pop A snackbar or a dialog here
-      }
     }
   }
 
@@ -115,16 +92,16 @@ class Component extends State<Employee> {
     eTCreated = TextEditingController();
     eTUpdated = TextEditingController();
   }
-  void parsingProductDateByDescription (List<VendorModel> modelList) {
+  void parsingProductDateByDescription (List<UserRelationModel> modelList) {
     dataCount = modelList.length;
-    listVendorPaginate = modelList;
+    listUserPaginate = modelList;
     isLoadingTable = false;
   }
-  void parsingProductDataToUI(VendorModel model) {
-    eTVendorName.text = model.description!;
-    eTVendorNote.text = model.second_description == null ? "" : model.second_description!;
-    eTCreated.text = model.added_by! + " On " + model.added_datetime!;
-    eTUpdated.text = model.updated_by == null ? "Not Available" : model.updated_by! + " On " + model.updated_by!;
+  void parsingProductDataToUI(UserRelationModel model) {
+    eTVendorName.text = model.firstName!;
+    eTVendorNote.text = model.lastName == null ? "" : model.lastName!;
+    eTCreated.text = model.addedBy! + " On " + model.addedDateTime!;
+    eTUpdated.text = model.updatedBy == null ? "Not Available" : model.updatedBy! + " On " + model.updatedDateTime!;
     eTVendorId.text = model.uid!;
   }
   @override
@@ -367,7 +344,7 @@ class Component extends State<Employee> {
   }
 
   Widget paginateTable() {
-    DataTableSource _data = TableData(listVendorPaginate, dataCount, context, widget.userData);
+    DataTableSource _data = TableData(listUserPaginate, dataCount, context, widget.userData);
     return PaginatedDataTable2(
       columns: const [
         DataColumn(label: Text('Product Id')),
@@ -453,7 +430,7 @@ class TableData extends DataTableSource {
   BuildContext context;
   dynamic userData;
   int dataCount = 0;
-  List<VendorModel> lstModel = [];
+  List<UserRelationModel> lstModel = [];
   TableData(this.lstModel, this.dataCount, this.context, this.userData);
 
   @override
@@ -466,16 +443,16 @@ class TableData extends DataTableSource {
   DataRow getRow(int index) {
     return DataRow2(
         onLongPress: () {
-          VendorModel selectedModel = lstModel[index];
+          UserRelationModel selectedModel = lstModel[index];
           Map<String, String> map = <String, String>{};
-          map["vendorId"] = selectedModel.uid!;
+          map["uId"] = selectedModel.uid!;
           context.read<MainBloc>().add(MainParam.GetVendorByParam(eventStatus: MainEvent.Event_GetVendorById, userData: userData, vendorParameter: map));
         },
         cells: [
           DataCell(Text(lstModel[index].uid.toString())),
-          DataCell(Text(lstModel[index].description.toString())),
-          DataCell(Text(lstModel[index].added_datetime.toString())),
-          DataCell(Text(lstModel[index].updated_datetime.toString()))
+          DataCell(Text(lstModel[index].firstName.toString())),
+          DataCell(Text(lstModel[index].addedDateTime.toString())),
+          DataCell(Text(lstModel[index].updatedDateTime.toString()))
         ]
     );
   }

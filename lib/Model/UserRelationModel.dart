@@ -5,4 +5,5 @@ class UserRelationModel extends UserModel {
   UserRelationModel() : super();
   List<String> locationIds = [];
   List<LocationModel> userLocations = [];
+
 }

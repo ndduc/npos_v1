@@ -78,7 +78,7 @@ class UserService extends Service{
         throw Exception(res.body.toString());
       } else {
         var json = jsonDecode(res.body);
-        UserPaginationModel response = jsonDecode(json["body"]);
+        UserPaginationModel response = UserPaginationModel.fromJson(jsonDecode(json["body"]));
         return response;
       }
     } catch(e) {
