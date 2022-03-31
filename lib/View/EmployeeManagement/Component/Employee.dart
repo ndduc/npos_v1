@@ -100,7 +100,7 @@ class Component extends State<Employee> {
 
     } else if (state is UserByIdLoadedState) {
       UserRelationModel response = state.response!;
-      response.print();
+      parsingProductDataToUI(response);
     } else if (state is UserByIdLoadedErrorState) {
     }
   }
@@ -127,11 +127,19 @@ class Component extends State<Employee> {
     isLoadingTable = false;
   }
   void parsingProductDataToUI(UserRelationModel model) {
-    // eTVendorName.text = model.firstName!;
-    // eTVendorNote.text = model.lastName == null ? "" : model.lastName!;
-    // eTCreated.text = model.addedBy! + " On " + model.addedDateTime!;
-    // eTUpdated.text = model.updatedBy == null ? "Not Available" : model.updatedBy! + " On " + model.updatedDateTime!;
-    // eTVendorId.text = model.uid!;
+    eTUserId.text = model.uid;
+    eTFirstName.text = model.firstName;
+    eTLastName.text = model.lastName;
+    eTPrimaryEmail.text = model.email;
+    eTSecondaryEmail.text = model.email2 ?? "";
+    eTPhoneNumber.text = model.phone ?? "";
+    eTAddress.text = model.address ?? "";
+    eTUserType.text = model.userType ?? "";
+    eTUserName.text = model.userName;
+    eTPassword.text = model.password ?? "";
+    eTStoreLocation.text = "TO BE Implemented";
+    eTCreated.text = model.addedBy! + " On " + model.addedDateTime!;
+    eTUpdated.text = model.updatedBy == null ? "Not Available" : model.updatedBy! + " On " + model.updatedDateTime!;
   }
   @override
   Widget build(BuildContext context) {
