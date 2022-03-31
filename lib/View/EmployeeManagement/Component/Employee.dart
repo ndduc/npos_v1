@@ -25,11 +25,19 @@ class Component extends State<Employee> {
   String dropdownValue = 'Search By Employee Name';
   bool isChecked = false;
   TextEditingController eTSearchTopBy = TextEditingController();
-  TextEditingController eTVendorName = TextEditingController();
-  TextEditingController eTVendorNote = TextEditingController();
+  TextEditingController eTFirstName = TextEditingController();
+  TextEditingController eTLastName = TextEditingController();
+  TextEditingController eTPrimaryEmail = TextEditingController();
+  TextEditingController eTSecondaryEmail = TextEditingController();
+  TextEditingController eTAddress = TextEditingController();
+  TextEditingController eTPhoneNumber = TextEditingController();
+  TextEditingController eTUserType = TextEditingController();
+  TextEditingController eTUserName = TextEditingController();
+  TextEditingController eTPassword = TextEditingController();
+  TextEditingController eTStoreLocation = TextEditingController();
   TextEditingController eTCreated = TextEditingController();
   TextEditingController eTUpdated = TextEditingController();
-  TextEditingController eTVendorId = TextEditingController();
+  TextEditingController eTUserId = TextEditingController();
   int searchOptionValue = 0;
   Map<int, String> searchOptionByParam = <int, String>{
     0:"Search By Employee Name"
@@ -86,11 +94,32 @@ class Component extends State<Employee> {
     }
   }
 
+  void appGetUserByIdEvent(MainState state) {
+    if (state is UserByIdInitState) {
+    } else  if (state is UserByIdLoadingState) {
+
+    } else if (state is UserByIdLoadedState) {
+      UserRelationModel response = state.response!;
+      response.print();
+    } else if (state is UserByIdLoadedErrorState) {
+    }
+  }
+
   void clearEditText() {
-    eTVendorNote = TextEditingController();
-    eTVendorName = TextEditingController();
-    eTCreated = TextEditingController();
-    eTUpdated = TextEditingController();
+     eTSearchTopBy = TextEditingController();
+     eTFirstName = TextEditingController();
+     eTLastName = TextEditingController();
+     eTPrimaryEmail = TextEditingController();
+     eTSecondaryEmail = TextEditingController();
+     eTAddress = TextEditingController();
+     eTPhoneNumber = TextEditingController();
+     eTUserType = TextEditingController();
+     eTUserName = TextEditingController();
+     eTPassword = TextEditingController();
+     eTStoreLocation = TextEditingController();
+     eTCreated = TextEditingController();
+     eTUpdated = TextEditingController();
+     eTUserId = TextEditingController();
   }
   void parsingProductDateByDescription (List<UserRelationModel> modelList) {
     dataCount = modelList.length;
@@ -98,11 +127,11 @@ class Component extends State<Employee> {
     isLoadingTable = false;
   }
   void parsingProductDataToUI(UserRelationModel model) {
-    eTVendorName.text = model.firstName!;
-    eTVendorNote.text = model.lastName == null ? "" : model.lastName!;
-    eTCreated.text = model.addedBy! + " On " + model.addedDateTime!;
-    eTUpdated.text = model.updatedBy == null ? "Not Available" : model.updatedBy! + " On " + model.updatedDateTime!;
-    eTVendorId.text = model.uid!;
+    // eTVendorName.text = model.firstName!;
+    // eTVendorNote.text = model.lastName == null ? "" : model.lastName!;
+    // eTCreated.text = model.addedBy! + " On " + model.addedDateTime!;
+    // eTUpdated.text = model.updatedBy == null ? "Not Available" : model.updatedBy! + " On " + model.updatedDateTime!;
+    // eTVendorId.text = model.uid!;
   }
   @override
   Widget build(BuildContext context) {
@@ -115,6 +144,7 @@ class Component extends State<Employee> {
       appBaseEvent(state);
       appNestedEvent(state);
       appSpecificEvent(state);
+      appGetUserByIdEvent(state);
       /**
        * Bloc Action Note
        * END
@@ -170,7 +200,7 @@ class Component extends State<Employee> {
       children: [
         Expanded(
             flex: 2,
-            child: solidButton("New Vendor", "NEW-VENDOR")
+            child: solidButton("New User", "NEW-VENDOR")
         ),
 
         Expanded(
@@ -233,37 +263,144 @@ class Component extends State<Employee> {
               children: [
                 Custom_ListTile_TextField(
                   read: true,
-                  controller: eTVendorId,
-                  labelText: "Vendor Id",
-                  hintText: "Vendor Id",
+                  controller: eTUserId,
+                  labelText: "User Id",
+                  hintText: "User Id",
                   isMask: false, isNumber:false,
                   mask: false,
 
                 ),
-                Custom_ListTile_TextField(
-                  read: false,
-                  controller: eTVendorName,
-                  labelText: "Vendor Name",
-                  hintText: "Vendor Name",
-                  isMask: false, isNumber:false,
-                  mask: false,
-                  validations: (value) {
-                    if(eTVendorName.text.isNotEmpty) {
-                      return null;
-                    } else {
-                      return "Please Provide Description";
-                    }
-                  },
-
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 5,
+                        child: Custom_ListTile_TextField(
+                          read: false,
+                          controller: eTFirstName,
+                          labelText: "First Name",
+                          hintText: "First Name",
+                          isMask: false, isNumber:false,
+                          mask: false,
+                          validations: (value) {
+                            if(eTFirstName.text.isNotEmpty) {
+                              return null;
+                            } else {
+                              return "Please Provide First Name";
+                            }
+                          },
+                        )
+                    ),
+                    Expanded(
+                        flex: 5,
+                        child: Custom_ListTile_TextField(
+                          read: false,
+                          controller: eTLastName,
+                          labelText: "Last Name",
+                          hintText: "Last Name",
+                          isMask: false, isNumber:false,
+                          mask: false,
+                          validations: (value) {
+                            if(eTLastName.text.isNotEmpty) {
+                              return null;
+                            } else {
+                              return "Please Provide Last Name";
+                            }
+                          },
+                        )
+                    )
+                  ],
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 5,
+                        child: Custom_ListTile_TextField(
+                          read: false,
+                          controller: eTPrimaryEmail,
+                          labelText: "Primary Email",
+                          hintText: "Primary Email",
+                          isMask: false,
+                          isNumber:false,
+                          mask: false,
+                        )
+                    ),
+                    Expanded(
+                        flex: 5,
+                        child: Custom_ListTile_TextField(
+                          read: false,
+                          controller: eTSecondaryEmail,
+                          labelText: "Secondary Email",
+                          hintText: "Secondary Email",
+                          isMask: false,
+                          isNumber:false,
+                          mask: false,
+                        )
+                    )
+                  ],
                 ),
                 Custom_ListTile_TextField(
                   read: false,
-                  controller: eTVendorNote,
-                  labelText: "User's Note",
-                  hintText: "User's Note",
-                  isMask: false, isNumber:false,
+                  controller: eTPhoneNumber,
+                  labelText: "Phone Number",
+                  hintText: "Phone Number",
+                  isMask: false,
+                  isNumber:false,
                   mask: false,
-                  maxLines: 5,
+                ),
+                Custom_ListTile_TextField(
+                  read: false,
+                  controller: eTAddress,
+                  labelText: "Primary Address",
+                  hintText: "Primary Address",
+                  isMask: false,
+                  isNumber:false,
+                  mask: false,
+                ),
+                Custom_ListTile_TextField(
+                  read: false,
+                  controller: eTUserType,
+                  labelText: "User Type",
+                  hintText: "User Type",
+                  isMask: false,
+                  isNumber:false,
+                  mask: false,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 5,
+                        child: Custom_ListTile_TextField(
+                          read: false,
+                          controller: eTUserName,
+                          labelText: "Username",
+                          hintText: "Username",
+                          isMask: false,
+                          isNumber:false,
+                          mask: false,
+                        )
+                    ),
+                    Expanded(
+                        flex: 5,
+                        child: Custom_ListTile_TextField(
+                          read: false,
+                          controller: eTPassword,
+                          labelText: "Password",
+                          hintText: "Password",
+                          isMask: false,
+                          isNumber:false,
+                          mask: false,
+                        )
+                    )
+                  ],
+                ),
+                Custom_ListTile_TextField(
+                  read: false,
+                  controller: eTStoreLocation,
+                  labelText: "Store Location",  //Default Location Is Always the current location
+                  hintText: "Store Location",
+                  isMask: false,
+                  isNumber:false,
+                  mask: false,
                 )
               ],
             )
@@ -290,7 +427,7 @@ class Component extends State<Employee> {
                   ),
                   Expanded(
                       flex: 3,
-                      child:  isAdded? solidButton("Add New Vendor", "ADD") : solidButton("Save Vendor", "UPDATE")
+                      child:  isAdded? solidButton("Add New User", "ADD") : solidButton("Save User", "UPDATE")
                   )
                 ],
               ),
@@ -347,9 +484,11 @@ class Component extends State<Employee> {
     DataTableSource _data = TableData(listUserPaginate, dataCount, context, widget.userData);
     return PaginatedDataTable2(
       columns: const [
-        DataColumn(label: Text('Product Id')),
-        DataColumn(label: Text('Description')),
-        DataColumn(label: Text('Created Datetime')),
+        DataColumn(label: Text('User Id')),
+        DataColumn(label: Text('Full Name')),
+        DataColumn(label: Text('Username')),
+        DataColumn(label: Text('User Type')),
+        DataColumn(label: Text('Added Datetime')),
         DataColumn(label: Text('Updated Datetime')),
       ],
       source: _data,
@@ -401,25 +540,25 @@ class Component extends State<Employee> {
     } else if (event == "NEW-VENDOR") {
       context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: true));
     } else if (event == "UPDATE") {
-      bool val = formKey.currentState!.validate();
-      ConsolePrint("Validate", val);
-      if (val) {
-        context.read<MainBloc>().add(MainParam.AddUpdateVendor(eventStatus: MainEvent.Event_UpdateVendor, userData: widget.userData, vendorParameter: {
-          "desc": eTVendorName.text,
-          "note": eTVendorNote.text,
-          "id": eTVendorId.text
-        }));
-      }
+      // bool val = formKey.currentState!.validate();
+      // ConsolePrint("Validate", val);
+      // if (val) {
+      //   context.read<MainBloc>().add(MainParam.AddUpdateVendor(eventStatus: MainEvent.Event_UpdateVendor, userData: widget.userData, vendorParameter: {
+      //     "desc": eTVendorName.text,
+      //     "note": eTVendorNote.text,
+      //     "id": eTVendorId.text
+      //   }));
+      // }
 
     } else if (event == "ADD") {
-      bool val = formKey.currentState!.validate();
-      ConsolePrint("Validate", val);
-      if (val) {
-        context.read<MainBloc>().add(MainParam.AddUpdateVendor(eventStatus: MainEvent.Event_AddVendor, userData: widget.userData, vendorParameter: {
-          "desc": eTVendorName.text,
-          "note": eTVendorNote.text,
-        }));
-      }
+      // bool val = formKey.currentState!.validate();
+      // ConsolePrint("Validate", val);
+      // if (val) {
+      //   context.read<MainBloc>().add(MainParam.AddUpdateVendor(eventStatus: MainEvent.Event_AddVendor, userData: widget.userData, vendorParameter: {
+      //     "desc": eTVendorName.text,
+      //     "note": eTVendorNote.text,
+      //   }));
+      // }
     }
   }
 
@@ -444,13 +583,13 @@ class TableData extends DataTableSource {
     return DataRow2(
         onLongPress: () {
           UserRelationModel selectedModel = lstModel[index];
-          Map<String, String> map = <String, String>{};
-          map["uId"] = selectedModel.uid!;
-          context.read<MainBloc>().add(MainParam.GetVendorByParam(eventStatus: MainEvent.Event_GetVendorById, userData: userData, vendorParameter: map));
+          context.read<MainBloc>().add(MainParam.GetUserByIdLocal(eventStatus: MainEvent.Event_GetUserById_Local, userData: userData, userRelationModel: selectedModel));
         },
         cells: [
           DataCell(Text(lstModel[index].uid.toString())),
-          DataCell(Text(lstModel[index].firstName.toString())),
+          DataCell(Text(lstModel[index].firstName.toString() + " " + lstModel[index].lastName.toString())),
+          DataCell(Text(lstModel[index].userName.toString())),
+          DataCell(Text(lstModel[index].userType.toString())),
           DataCell(Text(lstModel[index].addedDateTime.toString())),
           DataCell(Text(lstModel[index].updatedDateTime.toString()))
         ]

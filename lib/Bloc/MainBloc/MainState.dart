@@ -19,6 +19,7 @@ import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/Model/UserRelationModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 
 abstract class MainState extends Equatable{
@@ -209,6 +210,17 @@ class UserPaginationLoadedState extends MainState {
 class UserPaginationLoadedErrorState extends MainState{
   final error;
   UserPaginationLoadedErrorState({this.error});
+}
+
+class UserByIdInitState extends MainState {}
+class UserByIdLoadingState extends MainState {}
+class UserByIdLoadedState extends MainState {
+  UserRelationModel? response;
+  UserByIdLoadedState({required this.response});
+}
+class UserByIdLoadedErrorState extends MainState{
+  final error;
+  UserByIdLoadedErrorState({this.error});
 }
 
 //endregion USER

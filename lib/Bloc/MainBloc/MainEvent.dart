@@ -8,6 +8,7 @@ import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/Model/UserRelationModel.dart';
 
 enum MainEvent{
   fetchAlbums,
@@ -16,7 +17,7 @@ enum MainEvent{
   Event_VerifyUser,
   Check_Authorization,
   Event_GetUserPagination,
-  Event_GetUserById,
+  Event_GetUserById_Local,
   Event_UpsertUser,
   //endregion
 
@@ -171,6 +172,7 @@ class MainParam {
   ProductModel? productData;
   ItemCodeModel? itemCodeData;
   UpcModel? upcData;
+  UserRelationModel? userRelationModel;
   int? index;
   Map<String, dynamic>? productParameter;
   Map<String, dynamic>? departmentParameter;
@@ -190,6 +192,7 @@ class MainParam {
 
   /// USER
   MainParam.GetUserPagination({required this.eventStatus, required this.userData, required this.userParameter});
+  MainParam.GetUserByIdLocal({required this.eventStatus, required this.userData, required this.userRelationModel});
 
   /// DIALOG
   MainParam.NavDialog({this.userData, this.productData, this.eventStatus, this.context, this.optionalParameter});
