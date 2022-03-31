@@ -23,6 +23,7 @@ import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
+import 'package:npos/Model/UserRelationModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocAddUpdate.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocItemCode.dart';
@@ -85,7 +86,6 @@ class MainBloc extends Bloc<MainParam,MainState>
       //region ITEM CODE HTTP EVENT
       case MainEvent.Event_GetUserPagination:
         yield UserPaginationInitState();
-        ConsolePrint("EVENT", "USER PAGINATION");
         try {
           yield UserPaginationLoadingState();
           Map<String, dynamic> param = event.userParameter as Map<String, dynamic>;
@@ -98,6 +98,18 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield UserPaginationLoadedErrorState(error: e);
         }
       break;
+      case MainEvent.Event_GetUserById_Local:
+        yield UserByIdInitState();
+        ConsolePrint("EVENT", "UserByIdInitState");
+        try {
+          yield UserByIdLoadingState();
+          UserRelationModel? locationModel = event.userRelationModel as UserRelationModel;
+          yield UserByIdLoadedState(response: locationModel);
+
+        } catch (e) {
+          yield UserByIdLoadedErrorState(error: e);
+        }
+        break;
       case MainEvent.Event_ItemCodeVerify:
         yield ItemCodeVerifyInitState();
         try {
