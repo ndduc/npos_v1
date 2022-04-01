@@ -1,15 +1,23 @@
 // ignore_for_file: file_names
 // ignore_for_file: library_prefixes
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:npos/Bloc/MainBloc/MainBloc.dart';
+import 'package:npos/Bloc/MainBloc/MainEvent.dart';
+import 'package:npos/Bloc/MainBloc/MainState.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
+import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/Home/homeMenu.dart';
 
 import '../../Component/Stateful/customDialog.dart';
 
 class MainClientBody extends StatefulWidget {
+  UserModel? userData;
+  MainClientBody({Key? key, this.userData}) : super(key: key);
+
   @override
   _MainClientBody createState() => _MainClientBody();
 }
@@ -18,6 +26,7 @@ class _MainClientBody extends State<MainClientBody> {
   @override
   void initState() {
     super.initState();
+    widget.userData?.print();
   }
 
   @override
@@ -27,7 +36,26 @@ class _MainClientBody extends State<MainClientBody> {
 
   @override
   Widget build(BuildContext context) {
-    return mainBody();
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+          body:
+          BlocBuilder<MainBloc,MainState>(builder: (BuildContext context,MainState state) {
+            /**
+             * BLoc Action Note
+             * START
+             * */
+            appBaseEvent(state);
+            appSpecificEvent(state);
+            /**
+             * Bloc Action Note
+             * END
+             * */
+            return mainBody();
+          })
+
+      ),
+    );
   }
 
   Widget mainBody() {
@@ -48,6 +76,23 @@ class _MainClientBody extends State<MainClientBody> {
       ],
     );
   }
+
+  void appBaseEvent(MainState state) {
+    // Executing Generic State
+    if (state is GenericInitialState) {
+      // isLoading = false;
+    } else if (state is GenericLoadingState) {
+      // isLoading = true;
+    } else if (state is GenericErrorState) {
+      // isLoading = false;
+      // context.read<MainBloc>().add(MainParam.showSnackBar(eventStatus: MainEvent.Show_SnackBar, context: context, snackBarContent: state.error.toString()));
+    }
+  }
+
+  void appSpecificEvent(MainState state) {
+    // Executing Specific State
+  }
+
 
   Widget bodyCheckOut() {
     return Column(
@@ -138,7 +183,7 @@ class _MainClientBody extends State<MainClientBody> {
                 borderRadius: const BorderRadius.all(Radius.circular(2)),
                 border: Border.all(color: Colors.blueAccent),
               ),
-              child: UserCard(),
+              child: UserCard(userData: widget.userData),
             )
         )  ,
         Expanded(
@@ -210,8 +255,7 @@ class _MainClientBody extends State<MainClientBody> {
                 String event = UIItem.clientOptionTop[index]["event"];
                 switch(event) {
                   case "RT":
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => HomeMenu()));
+                    context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_MainMenu, context: context, userData: widget.userData));
                     break;
                   default:
                     break;

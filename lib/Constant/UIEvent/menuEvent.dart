@@ -2,6 +2,8 @@
 // ignore_for_file: library_prefixes
 // ignore_for_file: constant_identifier_names
 
+
+/// CENTER
 const String MENU_MAN_PROD = "MENU_PRODUCT_MAN";
 const String MENU_MAN_DEPTCATE = "MENU_DEPT/CATE_MAN";
 const String MENU_MAN_SEC = "MENU_SEC_MAN";
@@ -19,6 +21,7 @@ const String MENU_MAN_EMP = "MENU_EMP_MAN";
 const String MENU_MAN_LOC = "MENU_LOC_MAN";
 const String MENU_SETUP = "MENU_SETUP";
 
+/// LEFT
 const String MENU_POS_CLIENT = "PC";
 const String MENU_EOD = "CS";
 const String MENU_LOGOUT = "LO";
