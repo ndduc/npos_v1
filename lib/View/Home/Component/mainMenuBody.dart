@@ -107,9 +107,13 @@ class _MainMenuBody extends State<MainMenuBody> {
                             itemBuilder: (context, index) {
                               return InkWell(
                                 onTap: () {
+                                  /// POS Client
                                   if(  UIItem.menuItemLeft[index]["event"] == "PC") {
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(builder: (context) => ClientView()));
+                                    if(  UIItem.menuItemLeft[index]["event"] == "PC") {
+                                      context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_POS_Client, context: context, userData: widget.userData));
+                                    }
+                                    // Navigator.of(context)
+                                    //     .push(MaterialPageRoute(builder: (context) => ClientView()));
                                   }
                                 },
                                 child:  Container(

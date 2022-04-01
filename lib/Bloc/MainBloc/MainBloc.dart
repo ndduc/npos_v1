@@ -25,6 +25,7 @@ import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/UserRelationModel.dart';
 import 'package:npos/Model/VendorModel.dart';
+import 'package:npos/View/Client/clientView.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocAddUpdate.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocItemCode.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocUpc.dart';
@@ -89,6 +90,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         try {
           yield UserPaginationLoadingState();
           Map<String, dynamic> param = event.userParameter as Map<String, dynamic>;
+          ConsolePrint("Param",param);
           UserModel userModel = event.userData as UserModel;
           LocationModel? locationModel = userModel.defaultLocation;
           UserPaginationModel response = await mainRepo.GetUserPagination(userModel.uid.toString(),locationModel!.uid.toString(), param);
@@ -100,7 +102,6 @@ class MainBloc extends Bloc<MainParam,MainState>
       break;
       case MainEvent.Event_GetUserById_Local:
         yield UserByIdInitState();
-        ConsolePrint("EVENT", "UserByIdInitState");
         try {
           yield UserByIdLoadingState();
           UserRelationModel? locationModel = event.userRelationModel as UserRelationModel;
@@ -1137,6 +1138,14 @@ class MainBloc extends Bloc<MainParam,MainState>
   //region NAVIGATION
   void navigateHelper(MainParam event) {
     switch(event.eventStatus) {
+      case MainEvent.Nav_POS_Client:
+        Navigator.push(
+            event.context as BuildContext,
+            MaterialPageRoute(builder: (context) {
+              return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                  child:ClientView(userData: event.userData));
+            }));
+        break;
       case MainEvent.Nav_Man_Product:
         Navigator.push(
             event.context as BuildContext,
