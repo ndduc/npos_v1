@@ -31,3 +31,9 @@ const String EMPTY = "";
 const String PERCENT = "%";
 const String DASH = "-";
 const String OK = "OK";
+
+
+/// RECEIPT
+const String PURCHASE = "A_PURCHASE";
+const String VOID = "B_VOID";
+const String REFUND = "C_REFUND";

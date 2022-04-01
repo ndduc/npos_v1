@@ -5,9 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
 import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
+import 'package:npos/Constant/UIEvent/addProductEvent.dart';
+import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/Home/homeMenu.dart';
@@ -26,7 +29,6 @@ class _MainClientBody extends State<MainClientBody> {
   @override
   void initState() {
     super.initState();
-    widget.userData?.print();
   }
 
   @override
@@ -97,28 +99,42 @@ class _MainClientBody extends State<MainClientBody> {
   Widget bodyCheckOut() {
     return Column(
       children: [
-        Expanded(
-          flex: 1,
-          child: // Text("TEST 4-1"),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.all(Radius.circular(2)),
-              border: Border.all(color: Colors.blueAccent),
-            ),
-            child: TextFormField(
-              textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(
-                labelText: "User Input, This will be always focus",
-                hintText: "Hint",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5.0)),
-              ),
-            ),
+        Row(
+          children: [
+            Expanded(
+                flex: 8,
+                child: // Text("TEST 4-1"),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.all(Radius.circular(2)),
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  /// Depend on business, this input will be updated accordingly
+                  /// example: grocery then it will be UPC
+                  ///          service model then it will be some kind of user defined code
+                  child: TextFormField(
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      labelText: "Scan or Enter Item Upc",
+                      hintText: "Hint",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0)),
+                    ),
+                  ),
 
-          )
+                )
 
+            ),
+            Expanded(
+                flex: 2,
+                child: // Text("TEST 4-1"),
+                solidButton(BTN_CONFIRM, EVENT_CONFIRM)
+
+            ),
+          ],
         ),
+
         Expanded(
           flex: 8,
           child: //Text("TEST 4-8"),
@@ -287,6 +303,34 @@ class _MainClientBody extends State<MainClientBody> {
           }
       ),
     );
+  }
+
+  Widget solidButton(String text, String event) {
+    return ListTile(
+        title: ElevatedButton(
+
+          // style: style,
+          style: ElevatedButton.styleFrom(
+
+              minimumSize: const Size(0,50) // put the width and height you want
+          ),
+          onPressed: solidBtnOnClick(text, event),
+          child: Text(text),
+        )
+    ) ;
+  }
+
+  VoidCallback? solidBtnOnClick(String text, String event) {
+    return () {
+      solidButtonEvent(event);
+    };
+
+  }
+
+  void solidButtonEvent(String event) {
+    if (event == EVENT_CONFIRM) {
+      ConsolePrint("AddITEM", "TEST");
+    }
   }
 
 }
