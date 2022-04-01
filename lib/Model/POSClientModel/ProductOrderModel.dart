@@ -1,14 +1,20 @@
 import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 
 import '../LocationModel.dart';
+import 'UserCheckOutModel.dart';
 
 /// Consisting a list of ProductCheckoutModel
 
 
 
 class ProductOrderModel {
-
+  /// Uid will be system unique id
   late int orderUId;
+  /// Id will be human readable Id, starting from 0 per location
+  late int orderId;
+
+  late DateTime orderAddDateTime;
+  late DateTime orderUpdateDateTime;
 
   /// The goal here is to store product UID as key and Checkout Object as Value
   /// There will be 3 different kind of KEY
@@ -29,8 +35,6 @@ class ProductOrderModel {
   double totalVoidByQuantity = 0.0;
   double totalVoidByPrice = 0.0;
 
-  /// consisting any user id whose involve in checking out this transaction
-  /// perhap an list of object is better
-  List<String> userIds = [];
+  List<UserCheckOutModel> orderInvolveUser = [];
   List<LocationModel> orderLocation = [];
 }
