@@ -87,7 +87,6 @@ class Component extends State<Employee> {
     } else if (state is UserPaginationLoadedState) {
       isLoadingTable = false;
       UserPaginationModel response = state.response!;
-      response.print();
       listUserPaginate = response.userRelationModels;
     } else if (state is UserPaginationLoadedErrorState) {
       isLoadingTable = false;
@@ -208,7 +207,7 @@ class Component extends State<Employee> {
       children: [
         Expanded(
             flex: 2,
-            child: solidButton("New User", "NEW-VENDOR")
+            child: solidButton("New User", "NEW-USER")
         ),
 
         Expanded(
@@ -544,8 +543,21 @@ class Component extends State<Employee> {
 
   void solidButtonEvent(String event) {
     if (event == "SEARCH") {
-      context.read<MainBloc>().add(MainParam.GetVendorByParam(eventStatus: MainEvent.Event_GetVendorByDescription, userData: widget.userData, vendorParameter: {"description" : eTSearchTopBy.text}));
-    } else if (event == "NEW-VENDOR") {
+      ConsolePrint("SEARCH", eTSearchTopBy.text);
+      String searchValue = eTSearchTopBy.text;
+      Map<String, dynamic> param = {
+        "startIdx": "0",
+        "endIdx": "100" ,
+        "userFullName": ""
+      };
+
+      if (searchValue.isNotEmpty) {
+          param["userFullName"] = searchValue;
+          context.read<MainBloc>().add(MainParam.GetUserPagination(eventStatus: MainEvent.Event_GetUserPagination, userData: widget.userData, userParameter: param));
+      } else {
+          context.read<MainBloc>().add(MainParam.GetUserPagination(eventStatus: MainEvent.Event_GetUserPagination, userData: widget.userData, userParameter: param));
+      }
+    } else if (event == "NEW-USER") {
       context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: true));
     } else if (event == "UPDATE") {
       // bool val = formKey.currentState!.validate();

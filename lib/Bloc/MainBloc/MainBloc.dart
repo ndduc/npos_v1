@@ -89,6 +89,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         try {
           yield UserPaginationLoadingState();
           Map<String, dynamic> param = event.userParameter as Map<String, dynamic>;
+          ConsolePrint("Param",param);
           UserModel userModel = event.userData as UserModel;
           LocationModel? locationModel = userModel.defaultLocation;
           UserPaginationModel response = await mainRepo.GetUserPagination(userModel.uid.toString(),locationModel!.uid.toString(), param);
@@ -100,7 +101,6 @@ class MainBloc extends Bloc<MainParam,MainState>
       break;
       case MainEvent.Event_GetUserById_Local:
         yield UserByIdInitState();
-        ConsolePrint("EVENT", "UserByIdInitState");
         try {
           yield UserByIdLoadingState();
           UserRelationModel? locationModel = event.userRelationModel as UserRelationModel;
