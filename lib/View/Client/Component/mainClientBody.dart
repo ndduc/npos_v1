@@ -11,6 +11,8 @@ import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
+import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 import 'package:npos/View/Home/homeMenu.dart';
@@ -26,9 +28,29 @@ class MainClientBody extends StatefulWidget {
 }
 
 class _MainClientBody extends State<MainClientBody> {
+
+  ProductOrderModel productOrder = ProductOrderModel();
+
   @override
   void initState() {
     super.initState();
+  }
+
+  void initProductOrderTesting() {
+    productOrder.orderUId = 1;
+    productOrder.orderId = 1;
+    productOrder.orderAddDateTime = DateTime.now();
+    productOrder.orderUpdateDateTime = DateTime.now();
+    productOrder.transaction = {};
+
+    ProductCheckOutModel tempProd1 = ProductCheckOutModel();
+    tempProd1.uid = "PRODUCT_123";
+    tempProd1.description = "TEST PRODUCT";
+    tempProd1.cost = 1.00;
+    tempProd1.price = 5.00;
+    productOrder.transaction["1"] = tempProd1;
+    productOrder.orderInvolveUser = [];
+    productOrder.orderLocation = [];
   }
 
   @override
