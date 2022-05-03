@@ -18,6 +18,7 @@ import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/LocationModel.dart';
+import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
@@ -1127,6 +1128,23 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       case MainEvent.Nav_Dialog_Product_Update_No:
         Navigator.pop(event.context as BuildContext, false);
+        break;
+      //endregion
+
+      /// CHECKOUT ITEM
+      //region CHECKOUT ITEM
+      case MainEvent.Event_Add_Item_Checkout:
+        ConsolePrint("TEST", "TEST");
+        yield CheckoutItemInit();
+        try {
+          yield CheckoutItemLoading();
+          ProductOrderModel newProductOrderModel = event.productOrder as ProductOrderModel ;
+          newProductOrderModel.transaction[0].quantity = 2;
+          newProductOrderModel.transaction[0].subTotal = 10;
+          yield CheckoutItemLoaded(productOrderModel: newProductOrderModel);
+        } catch (e) {
+          yield CheckoutItemError(error:  e);
+        }
         break;
       //endregion
       default:

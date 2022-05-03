@@ -21,7 +21,7 @@ class ProductOrderModel {
   /// UID_PURCHASE as item to be purchase by customer
   /// UID_VOID as item voided from existing order
   /// UID_REFUND as item refunded from existing order
-  Map<String, ProductCheckOutModel> transaction = {};
+  List<ProductCheckOutModel> transaction = [];
   double orderSubTotal = 0.0;
   double orderQuantity = 0.0;
   double orderTotalTax = 0.0;
@@ -29,8 +29,8 @@ class ProductOrderModel {
   double orderTotalDiscount = 0.0;
 
   double orderSubTotalStep1 = 0.0;  /// Step 1 including, subTotal, TotalTax
-  double orderSubTotalStep2 = 0.0;  /// Step 1 including, subTotal, totalDiscount, TotalTax
-  double orderSubTotalStep3 = 0.0;  /// Step 1 including, subTotal, totalDiscount, totalRefund, TotalTax
+  double orderSubTotalStep2 = 0.0;  /// Step 2 including, subTotal, totalDiscount, TotalTax
+  double orderSubTotalStep3 = 0.0;  /// Step 3 including, subTotal, totalDiscount, totalRefund, TotalTax
 
   double totalVoidByQuantity = 0.0;
   double totalVoidByPrice = 0.0;

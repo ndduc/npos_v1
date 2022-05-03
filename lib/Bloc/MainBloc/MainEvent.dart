@@ -5,6 +5,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
+import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
@@ -156,7 +157,11 @@ enum MainEvent{
   Nav_POS_Client,
   Nav_ManLoc,
   Nav_Logout,
-  Nav_EOD
+  Nav_EOD,
+  //endregion
+
+  //region CHECKOUT EVENT
+  Event_Add_Item_Checkout
   //endregion
 }
 
@@ -189,6 +194,10 @@ class MainParam {
   dynamic dropDownValue;
   String? toWhere;
   bool? isAdded;
+  ProductOrderModel? productOrder;
+
+  /// CHECKOUT
+  MainParam.ItemCheckout({required this.eventStatus, required this.userData, required this.productData, required this.productOrder});
 
   /// USER
   MainParam.GetUserPagination({required this.eventStatus, required this.userData, required this.userParameter});
