@@ -1154,7 +1154,10 @@ class MainBloc extends Bloc<MainParam,MainState>
           prod1.transactionType = Value.PURCHASE;
           prod1.productModelId = prod1.transactionType + "_" + prod1.uid!;
 
+
           newProductOrderModel.transaction.add(prod1);
+          newProductOrderModel.orderSubTotal = newProductOrderModel.orderSubTotal + prod1.price!.toDouble();
+          newProductOrderModel.orderQuantity = newProductOrderModel.orderQuantity + prod1.quantity!.toDouble();
           yield CheckoutItemLoaded(productOrderModel: newProductOrderModel);
         } catch (e) {
           yield CheckoutItemError(error:  e);

@@ -54,7 +54,12 @@ class _MainClientBody extends State<MainClientBody> {
     tempProd1.quantity = 1;
     tempProd1.transactionType = PURCHASE;
     tempProd1.productModelId = tempProd1.transactionType + "_" + tempProd1.uid!;
+
     productOrder.transaction.add(tempProd1);
+    productOrder.orderSubTotal = 5.00;
+    productOrder.orderQuantity = 1;
+    productOrder.orderTotalTax = 0.05;
+
     productOrder.orderInvolveUser = [];
     productOrder.orderLocation = [];
   }
@@ -186,39 +191,91 @@ class _MainClientBody extends State<MainClientBody> {
                 return Card(
                     child: ListTile(
                       title:Container(
-                        child: Column(
+                        child: Row (
                           children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 6,
-                                  child: Text(productOrder.transaction[index].description.toString()),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Text("\$" + productOrder.transaction[index].subTotal.toString()),
-                                ),
-                                const Expanded(
-                                  flex: 2,
-                                  child: Text("CODE SEQ."),
-                                )
-                              ],
+                            Expanded(
+                              flex: 8,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 6,
+                                        child: Text(productOrder.transaction[index].description.toString()),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text("\$" + productOrder.transaction[index].subTotal.toString()),
+                                      ),
+                                      const Expanded(
+                                        flex: 2,
+                                        child: Text("CODE SEQ."),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Expanded(
+                                        flex: 7,
+                                        child: SizedBox(),
+                                      ),
+                                      Expanded(
+                                        flex: 3,
+                                        child: Text(productOrder.transaction[index].quantity.toString() + " Unit * " + productOrder.transaction[index].price.toString()),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              )
                             ),
-                            Row(
-                              children: [
-                                const Expanded(
-                                  flex: 7,
-                                  child: SizedBox(),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: Text(productOrder.transaction[index].quantity.toString() + " Unit * " + productOrder.transaction[index].price.toString()),
-                                )
-                              ],
-                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex:2,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      color: Colors.blueAccent,
+                                      onPressed: () {
+                                        /// Void Logic On Selected Item
+                                        /// Logic Overview
+                                        /// If Quantity is greater than 1, then pop option for user to void a specific number of item
+                                        /// If Quantity By Weight then simply void the entire item
+                                      },
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex:2,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.edit),
+                                      color: Colors.blueAccent,
+                                      onPressed: () {
+                                        /// Edit button allow user to do these following option. Pop up occur upon selected
+                                        /// Change quantity (unit only, no weight)
+                                        /// Perform Price Override
+                                      },
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex:2,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.money),
+                                      color: Colors.blueAccent,
+                                      onPressed: () {
+                                        /// Allow user to add discount to specific item
+                                      },
+                                    ),
+                                  )
+                                ],
+                              )
+                            )
                           ],
-                        ),
+                        )
                       ) ,
+                      onTap: () {
+                        ConsolePrint("LIST", "CLICKED");
+                      },
                     )
                 );
               },
@@ -234,6 +291,58 @@ class _MainClientBody extends State<MainClientBody> {
         Expanded(
           flex: 1,
           child:Container(
+            child: Card(
+              child: Row(
+                children: [
+                  Expanded(
+                      flex: 5,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              "Number of Voided Item: " + productOrder.totalVoidByQuantity.toString()
+                          ),
+                          Text(
+                              "Amount of Voided Item: \$" + productOrder.totalVoidByPrice.toString()
+                          ),
+                          Text(
+                              "Number of Refunded Item: " + productOrder.orderTotalRefundQuantity.toString()
+                          ),
+                          Text(
+                              "Amount of Refunded Item: \$" + productOrder.orderTotalRefund.toString()
+                          ),
+                        ],
+                      )
+                  ),
+                  Expanded(
+                      flex: 5,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              "Sub Total: \$" + productOrder.orderSubTotal.toString()
+                          ),
+                          Text(
+                              "Total Count: " + productOrder.orderQuantity.toString()
+                          ),
+                          Text(
+                              "Total Tax: " + productOrder.orderTotalTax.toString()
+                          ),
+                          Text(
+                              "Total Discount: " + productOrder.orderTotalDiscount.toString()
+                          ),
+                          Text(
+                              "Total Amount: " + productOrder.orderSubTotalStep3.toString()
+                          )
+                        ],
+                      )
+                  )
+                ],
+              )
+            ),
+
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(2)),
