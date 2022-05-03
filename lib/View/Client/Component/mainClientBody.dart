@@ -10,6 +10,7 @@ import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
+import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
@@ -34,6 +35,7 @@ class _MainClientBody extends State<MainClientBody> {
   @override
   void initState() {
     super.initState();
+    initProductOrderTesting();
   }
 
   void initProductOrderTesting() {
@@ -41,14 +43,18 @@ class _MainClientBody extends State<MainClientBody> {
     productOrder.orderId = 1;
     productOrder.orderAddDateTime = DateTime.now();
     productOrder.orderUpdateDateTime = DateTime.now();
-    productOrder.transaction = {};
+    productOrder.transaction = [];
 
     ProductCheckOutModel tempProd1 = ProductCheckOutModel();
     tempProd1.uid = "PRODUCT_123";
     tempProd1.description = "TEST PRODUCT";
     tempProd1.cost = 1.00;
     tempProd1.price = 5.00;
-    productOrder.transaction["1"] = tempProd1;
+    tempProd1.subTotal = 5.00;
+    tempProd1.quantity = 1;
+    tempProd1.transactionType = PURCHASE;
+    tempProd1.productModelId = tempProd1.transactionType + "_" + tempProd1.uid!;
+    productOrder.transaction.add(tempProd1);
     productOrder.orderInvolveUser = [];
     productOrder.orderLocation = [];
   }
@@ -71,6 +77,7 @@ class _MainClientBody extends State<MainClientBody> {
              * */
             appBaseEvent(state);
             appSpecificEvent(state);
+            appCheckoutItemEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -117,6 +124,18 @@ class _MainClientBody extends State<MainClientBody> {
     // Executing Specific State
   }
 
+  void appCheckoutItemEvent(MainState state) {
+    if (state is CheckoutItemInit) {
+
+    } else if (state is CheckoutItemLoading) {
+
+    } else if (state is CheckoutItemLoaded) {
+      this.productOrder = state.productOrderModel!;
+    } else if (state is CheckoutItemError) {
+
+    }
+  }
+
 
   Widget bodyCheckOut() {
     return Column(
@@ -161,6 +180,50 @@ class _MainClientBody extends State<MainClientBody> {
           flex: 8,
           child: //Text("TEST 4-8"),
           Container(
+            child: ListView.builder(
+              itemCount: productOrder.transaction.length,
+              itemBuilder: (context, index) {
+                return Card(
+                    child: ListTile(
+                      title:Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 6,
+                                  child: Text(productOrder.transaction[index].description.toString()),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: Text("\$" + productOrder.transaction[index].subTotal.toString()),
+                                ),
+                                const Expanded(
+                                  flex: 2,
+                                  child: Text("CODE SEQ."),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(
+                                  flex: 7,
+                                  child: SizedBox(),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(productOrder.transaction[index].quantity.toString() + " Unit * " + productOrder.transaction[index].price.toString()),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ) ,
+                    )
+                );
+              },
+              padding: EdgeInsets.all(10),
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(2)),
@@ -352,6 +415,9 @@ class _MainClientBody extends State<MainClientBody> {
   void solidButtonEvent(String event) {
     if (event == EVENT_CONFIRM) {
       ConsolePrint("AddITEM", "TEST");
+
+      context.read<MainBloc>().add(MainParam.ItemCheckout(eventStatus: MainEvent.Event_Add_Item_Checkout, userData: widget.userData, productData: null, productOrder: this.productOrder));
+
     }
   }
 

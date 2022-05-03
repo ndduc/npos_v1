@@ -14,6 +14,7 @@ import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
+import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
 import 'package:npos/Model/TaxModel.dart';
@@ -457,4 +458,20 @@ class DialogProductAddUpdateErrorState extends MainState{
   final error;
   DialogProductAddUpdateErrorState({this.error});
 }
+//endregion
+
+//region CHECKOUT ITEM
+class CheckoutItemInit extends MainState {}
+class CheckoutItemLoading extends MainState {}
+class CheckoutItemLoaded extends MainState {
+  ProductOrderModel? productOrderModel;
+  CheckoutItemLoaded({required this.productOrderModel});
+
+}
+class CheckoutItemError extends MainState {
+  final error;
+  CheckoutItemError({this.error});
+}
+
+
 //endregion
