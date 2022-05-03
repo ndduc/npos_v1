@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Constant/API/MapValues.dart';
 import 'package:npos/Constant/API/StringValues.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
+import 'package:npos/Constant/Values/StringValues.dart' as Value;
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/AddResponseModel.dart';
 import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
@@ -18,6 +19,7 @@ import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/LocationModel.dart';
+import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
@@ -1141,6 +1143,18 @@ class MainBloc extends Bloc<MainParam,MainState>
           ProductOrderModel newProductOrderModel = event.productOrder as ProductOrderModel ;
           newProductOrderModel.transaction[0].quantity = 2;
           newProductOrderModel.transaction[0].subTotal = 10;
+
+          ProductCheckOutModel prod1 = ProductCheckOutModel();
+          prod1.uid = "PRODUCT_123_2";
+          prod1.description = "TEST PRODUCT 2";
+          prod1.cost = 1.00;
+          prod1.price = 5.00;
+          prod1.subTotal = 5.00;
+          prod1.quantity = 1;
+          prod1.transactionType = Value.PURCHASE;
+          prod1.productModelId = prod1.transactionType + "_" + prod1.uid!;
+
+          newProductOrderModel.transaction.add(prod1);
           yield CheckoutItemLoaded(productOrderModel: newProductOrderModel);
         } catch (e) {
           yield CheckoutItemError(error:  e);
