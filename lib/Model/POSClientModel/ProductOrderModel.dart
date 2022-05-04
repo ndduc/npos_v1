@@ -25,7 +25,6 @@ class ProductOrderModel {
   double orderSubTotal = 0.0;
   double orderQuantity = 0.0;
   double orderTotalTax = 0.0;
-  double orderTotalRefund = 0.0;
   double orderTotalDiscount = 0.0;
 
   double orderSubTotalStep1 = 0.0;  /// Step 1 including, subTotal, TotalTax
@@ -34,6 +33,9 @@ class ProductOrderModel {
 
   double totalVoidByQuantity = 0.0;
   double totalVoidByPrice = 0.0;
+
+  double orderTotalRefund = 0.0;
+  double orderTotalRefundQuantity = 0.0;
 
   List<UserCheckOutModel> orderInvolveUser = [];
   List<LocationModel> orderLocation = [];

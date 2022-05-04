@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 // ignore_for_file: library_prefixes
+import 'package:npos/Constant/UIEvent/menuEvent.dart';
+
 List<Map<dynamic, dynamic>> menuItem = [
   {"id" : 0, "name" : "Product/Service Management", "event" : "MENU_PRODUCT_MAN"},
   {"id" : 1, "name" : "Department & Category", "event" : "MENU_DEPT/CATE_MAN"},
@@ -35,20 +37,20 @@ List<Map<dynamic, dynamic>> menuItemLeftNested = [
 
 
 List<Map<dynamic, dynamic>> clientOption = [
-  {"id" : 0, "name" : "Total/Finalize"},
-  {"id" : 1, "name" : "Payment"},
-  {"id" : 4, "name" : "Void"},
-  {"id" : 5, "name" : "Refund"},
-  {"id" : 6, "name" : "Discount"},
-  {"id" : 7, "name" : "Item"},
-  {"id" : 8, "name" : "Lookup"},
+  {"id" : 0, "name" : "Total/Finalize", "event" : OPTION_TOTAL},
+  {"id" : 1, "name" : "Payment","event" : OPTION_PAYMENT},
+  {"id" : 4, "name" : "Void", "event" : OPTION_VOID},
+  {"id" : 5, "name" : "Refund", "event" : OPTION_REFUND},
+  {"id" : 6, "name" : "Discount", "event" : OPTION_DISCOUNT},
+  {"id" : 7, "name" : "Item", "event" : OPTION_ITEM},
+  {"id" : 8, "name" : "Lookup", "event" : OPTION_LOOKUP},
 ];
 
 
 List<Map<dynamic, dynamic>> clientOptionTop = [
-  {"id" : 0, "name" : "Return", "event" : "RT"},
-  {"id" : 1, "name" : "Setup", "event" : "SET"},
-  {"id" : 4, "name" : "Advance Option", "event" : "ADV_OPT"},
+  {"id" : 0, "name" : "Return", "event" : OPTION_RETURN },
+  {"id" : 1, "name" : "Setup", "event" : OPTION_SETUP},
+  {"id" : 4, "name" : "Advance Option", "event" : OPTION_ADVANCE},
 ];
 
 
