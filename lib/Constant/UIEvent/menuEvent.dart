@@ -31,3 +31,18 @@ const String OPTION_DEPARTMENT = "DEPARTMENT";
 const String OPTION_CATEGORY = "CATEGORY";
 const String OPTION_DISCOUNT = "DISCOUNT";
 const String OPTION_TAX = "TAX";
+
+const String OPTION_TOTAL  = "TOTAL";
+const String OPTION_PAYMENT = "PAYMENT";
+const String OPTION_VOID = "VOID";
+const String OPTION_REFUND = "REFUND";
+const String OPTION_ITEM = "ITEM";
+const String OPTION_LOOKUP = "LOOKUP";
+
+const String OPTION_RETURN = "RETURN";
+const String OPTION_SETUP = "SETUP";
+const String OPTION_ADVANCE = "ADV_OPT";
+
+
+
+
