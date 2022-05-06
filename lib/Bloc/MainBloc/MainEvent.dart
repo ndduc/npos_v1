@@ -161,7 +161,9 @@ enum MainEvent{
   //endregion
 
   //region CHECKOUT EVENT
-  Event_Add_Item_Checkout
+  Event_Add_Item_Checkout,
+  Event_Payments,
+  Event_Items
   //endregion
 }
 
@@ -198,7 +200,8 @@ class MainParam {
 
   /// CHECKOUT
   MainParam.ItemCheckout({required this.eventStatus, required this.userData, required this.productData, required this.productOrder});
-
+  MainParam.GetPayments({required this.eventStatus, required this.userData});
+  MainParam.GetItems({required this.eventStatus, required this.userData});
   /// USER
   MainParam.GetUserPagination({required this.eventStatus, required this.userData, required this.userParameter});
   MainParam.GetUserByIdLocal({required this.eventStatus, required this.userData, required this.userRelationModel});
@@ -246,6 +249,7 @@ class MainParam {
   /// DISCOUNT
   MainParam.GetDiscountByParam({this.eventStatus, this.discountParameter, this.userData});
   MainParam.AddUpdateDiscount({this.eventStatus, this.userData, this.discountParameter});
+  MainParam.GetDiscounts({this.eventStatus, this.userData});
 
   /// TAX
   MainParam.GetTaxByParam({this.eventStatus, this.taxParameter, this.userData});

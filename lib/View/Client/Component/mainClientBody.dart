@@ -5,23 +5,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/Dummy/DummyValues.dart';
 import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
-import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
-import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
 import 'package:npos/Constant/UIEvent/menuEvent.dart';
 import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
-import 'package:npos/View/Home/homeMenu.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:virtual_keyboard/virtual_keyboard.dart';
 
-import '../../Component/Stateful/customDialog.dart';
-
+// ignore: must_be_immutable
 class MainClientBody extends StatefulWidget {
   UserModel? userData;
   MainClientBody({Key? key, this.userData}) : super(key: key);
@@ -33,7 +32,8 @@ class MainClientBody extends StatefulWidget {
 class _MainClientBody extends State<MainClientBody> {
 
   ProductOrderModel productOrder = ProductOrderModel();
-
+  String loadEvent = EMPTY;
+  List<DiscountModel> discounts = <DiscountModel>[];
   @override
   void initState() {
     super.initState();
@@ -85,6 +85,9 @@ class _MainClientBody extends State<MainClientBody> {
             appBaseEvent(state);
             appSpecificEvent(state);
             appCheckoutItemEvent(state);
+            appDiscountEvent(state);
+            appPaymentEvent(state);
+            appItemEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -150,6 +153,39 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  void appDiscountEvent(MainState state) {
+    if (state is DiscountPaginateLoadingState) {
+
+    } else if (state is DiscountPaginateLoadedState) {
+      ConsolePrint("Discount", state.listDiscountModel?.length);
+      discounts = state.listDiscountModel ?? <DiscountModel>[];
+      loadEvent = OPTION_DISCOUNT;
+    }
+  }
+
+  void appPaymentEvent(MainState state) {
+    if (state is CheckoutPaymentsInit) {
+
+    } else if (state is CheckoutPaymentsLoading) {
+
+    } else if (state is CheckoutPaymentsLoaded) {
+      loadEvent = OPTION_PAYMENT;
+    } else if (state is CheckoutPaymentsError) {
+
+    }
+  }
+
+  void appItemEvent(MainState state) {
+    if (state is CheckoutItemsInit) {
+
+    } else if (state is CheckoutItemsLoading) {
+
+    } else if (state is CheckoutItemsLoaded) {
+      loadEvent = OPTION_ITEM;
+    } else if (state is CheckoutItemsError) {
+
+    }
+  }
 
   Widget bodyCheckOut() {
     return Column(
@@ -418,19 +454,9 @@ class _MainClientBody extends State<MainClientBody> {
   ///GRID HOLDS STUFFS LIKE ITEM FROM OPTION SUCH AS DISCOUNT HOLDS HOLD DISCOUNT_1, _2, _3,..etc
   //region GRID VIEW
   Widget showItemGrid() {
+    // loadEvent
     return Container(
-        child: GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-            ),
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return Card(
-                color: Colors.amber,
-                child: Center(child: Text('$index')),
-              );
-            }
-        ),
+        child: gridProcessing(),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.all(Radius.circular(2)),
@@ -438,6 +464,82 @@ class _MainClientBody extends State<MainClientBody> {
         )
     );
   }
+
+  Widget gridProcessing() {
+    switch (loadEvent) {
+      case EMPTY:
+        return defaultGrid();
+      case OPTION_DISCOUNT:
+        return discountGrid();
+      case OPTION_PAYMENT:
+        return paymentGrid();
+      case OPTION_ITEM:
+        return itemGrid();
+      default:
+        return defaultGrid();
+    }
+  }
+
+  Widget defaultGrid() {
+    return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+        ),
+        itemCount: 10,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            color: Colors.amber,
+            child: Center(child: Text('$index')),
+          );
+        }
+    );
+  }
+
+  Widget discountGrid() {
+    return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+        ),
+        itemCount: discounts.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            color: Colors.amber,
+            child: Center(child: Text(discounts[index].description!)),
+          );
+        }
+    );
+  }
+
+  Widget paymentGrid() {
+    return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+        ),
+        itemCount: dummyPayment.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            color: Colors.amber,
+            child: Center(child: Text(dummyPayment[index]["name"])),
+          );
+        }
+    );
+  }
+
+  Widget itemGrid() {
+    return GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+        ),
+        itemCount: dummyItem.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            color: Colors.amber,
+            child: Center(child: Text(dummyItem[index]["name"])),
+          );
+        }
+    );
+  }
+
   //endregion
 
   ///KEYBOARD STUFF
@@ -574,14 +676,19 @@ class _MainClientBody extends State<MainClientBody> {
                       // context.read<MainBloc>().add(MainParam.GenericNavigator(eventStatus: MainEvent.Nav_MainMenu, context: context, userData: widget.userData));
                       break;
                     case OPTION_PAYMENT:
+                      ConsolePrint("OPTION", "PAYMENT");
+                      context.read<MainBloc>().add(MainParam.GetPayments(eventStatus: MainEvent.Event_Payments, userData: widget.userData));
                       break;
                     case OPTION_VOID:
                       break;
                     case OPTION_REFUND:
                         break;
                     case OPTION_DISCOUNT:
+                      ConsolePrint("OPTION", "DISCOUNT");
+                      context.read<MainBloc>().add(MainParam.GetDiscounts(eventStatus: MainEvent.Event_GetDiscounts, userData: widget.userData));
                       break;
                     case OPTION_ITEM:
+                      context.read<MainBloc>().add(MainParam.GetItems(eventStatus: MainEvent.Event_Items, userData: widget.userData));
                       break;
                     case OPTION_LOOKUP:
                       break;

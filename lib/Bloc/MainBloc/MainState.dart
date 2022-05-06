@@ -460,18 +460,36 @@ class DialogProductAddUpdateErrorState extends MainState{
 }
 //endregion
 
-//region CHECKOUT ITEM
+//region CHECKOUT CLIENT
+
+/// CHECKOUT
 class CheckoutItemInit extends MainState {}
 class CheckoutItemLoading extends MainState {}
 class CheckoutItemLoaded extends MainState {
   ProductOrderModel? productOrderModel;
   CheckoutItemLoaded({required this.productOrderModel});
-
 }
 class CheckoutItemError extends MainState {
   final error;
   CheckoutItemError({this.error});
 }
 
+/// PAYMENT
+class CheckoutPaymentsInit extends MainState {}
+class CheckoutPaymentsLoading extends MainState {}
+class CheckoutPaymentsLoaded extends MainState {}
+class CheckoutPaymentsError extends MainState {
+  final error;
+  CheckoutPaymentsError({this.error});
+}
+
+/// ITEM
+class CheckoutItemsInit extends MainState {}
+class CheckoutItemsLoading extends MainState {}
+class CheckoutItemsLoaded extends MainState {}
+class CheckoutItemsError extends MainState {
+  final error;
+  CheckoutItemsError({this.error});
+}
 
 //endregion

@@ -1163,6 +1163,26 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield CheckoutItemError(error:  e);
         }
         break;
+      case MainEvent.Event_Payments:
+        ConsolePrint("BLOC", "PAY");
+        yield CheckoutPaymentsInit();
+        try {
+          yield CheckoutPaymentsLoading();
+          yield CheckoutPaymentsLoaded();
+        } catch (e) {
+          yield CheckoutPaymentsError(error: e);
+        }
+        break;
+      case MainEvent.Event_Items:
+        ConsolePrint("BLOC", "ITEM");
+        yield CheckoutItemsInit();
+        try {
+          yield CheckoutItemsLoading();
+          yield CheckoutItemsLoaded();
+        } catch (e) {
+          yield CheckoutItemsError(error: e);
+        }
+        break;
       //endregion
       default:
         break;
