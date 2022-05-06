@@ -165,6 +165,13 @@ enum MainEvent{
   Event_Payments,
   Event_Items,
   Event_Lookup,
+
+  /// LOGIC WITH POPUP DIALOG
+  Nav_Event_POS_VOID_Dialog,
+  Nav_Event_POS_REFUND_Dialog,
+  Nav_Event_POS_OVERRIDE_Dialog,
+  Nav_Event_POS_PRODUCT_EDIT_Dialog,
+
   /// DEPARTMENT -> CATEGORY -> SUB CATEGORY -> ITEM
   Event_Department_POS,
   Event_Category_POS,
@@ -209,6 +216,9 @@ class MainParam {
   MainParam.GetPayments({required this.eventStatus, required this.userData});
   MainParam.GetItems({required this.eventStatus, required this.userData});
   MainParam.GetLookup({required this.eventStatus, required this.userData});
+  /// CHECKOUT POS DIALOG
+  MainParam.NavDialogPOSClient({this.eventStatus, this.userData, this.context});
+
 
   /// CHECKOUT DEPARTMENT -> CATEGORY -> SUB CATEGORY -> ITEM
   MainParam.ItemGenericSelection({required this.eventStatus, required this.userData, required this.optionalParameter});

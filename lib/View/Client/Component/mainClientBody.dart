@@ -334,6 +334,9 @@ class _MainClientBody extends State<MainClientBody> {
                                         /// Logic Overview
                                         /// If Quantity is greater than 1, then pop option for user to void a specific number of item
                                         /// If Quantity By Weight then simply void the entire item
+                                        ConsolePrint("PRODUCT", "VOID");
+                                        context.read<MainBloc>().add(MainParam.NavDialogPOSClient(eventStatus: MainEvent.Nav_Event_POS_VOID_Dialog
+                                            , context: context, userData: widget.userData));
                                       },
                                     ),
                                   ),
@@ -653,9 +656,11 @@ class _MainClientBody extends State<MainClientBody> {
           ),
           itemCount: products.length,
           itemBuilder: (BuildContext context, int index) {
-            return Card(
-              color: Colors.amber,
-              child: Center(child: Text(products[index]["name"])),
+            return InkWell(
+              child: Card(
+                color: Colors.amber,
+                child: Center(child: Text(products[index]["name"])),
+              )
             );
           }
       );

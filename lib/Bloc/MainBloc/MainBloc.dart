@@ -1409,7 +1409,27 @@ class MainBloc extends Bloc<MainParam,MainState>
           },
         );
         break;
-
+      case MainEvent.Nav_Event_POS_VOID_Dialog:
+        ConsolePrint("BLOC", "VOID DIALOG");
+        // showGeneralDialog(
+        //   barrierLabel: "Barrier",
+        //   barrierDismissible: false,
+        //   barrierColor: Colors.black.withOpacity(0.5),
+        //   transitionDuration: Duration(milliseconds: 500),
+        //   context: event.context as BuildContext,
+        //   pageBuilder: (_, __, ___) {
+        //     return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: EVENT_ITEMCODE_UPDATE, productMode: event.productData,);
+        //   },
+        //   transitionBuilder: (_, anim, __, child) {
+        //     return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+        //         child:SlideTransition(
+        //           position:
+        //           Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+        //           child: child,
+        //         ));
+        //   },
+        // );
+        break;
     }
   }
   //endregion
