@@ -27,19 +27,15 @@ List<Map<dynamic, dynamic>> dummyDepartment = [
 ];
 
 List<Map<dynamic, dynamic>> dummyCategory = [
-  {"id" : 0, "name" : "Category 1", "Department": "0"},
-  {"id" : 1, "name" : "Category 2", "Department": "1"},
-  {"id" : 2, "name" : "Category 3", "Department": "2"},
-  {"id" : 3, "name" : "Category 4", "Department": "3"},
-  {"id" : 0, "name" : "Category 1", "Department": "0"},
-  {"id" : 1, "name" : "Category 2", "Department": "1"},
-  {"id" : 2, "name" : "Category 3", "Department": "2"},
-  {"id" : 3, "name" : "Category 4", "Department": "3"},
+  {"id" : 0, "name" : "Category 1", "Department": 0},
+  {"id" : 1, "name" : "Category 2", "Department": 1},
+  {"id" : 2, "name" : "Category 3", "Department": 2},
+  {"id" : 3, "name" : "Category 4", "Department": 3},
 ];
 
 List<Map<dynamic, dynamic>> dummySubCategory = [
-  {"id" : 0, "name" : "Sub Category 1", "Category": "0"},
-  {"id" : 1, "name" : "Sub Category 2", "Category": "1"},
-  {"id" : 2, "name" : "Sub Category 3", "Category": "2"},
-  {"id" : 3, "name" : "Sub Category 4", "Category": "3"},
+  {"id" : 0, "name" : "Sub Category 1", "Category": 0},
+  {"id" : 1, "name" : "Sub Category 2", "Category": 1},
+  {"id" : 2, "name" : "Sub Category 3", "Category": 2},
+  {"id" : 3, "name" : "Sub Category 4", "Category": 3},
 ];

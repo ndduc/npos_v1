@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Constant/API/MapValues.dart';
 import 'package:npos/Constant/API/StringValues.dart';
+import 'package:npos/Constant/Dummy/DummyValues.dart';
+import 'package:npos/Constant/Enum/CheckoutEnum.dart';
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
 import 'package:npos/Constant/Values/StringValues.dart' as Value;
 import 'package:npos/Debug/Debug.dart';
@@ -1136,7 +1138,6 @@ class MainBloc extends Bloc<MainParam,MainState>
       /// CHECKOUT ITEM
       //region CHECKOUT ITEM
       case MainEvent.Event_Add_Item_Checkout:
-        ConsolePrint("TEST", "TEST");
         yield CheckoutItemInit();
         try {
           yield CheckoutItemLoading();
@@ -1157,14 +1158,13 @@ class MainBloc extends Bloc<MainParam,MainState>
 
           newProductOrderModel.transaction.add(prod1);
           newProductOrderModel.orderSubTotal = newProductOrderModel.orderSubTotal + prod1.price!.toDouble();
-          newProductOrderModel.orderQuantity = newProductOrderModel.orderQuantity + prod1.quantity!.toDouble();
+          newProductOrderModel.orderQuantity = newProductOrderModel.orderQuantity + prod1.quantity.toDouble();
           yield CheckoutItemLoaded(productOrderModel: newProductOrderModel);
         } catch (e) {
           yield CheckoutItemError(error:  e);
         }
         break;
       case MainEvent.Event_Payments:
-        ConsolePrint("BLOC", "PAY");
         yield CheckoutPaymentsInit();
         try {
           yield CheckoutPaymentsLoading();
@@ -1174,17 +1174,70 @@ class MainBloc extends Bloc<MainParam,MainState>
         }
         break;
       case MainEvent.Event_Items:
-        ConsolePrint("BLOC", "ITEM");
         yield CheckoutItemsInit();
         try {
           yield CheckoutItemsLoading();
-          yield CheckoutItemsLoaded();
+          yield CheckoutItemsLoaded.Department();
+        } catch (e) {
+          yield CheckoutItemsError(error: e);
+        }
+        break;
+      case MainEvent.Event_Department_POS:
+        dynamic dept =  event.optionalParameter as Map<String, String>;
+        yield CheckoutItemsInit();
+        try {
+          yield CheckoutItemsLoading();
+          List<Map<dynamic, dynamic>> categoryAssociationModel = [];
+          List<Map<dynamic, dynamic>> firstSubAssociationModel = [];
+          Enum checkoutOption = CheckoutEnum.CATEGORY;
+          for(int i = 0; i < dummyCategory.length; i++) {
+            if (dummyCategory[i]["Department"] == int.parse(dept["id"])) {
+              categoryAssociationModel.add(dummyCategory[i]);
+            }
+          }
+
+          if (categoryAssociationModel.isNotEmpty) {
+            for(int i = 0; i < dummySubCategory.length; i++) {
+              if (dummySubCategory[i]["Category"] == categoryAssociationModel[0]["id"]) {
+                firstSubAssociationModel.add(dummySubCategory[i]);
+              }
+            }
+          }
+
+          yield CheckoutItemsLoaded.Category(categoryAssociationModel: categoryAssociationModel, subCategoryAssociationModel: firstSubAssociationModel, option: checkoutOption);
+        } catch (e) {
+          yield CheckoutItemsError(error: e);
+        }
+        break;
+      case MainEvent.Event_Category_POS:
+        dynamic cat =  event.optionalParameter as Map<String, String>;
+        yield CheckoutItemsInit();
+        try {
+          yield CheckoutItemsLoading();
+          List<Map<dynamic, dynamic>> subCategoryAssociationModel = [];
+          Enum checkoutOption = CheckoutEnum.SUBCATEGORY;
+          for(int i = 0; i < dummySubCategory.length; i++) {
+            if (dummySubCategory[i]["Category"] == int.parse(cat["id"])) {
+              subCategoryAssociationModel.add(dummySubCategory[i]);
+            }
+          }
+          yield CheckoutItemsLoaded.SubCategory(subCategoryAssociationModel: subCategoryAssociationModel, option: checkoutOption);
+        } catch (e) {
+          yield CheckoutItemsError(error: e);
+        }
+        break;
+      case MainEvent.Event_SubCategory_POS:
+        yield CheckoutItemsInit();
+        try {
+          yield CheckoutItemsLoading();
+          List<Map<dynamic, dynamic>> productAssociationModel = dummyItem;
+          Enum checkoutOption = CheckoutEnum.PRODUCT;
+          yield CheckoutItemsLoaded.Product(productAssociationModel: productAssociationModel, option: checkoutOption);
         } catch (e) {
           yield CheckoutItemsError(error: e);
         }
         break;
       case MainEvent.Event_Lookup:
-        ConsolePrint("BLOC", "LOOKUP");
         yield CheckoutLookupInit();
         try {
           yield CheckoutLookupLoading();

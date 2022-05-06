@@ -6,6 +6,7 @@ import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
 import 'package:npos/Constant/Dummy/DummyValues.dart';
+import 'package:npos/Constant/Enum/CheckoutEnum.dart';
 import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UIEvent/addProductEvent.dart';
@@ -34,6 +35,16 @@ class _MainClientBody extends State<MainClientBody> {
   ProductOrderModel productOrder = ProductOrderModel();
   String loadEvent = EMPTY;
   List<DiscountModel> discounts = <DiscountModel>[];
+
+  /// dummy list
+  List<Map<dynamic, dynamic>> categories = [];
+  List<Map<dynamic, dynamic>> subCategories = [];
+  List<Map<dynamic, dynamic>> products = [];
+
+  /// logic here is to switch between sub cat and product
+  bool isProduct = false;
+
+
   @override
   void initState() {
     super.initState();
@@ -177,12 +188,22 @@ class _MainClientBody extends State<MainClientBody> {
   }
 
   void appItemEvent(MainState state) {
+    isProduct = false;
     if (state is CheckoutItemsInit) {
 
     } else if (state is CheckoutItemsLoading) {
 
     } else if (state is CheckoutItemsLoaded) {
       loadEvent = OPTION_ITEM;
+      if (state.option == CheckoutEnum.CATEGORY) {
+        generateAssociateCategory(state.categoryAssociationModel, state.subCategoryAssociationModel);
+      } else if (state.option == CheckoutEnum.SUBCATEGORY) {
+        generateAssociateSubCategory(state.subCategoryAssociationModel);
+
+      } else if (state.option == CheckoutEnum.PRODUCT) {
+        isProduct = true;
+        generateAssociateProduct(state.productAssociationModel);
+      }
     } else if (state is CheckoutItemsError) {
 
     }
@@ -198,6 +219,19 @@ class _MainClientBody extends State<MainClientBody> {
     } else if (state is CheckoutLookupError) {
 
     }
+  }
+
+  void generateAssociateCategory(List<Map<dynamic, dynamic>> model, List<Map<dynamic, dynamic>> firstSubModel) {
+    model.isEmpty ? categories = [] : categories = model;
+    firstSubModel.isEmpty ? subCategories = []: subCategories = firstSubModel;
+  }
+
+  void generateAssociateSubCategory(List<Map<dynamic, dynamic>> model) {
+    model.isEmpty ? subCategories = [] : subCategories = model;
+  }
+
+  void generateAssociateProduct(List<Map<dynamic, dynamic>> model) {
+    model.isEmpty ? products = [] : products = model;
   }
 
   Widget bodyCheckOut() {
@@ -559,7 +593,11 @@ class _MainClientBody extends State<MainClientBody> {
                     ),
                     onTap: () {
                       /// The logic will populate Category associate with this Department
-                      ConsolePrint("Department", dummyDepartment[index]["name"]);
+                      Map<String, String> param = {
+                        "id" : dummyDepartment[index]["id"].toString()
+                      };
+                      context.read<MainBloc>().add(MainParam.ItemGenericSelection(eventStatus: MainEvent.Event_Department_POS, userData: widget.userData, optionalParameter: param));
+
                     },
                   ),
                 ),
@@ -576,16 +614,19 @@ class _MainClientBody extends State<MainClientBody> {
                       physics: ClampingScrollPhysics(),
                       shrinkWrap: false,
                       scrollDirection: Axis.vertical,
-                      itemCount: dummyCategory.length,
+                      itemCount: categories.length,
                       itemBuilder: (BuildContext context, int index) => Card(
                         child: InkWell(
                           child: Container(
                             height: 100,
-                            child: Text(dummyCategory[index]["name"]),
+                            child: Text(categories[index]["name"]),
                           ),
                           onTap: () {
                             /// The logic will populate Sub Category associate with this Category
-                            ConsolePrint("Category", dummyCategory[index]["name"]);
+                            Map<String, String> param = {
+                              "id" : categories[index]["id"].toString()
+                            };
+                            context.read<MainBloc>().add(MainParam.ItemGenericSelection(eventStatus: MainEvent.Event_Category_POS, userData: widget.userData, optionalParameter: param));
                           },
                         ),
                       ),
@@ -593,25 +634,60 @@ class _MainClientBody extends State<MainClientBody> {
                 ),
                 Expanded(
                     flex: 8,
-                    child: GridView.builder(
-                        scrollDirection: Axis.vertical,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                        ),
-                        itemCount: dummyItem.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Card(
-                            color: Colors.amber,
-                            child: Center(child: Text(dummyItem[index]["name"])),
-                          );
-                        }
-                    )
+                    child: generateProductOrSubCat()
                 )
               ],
             )
         )
       ],
     );
+  }
+
+  Widget generateProductOrSubCat() {
+    if (isProduct) {
+      ConsolePrint("HIT", "THIS");
+      return GridView.builder(
+          scrollDirection: Axis.vertical,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+          ),
+          itemCount: products.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              color: Colors.amber,
+              child: Center(child: Text(products[index]["name"])),
+            );
+          }
+      );
+    } else {
+      return GridView.builder(
+          scrollDirection: Axis.vertical,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+          ),
+          itemCount: subCategories.length,
+          itemBuilder: (BuildContext context, int index) {
+            return InkWell(
+              // color: Colors.amber,
+              child: Container(
+                child: Text(subCategories[index]["name"]),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blueAccent),
+                    color: Colors.white),
+              ),
+              onTap: () {
+                Map<String, String> param = {
+                  "dept_id" : "1",
+                  "cat_id" : "1",
+                  "sub_id" : "1"
+                };
+                context.read<MainBloc>().add(MainParam.ItemGenericSelection(eventStatus: MainEvent.Event_SubCategory_POS, userData: widget.userData, optionalParameter: param));
+              },
+            );
+          }
+      );
+    }
+
   }
 
   Widget lookUpContainer() {
@@ -662,6 +738,7 @@ class _MainClientBody extends State<MainClientBody> {
       ],
     );
   }
+
 
   //endregion
 

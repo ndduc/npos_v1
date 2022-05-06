@@ -164,7 +164,12 @@ enum MainEvent{
   Event_Add_Item_Checkout,
   Event_Payments,
   Event_Items,
-  Event_Lookup
+  Event_Lookup,
+  /// DEPARTMENT -> CATEGORY -> SUB CATEGORY -> ITEM
+  Event_Department_POS,
+  Event_Category_POS,
+  Event_SubCategory_POS,
+  Event_Product_POS,
   //endregion
 }
 
@@ -204,6 +209,10 @@ class MainParam {
   MainParam.GetPayments({required this.eventStatus, required this.userData});
   MainParam.GetItems({required this.eventStatus, required this.userData});
   MainParam.GetLookup({required this.eventStatus, required this.userData});
+
+  /// CHECKOUT DEPARTMENT -> CATEGORY -> SUB CATEGORY -> ITEM
+  MainParam.ItemGenericSelection({required this.eventStatus, required this.userData, required this.optionalParameter});
+
   /// USER
   MainParam.GetUserPagination({required this.eventStatus, required this.userData, required this.userParameter});
   MainParam.GetUserByIdLocal({required this.eventStatus, required this.userData, required this.userRelationModel});

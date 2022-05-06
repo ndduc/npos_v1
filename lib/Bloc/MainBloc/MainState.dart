@@ -23,6 +23,8 @@ import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/UserRelationModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 
+import '../../Constant/Enum/CheckoutEnum.dart';
+
 abstract class MainState extends Equatable{
   @override
   // TODO: implement props
@@ -484,9 +486,24 @@ class CheckoutPaymentsError extends MainState {
 }
 
 /// ITEM
+/// CHECKOUT DEPARTMENT -> CATEGORY -> SUB CATEGORY -> ITEM
 class CheckoutItemsInit extends MainState {}
 class CheckoutItemsLoading extends MainState {}
-class CheckoutItemsLoaded extends MainState {}
+class CheckoutItemsLoaded extends MainState {
+  /// holding category associates with selected department
+  List<Map<dynamic, dynamic>> categoryAssociationModel = [];
+  /// holding sub category associates with selected department
+  List<Map<dynamic, dynamic>> subCategoryAssociationModel = [];
+  /// holding item associates with selected dept, cat, sub cat
+  List<Map<dynamic, dynamic>> productAssociationModel = [];
+
+  /// selected option
+  Enum option = CheckoutEnum.NONE;
+  CheckoutItemsLoaded.Department();
+  CheckoutItemsLoaded.Category({required this.categoryAssociationModel, required this.subCategoryAssociationModel, required this.option});
+  CheckoutItemsLoaded.SubCategory({required this.subCategoryAssociationModel, required this.option});
+  CheckoutItemsLoaded.Product({required this.productAssociationModel, required this.option});
+}
 class CheckoutItemsError extends MainState {
   final error;
   CheckoutItemsError({this.error});
@@ -500,4 +517,6 @@ class CheckoutLookupError extends MainState {
   final error;
   CheckoutLookupError({this.error});
 }
+
+
 //endregion
