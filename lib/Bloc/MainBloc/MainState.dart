@@ -492,4 +492,12 @@ class CheckoutItemsError extends MainState {
   CheckoutItemsError({this.error});
 }
 
+/// LOOKUP
+class CheckoutLookupInit extends MainState {}
+class CheckoutLookupLoading extends MainState {}
+class CheckoutLookupLoaded extends MainState {}
+class CheckoutLookupError extends MainState {
+  final error;
+  CheckoutLookupError({this.error});
+}
 //endregion

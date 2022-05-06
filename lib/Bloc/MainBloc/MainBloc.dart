@@ -1183,6 +1183,16 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield CheckoutItemsError(error: e);
         }
         break;
+      case MainEvent.Event_Lookup:
+        ConsolePrint("BLOC", "LOOKUP");
+        yield CheckoutLookupInit();
+        try {
+          yield CheckoutLookupLoading();
+          yield CheckoutLookupLoaded();
+        } catch (e) {
+          yield CheckoutLookupError(error: e);
+        }
+        break;
       //endregion
       default:
         break;

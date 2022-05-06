@@ -88,6 +88,7 @@ class _MainClientBody extends State<MainClientBody> {
             appDiscountEvent(state);
             appPaymentEvent(state);
             appItemEvent(state);
+            appLookupEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -183,6 +184,18 @@ class _MainClientBody extends State<MainClientBody> {
     } else if (state is CheckoutItemsLoaded) {
       loadEvent = OPTION_ITEM;
     } else if (state is CheckoutItemsError) {
+
+    }
+  }
+
+  void appLookupEvent(MainState state) {
+    if (state is CheckoutLookupInit) {
+
+    } else if (state is CheckoutLookupLoading) {
+
+    } else if (state is CheckoutLookupLoaded) {
+      loadEvent = OPTION_LOOKUP;
+    } else if (state is CheckoutLookupError) {
 
     }
   }
@@ -475,6 +488,8 @@ class _MainClientBody extends State<MainClientBody> {
         return paymentGrid();
       case OPTION_ITEM:
         return itemGrid();
+      case OPTION_LOOKUP:
+        return lookUpContainer();
       default:
         return defaultGrid();
     }
@@ -526,17 +541,54 @@ class _MainClientBody extends State<MainClientBody> {
   }
 
   Widget itemGrid() {
-    return GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+    return Column(
+      children: [
+        Expanded(
+            flex: 1,
+            child: Text("TEST")
         ),
-        itemCount: dummyItem.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            color: Colors.amber,
-            child: Center(child: Text(dummyItem[index]["name"])),
-          );
-        }
+        Expanded(
+            flex: 9,
+            child: Row(
+              children: [
+                Expanded(
+                    flex: 2,
+                    child: Text("TEST")
+                ),
+                Expanded(
+                    flex: 8,
+                    child: GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                        ),
+                        itemCount: dummyItem.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Card(
+                            color: Colors.amber,
+                            child: Center(child: Text(dummyItem[index]["name"])),
+                          );
+                        }
+                    )
+                )
+              ],
+            )
+        )
+      ],
+    );
+  }
+
+  Widget lookUpContainer() {
+    return Column(
+      children: [
+        Expanded(
+            flex: 1,
+            child: Text("Text Box Goes Here")
+        ),
+        Expanded(
+            flex: 9,
+            child: Text("Table Grid Goes, Where we search item by name")
+        )
+      ],
     );
   }
 
@@ -691,6 +743,7 @@ class _MainClientBody extends State<MainClientBody> {
                       context.read<MainBloc>().add(MainParam.GetItems(eventStatus: MainEvent.Event_Items, userData: widget.userData));
                       break;
                     case OPTION_LOOKUP:
+                      context.read<MainBloc>().add(MainParam.GetLookup(eventStatus: MainEvent.Event_Lookup, userData: widget.userData));
                       break;
                     default:
                       break;
