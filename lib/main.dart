@@ -4,6 +4,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,6 +46,7 @@ class BlocState extends State<BlocRun>{
       child: BlocBuilder<ThemeBloc,ThemeState>(
         builder: (BuildContext context,ThemeState themeState){
           return   MaterialApp(
+            scrollBehavior: MyCustomScrollBehavior(),
             theme: themeState.themeData,
             home: BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
                 child:Authentication()),
@@ -57,6 +59,18 @@ class BlocState extends State<BlocRun>{
 
 }
 
+/// scroll support for other platform beside android and ios
+/// this should override the entire app
+/// https://docs.flutter.dev/release/breaking-changes/default-scroll-behavior-drag
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  // Override behavior methods and getters like dragDevices
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+    // etc.
+  };
+}
 
 /*
 void main() {

@@ -540,12 +540,31 @@ class _MainClientBody extends State<MainClientBody> {
     );
   }
 
+  final ScrollController controller = ScrollController();
+
   Widget itemGrid() {
     return Column(
       children: [
         Expanded(
-            flex: 1,
-            child: Text("TEST")
+              flex: 1,
+              child: ListView.builder(
+                physics: ClampingScrollPhysics(),
+                shrinkWrap: false,
+                scrollDirection: Axis.horizontal,
+                itemCount: dummyDepartment.length,
+                itemBuilder: (BuildContext context, int index) => Card(
+                  child: InkWell(
+                    child: Container(
+                      child: Text(dummyDepartment[index]["name"]),
+                    ),
+                    onTap: () {
+                      /// The logic will populate Category associate with this Department
+                      ConsolePrint("Department", dummyDepartment[index]["name"]);
+                    },
+                  ),
+                ),
+            ),
+
         ),
         Expanded(
             flex: 9,
@@ -553,11 +572,29 @@ class _MainClientBody extends State<MainClientBody> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: Text("TEST")
+                    child: ListView.builder(
+                      physics: ClampingScrollPhysics(),
+                      shrinkWrap: false,
+                      scrollDirection: Axis.vertical,
+                      itemCount: dummyCategory.length,
+                      itemBuilder: (BuildContext context, int index) => Card(
+                        child: InkWell(
+                          child: Container(
+                            height: 100,
+                            child: Text(dummyCategory[index]["name"]),
+                          ),
+                          onTap: () {
+                            /// The logic will populate Sub Category associate with this Category
+                            ConsolePrint("Category", dummyCategory[index]["name"]);
+                          },
+                        ),
+                      ),
+                    )
                 ),
                 Expanded(
                     flex: 8,
                     child: GridView.builder(
+                        scrollDirection: Axis.vertical,
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 4,
                         ),
@@ -582,7 +619,41 @@ class _MainClientBody extends State<MainClientBody> {
       children: [
         Expanded(
             flex: 1,
-            child: Text("Text Box Goes Here")
+            child: Row(
+              children: [
+                Expanded(
+                    flex: 8,
+                    child: // Text("TEST 4-1"),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: const BorderRadius.all(Radius.circular(2)),
+                        border: Border.all(color: Colors.blueAccent),
+                      ),
+                      /// Depend on business, this input will be updated accordingly
+                      /// example: grocery then it will be UPC
+                      ///          service model then it will be some kind of user defined code
+                      child: TextFormField(
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          labelText: "Scan or Enter Item Upc",
+                          hintText: "Hint",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0)),
+                        ),
+                      ),
+
+                    )
+
+                ),
+                Expanded(
+                    flex: 2,
+                    child: // Text("TEST 4-1"),
+                    solidButton(BTN_CONFIRM, EVENT_CONFIRM)
+
+                ),
+              ],
+            ),
         ),
         Expanded(
             flex: 9,
@@ -732,14 +803,36 @@ class _MainClientBody extends State<MainClientBody> {
                       context.read<MainBloc>().add(MainParam.GetPayments(eventStatus: MainEvent.Event_Payments, userData: widget.userData));
                       break;
                     case OPTION_VOID:
+                      /**
+                       * Logic
+                       * Redundant -- this can be done on item List View
+                       * */
                       break;
                     case OPTION_REFUND:
+                      /**
+                       * Logic
+                       * Display a pop up dialog
+                       * allow user to either scan or enter an item would to refund
+                       * */
                         break;
                     case OPTION_DISCOUNT:
+                      /**
+                       * Logic
+                       * Show all associated discount with logged location
+                       * Discount on this option must be order-wise discount where a discount will be applied to the entire order
+                      * */
                       ConsolePrint("OPTION", "DISCOUNT");
                       context.read<MainBloc>().add(MainParam.GetDiscounts(eventStatus: MainEvent.Event_GetDiscounts, userData: widget.userData));
                       break;
-                    case OPTION_ITEM:
+                      case OPTION_ITEM:
+                      /// Logic
+                      /// Once clicked, display item widget
+                      /// Backend change: dept, cat, sub, and item should now have UI view variable where true mean allow to display on POS client
+                      /// initial value should be
+                      ///     1st department
+                      ///     associated category with the 1st department
+                      ///     caching associated sub category with the category above
+                      ///     display item associate with all attribute above + item must have UI view set to true
                       context.read<MainBloc>().add(MainParam.GetItems(eventStatus: MainEvent.Event_Items, userData: widget.userData));
                       break;
                     case OPTION_LOOKUP:
