@@ -321,7 +321,7 @@ class _MainClientBody extends State<MainClientBody> {
                               )
                             ),
                             Expanded(
-                              flex: 2,
+                              flex: 1,
                               child: Row(
                                 children: [
                                   Expanded(
@@ -343,22 +343,12 @@ class _MainClientBody extends State<MainClientBody> {
                                   Expanded(
                                     flex:2,
                                     child: IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      color: Colors.blueAccent,
-                                      onPressed: () {
-                                        /// Edit button allow user to do these following option. Pop up occur upon selected
-                                        /// Change quantity (unit only, no weight)
-                                        /// Perform Price Override
-                                      },
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex:2,
-                                    child: IconButton(
                                       icon: const Icon(Icons.money),
                                       color: Colors.blueAccent,
                                       onPressed: () {
                                         /// Allow user to add discount to specific item
+                                        context.read<MainBloc>().add(MainParam.NavDialogPOSClient(eventStatus: MainEvent.Nav_Event_POS_OVERRIDE_Dialog
+                                            , context: context, userData: widget.userData));
                                       },
                                     ),
                                   )
@@ -896,6 +886,8 @@ class _MainClientBody extends State<MainClientBody> {
                        * Display a pop up dialog
                        * allow user to either scan or enter an item would to refund
                        * */
+                      context.read<MainBloc>().add(MainParam.NavDialogPOSClient(eventStatus: MainEvent.Nav_Event_POS_REFUND_Dialog
+                          , context: context, userData: widget.userData));
                         break;
                     case OPTION_DISCOUNT:
                       /**

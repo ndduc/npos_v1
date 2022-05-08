@@ -31,6 +31,9 @@ import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Model/UserRelationModel.dart';
 import 'package:npos/Model/VendorModel.dart';
 import 'package:npos/View/Client/clientView.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/CheckoutOverrideDiscountDialog.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/CheckoutRefundDialog.dart';
+import 'package:npos/View/Component/Stateful/Dialogs/CheckoutVoidDialog.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocAddUpdate.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocItemCode.dart';
 import 'package:npos/View/Component/Stateful/Dialogs/ProductDialogBlocUpc.dart';
@@ -1411,24 +1414,66 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
       case MainEvent.Nav_Event_POS_VOID_Dialog:
         ConsolePrint("BLOC", "VOID DIALOG");
-        // showGeneralDialog(
-        //   barrierLabel: "Barrier",
-        //   barrierDismissible: false,
-        //   barrierColor: Colors.black.withOpacity(0.5),
-        //   transitionDuration: Duration(milliseconds: 500),
-        //   context: event.context as BuildContext,
-        //   pageBuilder: (_, __, ___) {
-        //     return ProductDialogBlocItemCode(userModel: event.userData, whoAmI: EVENT_ITEMCODE_UPDATE, productMode: event.productData,);
-        //   },
-        //   transitionBuilder: (_, anim, __, child) {
-        //     return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
-        //         child:SlideTransition(
-        //           position:
-        //           Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
-        //           child: child,
-        //         ));
-        //   },
-        // );
+        showGeneralDialog(
+          barrierLabel: "Barrier",
+          barrierDismissible: false,
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 500),
+          context: event.context as BuildContext,
+          pageBuilder: (_, __, ___) {
+            return CheckoutVoidDialog(userModel: event.userData);
+          },
+          transitionBuilder: (_, anim, __, child) {
+            return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                child:SlideTransition(
+                  position:
+                  Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                  child: child,
+                ));
+          },
+        );
+        break;
+      case MainEvent.Nav_Event_POS_OVERRIDE_Dialog:
+        ConsolePrint("BLOC", "VOID DIALOG");
+        showGeneralDialog(
+          barrierLabel: "Barrier",
+          barrierDismissible: false,
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 500),
+          context: event.context as BuildContext,
+          pageBuilder: (_, __, ___) {
+            return CheckoutOverrideDiscountDialog(userModel: event.userData);
+          },
+          transitionBuilder: (_, anim, __, child) {
+            return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                child:SlideTransition(
+                  position:
+                  Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                  child: child,
+                ));
+          },
+        );
+        break;
+      case MainEvent.Nav_Event_POS_REFUND_Dialog:
+        ConsolePrint("BLOC", "VOID DIALOG");
+        showGeneralDialog(
+          barrierLabel: "Barrier",
+          barrierDismissible: false,
+          barrierColor: Colors.black.withOpacity(0.5),
+          transitionDuration: Duration(milliseconds: 500),
+          context: event.context as BuildContext,
+          pageBuilder: (_, __, ___) {
+            return CheckoutRefundDialog(userModel: event.userData);
+          },
+          transitionBuilder: (_, anim, __, child) {
+            return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),
+                child:SlideTransition(
+                  position:
+                  Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+                  child: child,
+                ));
+          },
+        );
         break;
     }
   }
