@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 // ignore_for_file: library_prefixes
 import 'package:data_table_2/data_table_2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
@@ -118,20 +119,23 @@ class Component extends State<CheckoutRefundDialog> {
               borderRadius: const BorderRadius.all(Radius.circular(GENERIC_BORDER_RADIUS)),
               border: Border.all(color: Colors.blueAccent),
             ),
-            child: Stack(
-              children: [
-                Align(
-                    alignment: AlignmentDirectional.topEnd,
-                    child: IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      color: Colors.blueAccent,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                ),
-                MainBodyWidget()
-              ],
+            child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Stack(
+                children: [
+                  Align(
+                      alignment: AlignmentDirectional.topEnd,
+                      child: IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        color: Colors.blueAccent,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                  ),
+                  MainBodyWidget()
+                ],
+              )
             )
         ));
   }
@@ -160,14 +164,12 @@ class Component extends State<CheckoutRefundDialog> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      children: const [
-                        Text(
-                          "Either scan or enter the product's upc or item code to refund:",
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ],
+
+                    const Text(
+                      "Either scan or enter the product's upc or item code to refund:",
+                      style: TextStyle(fontSize: 20.0),
                     ),
+
                     Custom_ListTile_TextField(
                         controller: null,
                         read: readOnly,

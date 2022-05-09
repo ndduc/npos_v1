@@ -119,26 +119,33 @@ class Component extends State<CheckoutOverrideDiscountDialog> {
               borderRadius: const BorderRadius.all(Radius.circular(GENERIC_BORDER_RADIUS)),
               border: Border.all(color: Colors.blueAccent),
             ),
-            child: Stack(
-              children: [
-                Align(
-                    alignment: AlignmentDirectional.topEnd,
-                    child: IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      color: Colors.blueAccent,
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-                ),
-                MainBodyWidget()
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Stack(
+                children: [
+                  Align(
+                      alignment: AlignmentDirectional.topEnd,
+                      child: IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        color: Colors.blueAccent,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                  ),
+                  MainBodyWidget()
+                ],
+              )
             )
         ));
   }
 
   Widget MainBodyWidget() {
-      return OverrideWidget();
+    return OverrideWidget();
+      // return SingleChildScrollView (
+      //   scrollDirection: Axis.vertical,
+      //   child: OverrideWidget(),
+      // );
   }
 
   Widget OverrideWidget() {
@@ -209,20 +216,16 @@ class Component extends State<CheckoutOverrideDiscountDialog> {
                       color: Colors.black,
                     ),
                     const SizedBox(height: 20),
-                    Row(
+                    Column(
                       children: [
-                        Column(
-                          children: const [
-                            Text(
-                              "Choose avaible option to update pricing of the selected product:",
-                              style: TextStyle(fontSize: 20.0),
-                            ),
-                            Text(
-                              "*Remark: you might either give discount or override pricing of this product",
-                              style: TextStyle(fontSize: 15.0),
-                            ),
-                          ],
-                        )
+                        Text(
+                          "Choose avaible option to update pricing of the selected product:",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                        Text(
+                          "*Remark: you might either give discount or override pricing of this product",
+                          style: TextStyle(fontSize: 15.0),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),

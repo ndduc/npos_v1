@@ -34,7 +34,7 @@ class Component extends State<CheckoutVoidDialog> {
   var formKey = GlobalKey<FormState>();
   bool isLoading = false;
   bool readOnly = true;
-  bool isByWeight = true;
+  bool isByWeight = false;
 
   @override
   void initState() {
@@ -127,20 +127,23 @@ class Component extends State<CheckoutVoidDialog> {
               borderRadius: const BorderRadius.all(Radius.circular(GENERIC_BORDER_RADIUS)),
               border: Border.all(color: Colors.blueAccent),
             ),
-            child: Stack(
-              children: [
-                Align(
-                  alignment: AlignmentDirectional.topEnd,
-                  child: IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    color: Colors.blueAccent,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  )
-                ),
-                MainBodyWidget()
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Stack(
+                children: [
+                  Align(
+                      alignment: AlignmentDirectional.topEnd,
+                      child: IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        color: Colors.blueAccent,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )
+                  ),
+                  MainBodyWidget()
+                ],
+              )
             )
         ));
   }
@@ -328,20 +331,16 @@ class Component extends State<CheckoutVoidDialog> {
                       color: Colors.black,
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Column(
-                          children: const [
-                            Text(
-                              "Enter number of item you would like to void from this product:",
-                              style: TextStyle(fontSize: 20.0),
-                            ),
-                            Text(
-                              "*Remark: you can either or select the available option below\nNumber of void must be less than or equal to charged unit",
-                              style: TextStyle(fontSize: 15.0),
-                            ),
-                          ],
-                        )
+                    Column(
+                      children: const [
+                        Text(
+                          "Enter number of item you would like to void from this product:",
+                          style: TextStyle(fontSize: 20.0),
+                        ),
+                        Text(
+                          "*Remark: you can either or select the available option below\nNumber of void must be less than or equal to charged unit",
+                          style: TextStyle(fontSize: 15.0),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
