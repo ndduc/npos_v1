@@ -177,6 +177,9 @@ enum MainEvent{
   Event_Category_POS,
   Event_SubCategory_POS,
   Event_Product_POS,
+
+  /// LOCAL EVENT
+  Event_Keyboard_OpenClose
   //endregion
 }
 
@@ -210,7 +213,7 @@ class MainParam {
   String? toWhere;
   bool? isAdded;
   ProductOrderModel? productOrder;
-
+  bool? isKeyboard;
   /// CHECKOUT
   MainParam.ItemCheckout({required this.eventStatus, required this.userData, required this.productData, required this.productOrder});
   MainParam.GetPayments({required this.eventStatus, required this.userData});
@@ -218,6 +221,9 @@ class MainParam {
   MainParam.GetLookup({required this.eventStatus, required this.userData});
   /// CHECKOUT POS DIALOG
   MainParam.NavDialogPOSClient({this.eventStatus, this.userData, this.context});
+  /// CHECKOUT KEYBOARD
+  MainParam.KeyboardOpenClose({this.eventStatus, this.isKeyboard});
+
 
 
   /// CHECKOUT DEPARTMENT -> CATEGORY -> SUB CATEGORY -> ITEM

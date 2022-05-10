@@ -1249,6 +1249,17 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield CheckoutLookupError(error: e);
         }
         break;
+      case MainEvent.Event_Keyboard_OpenClose:
+        ConsolePrint("BLOC", "VOID DIALOG");
+        yield CheckoutKeyboardInit();
+        try {
+          yield CheckoutKeyboardLoading();
+          bool isKeyboard = event.isKeyboard as bool;
+          yield CheckoutKeyboardLoaded(isKeyboard: isKeyboard);
+        } catch (e) {
+          yield CheckoutKeyboardError(error: e);
+        }
+        break;
       //endregion
       default:
         break;

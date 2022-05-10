@@ -48,9 +48,10 @@ List<Map<dynamic, dynamic>> clientOption = [
 
 
 List<Map<dynamic, dynamic>> clientOptionTop = [
-  {"id" : 0, "name" : "Return", "event" : OPTION_RETURN },
-  {"id" : 1, "name" : "Setup", "event" : OPTION_SETUP},
-  {"id" : 4, "name" : "Advance Option", "event" : OPTION_ADVANCE},
+  {"id" : 0, "name" : "Setup", "event" : OPTION_SETUP},
+  {"id" : 1, "name" : "Advance", "event" : OPTION_ADVANCE},
+  {"id" : 2, "name" : "Return", "event" : OPTION_RETURN },
+  {"id" : 3, "name" : "Keyboard", "event" : "KEY_BOARD" },
 ];
 
 

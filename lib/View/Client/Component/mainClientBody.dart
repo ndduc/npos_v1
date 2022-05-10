@@ -36,6 +36,7 @@ class _MainClientBody extends State<MainClientBody> {
   String loadEvent = EMPTY;
   List<DiscountModel> discounts = <DiscountModel>[];
 
+  TextEditingController scannerController = TextEditingController();
   /// dummy list
   List<Map<dynamic, dynamic>> categories = [];
   List<Map<dynamic, dynamic>> subCategories = [];
@@ -43,7 +44,7 @@ class _MainClientBody extends State<MainClientBody> {
 
   /// logic here is to switch between sub cat and product
   bool isProduct = false;
-
+  bool isKeyboard = false;
 
   @override
   void initState() {
@@ -100,6 +101,7 @@ class _MainClientBody extends State<MainClientBody> {
             appPaymentEvent(state);
             appItemEvent(state);
             appLookupEvent(state);
+            appKeyboardEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -131,7 +133,10 @@ class _MainClientBody extends State<MainClientBody> {
           ],
         ),
         /// KEYBOARD
-        //displayKeyboard(),
+
+        isKeyboard ? displayKeyboard() : const SizedBox()
+
+
       ],
 
     ) ;
@@ -221,6 +226,18 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  void appKeyboardEvent(MainState state) {
+    if (state is CheckoutKeyboardInit) {
+
+    } else if (state is CheckoutKeyboardLoading) {
+
+    } else if (state is CheckoutKeyboardLoaded) {
+      isKeyboard = state.isKeyboard;
+    } else if (state is CheckoutKeyboardError) {
+
+    }
+  }
+
   void generateAssociateCategory(List<Map<dynamic, dynamic>> model, List<Map<dynamic, dynamic>> firstSubModel) {
     model.isEmpty ? categories = [] : categories = model;
     firstSubModel.isEmpty ? subCategories = []: subCategories = firstSubModel;
@@ -237,44 +254,51 @@ class _MainClientBody extends State<MainClientBody> {
   Widget bodyCheckOut() {
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-                flex: 8,
-                child: // Text("TEST 4-1"),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.all(Radius.circular(2)),
-                    border: Border.all(color: Colors.blueAccent),
-                  ),
-                  /// Depend on business, this input will be updated accordingly
-                  /// example: grocery then it will be UPC
-                  ///          service model then it will be some kind of user defined code
-                  child: TextFormField(
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      labelText: "Scan or Enter Item Upc",
-                      hintText: "Hint",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0)),
-                    ),
-                  ),
-
-                )
-
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            border: Border.all(color: Colors.blueAccent),
+          ),
+          /// Depend on business, this input will be updated accordingly
+          /// example: grocery then it will be UPC
+          ///          service model then it will be some kind of user defined code
+          child: TextFormField(
+            onTap: () {
+              /// fire keyboard on tap
+              context.read<MainBloc>().add(MainParam.KeyboardOpenClose(eventStatus: MainEvent.Event_Keyboard_OpenClose, isKeyboard: !isKeyboard));
+            },
+            controller: scannerController,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: InputDecoration(
+              labelText: "Scan or Enter Item Upc",
+              hintText: "Hint",
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
             ),
-            Expanded(
-                flex: 2,
-                child: // Text("TEST 4-1"),
-                solidButton(BTN_CONFIRM, EVENT_CONFIRM)
+          ),
 
-            ),
-          ],
         ),
+        // Row(
+        //   children: [
+        //     Expanded(
+        //         // flex: 8,
+        //         child: // Text("TEST 4-1"),
+        //
+        //
+        //     ),
+        //     // Expanded(
+        //     //     flex: 2,
+        //     //     child: // Text("TEST 4-1"),
+        //     //     solidButton(BTN_CONFIRM, EVENT_CONFIRM)
+        //     //
+        //     // ),
+        //   ],
+        // ),
 
         Expanded(
-          flex: 8,
+          flex: 7,
           child: //Text("TEST 4-8"),
           Container(
             child: ListView.builder(
@@ -375,64 +399,240 @@ class _MainClientBody extends State<MainClientBody> {
         ),
         Expanded(
           flex: 1,
-          child:Container(
-            child: Card(
-              child: Row(
-                children: [
-                  Expanded(
-                      flex: 5,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              "Number of Voided Item: " + productOrder.totalVoidByQuantity.toString()
-                          ),
-                          Text(
-                              "Amount of Voided Item: \$" + productOrder.totalVoidByPrice.toString()
-                          ),
-                          Text(
-                              "Number of Refunded Item: " + productOrder.orderTotalRefundQuantity.toString()
-                          ),
-                          Text(
-                              "Amount of Refunded Item: \$" + productOrder.orderTotalRefund.toString()
-                          ),
-                        ],
-                      )
-                  ),
-                  Expanded(
-                      flex: 5,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              "Sub Total: \$" + productOrder.orderSubTotal.toString()
-                          ),
-                          Text(
-                              "Total Count: " + productOrder.orderQuantity.toString()
-                          ),
-                          Text(
-                              "Total Tax: " + productOrder.orderTotalTax.toString()
-                          ),
-                          Text(
-                              "Total Discount: " + productOrder.orderTotalDiscount.toString()
-                          ),
-                          Text(
-                              "Total Amount: " + productOrder.orderSubTotalStep3.toString()
-                          )
-                        ],
-                      )
-                  )
-                ],
-              )
-            ),
-
+          child: Container(
+            padding: EdgeInsets.only(left: 20),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(2)),
               border: Border.all(color: Colors.blueAccent),
             ),
+            child:
+            Row(
+              children: [
+                Expanded(
+                    flex: 5,
+                    child:  Column(
+                      children: [
+                        Row(
+                          children: const [
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "Number of Item: ",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "5",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "Number of Void: ",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "2",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "Amount of Refund: ",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "5",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "Sub Total: ",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                    )
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "\$51.00",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                    )
+                                )
+                            )
+                          ],
+                        )
+
+                      ],
+                    )
+                ),
+                Expanded(
+                    flex: 5,
+                    child:  Column(
+                      children: [
+                        Row(
+                          children: const [
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "Total Discount (\$): ",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "\$5.00",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "Total Void (\$): ",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "\$5.99",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "Total Refunded (\$): ",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "\$15.99",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: const [
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "Total Tax (\$): ",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            ),
+                            Expanded(
+                                flex: 5,
+                                child: Text(
+                                    "\$5.87",
+                                    style: TextStyle(
+                                        fontSize: 20
+                                    )
+                                )
+                            )
+                          ],
+                        )
+                      ],
+                    )
+                )
+              ],
+            )
+          ),
+        ),
+        Container(
+          height: 50,
+          padding: EdgeInsets.only(left: 20),
+          child: Row(
+            children: const [
+
+              Text(
+                  "Total (\$): ",
+                  style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold
+                  )
+              ),
+              SizedBox(width: 30),
+              Text(
+                  "\$100.00",
+                  style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold
+                  )
+              ),
+            ],
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            border: Border.all(color: Colors.blueAccent),
           ),
         )
       ]
@@ -445,6 +645,7 @@ class _MainClientBody extends State<MainClientBody> {
         Expanded(
           flex: 1,
           child: Container(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(2)),
@@ -472,7 +673,7 @@ class _MainClientBody extends State<MainClientBody> {
                     flex: 1,
                     child: Container(
                       child: Row(
-                        children: [
+                        children: const [
                           Text("TEST")
                         ],
                       ),
@@ -626,6 +827,7 @@ class _MainClientBody extends State<MainClientBody> {
                     )
                 ),
                 Expanded(
+
                     flex: 8,
                     child: generateProductOrSubCat()
                 )
@@ -747,7 +949,7 @@ class _MainClientBody extends State<MainClientBody> {
   bool shiftEnabled = false;
 
   // is true will show the numeric keyboard.
-  bool isNumericMode = true;
+  bool isNumericMode = false;
 
   /// We are going to cum back to this later
   /// Incorporate this widget with an event, where the keyboard will display upon a click event
@@ -755,58 +957,93 @@ class _MainClientBody extends State<MainClientBody> {
     /// Align would allow this to display at specific area in stack
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Column(
-        children: <Widget>[
-          Text(
-            text,
-
-          ),
-          SwitchListTile(
-            title: Text(
-              'Keyboard Type = ' +
-                  (isNumericMode
-                      ? 'VirtualKeyboardType.Numeric'
-                      : 'VirtualKeyboardType.Alphanumeric'),
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              text,
             ),
-            value: isNumericMode,
-            onChanged: (val) {
-              setState(() {
-                isNumericMode = val;
-              });
-            },
-          ),
-          // Expanded(
-          //   child: Container(),
-          // ),
-          Container(
-            color: Colors.deepPurple,
-            child: VirtualKeyboard(
-                height: 300,
-                textColor: Colors.white,
-                type: isNumericMode
-                    ? VirtualKeyboardType.Numeric
-                    : VirtualKeyboardType.Alphanumeric,
-                onKeyPress: _onKeyPress),
-          )
-        ],
+            Row(
+              children: [
+                Expanded(
+                    flex: 9,
+                    child:  SwitchListTile(
+                      title: Text(
+                        'Keyboard Type = ' +
+                            (isNumericMode
+                                ? 'VirtualKeyboardType.Numeric'
+                                : 'VirtualKeyboardType.Alphanumeric'),
+                      ),
+                      value: isNumericMode,
+                      onChanged: (val) {
+                        setState(() {
+                          isNumericMode = val;
+                        });
+                      },
+                    )
+                ),
+                Expanded(
+                    flex: 1,
+                    child: Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        color: Colors.blueAccent,
+                        onPressed: () {
+                          /// Logic is to close virtual keyboard
+                          context.read<MainBloc>().add(MainParam.KeyboardOpenClose(eventStatus: MainEvent.Event_Keyboard_OpenClose, isKeyboard: !isKeyboard));
+
+                        },
+                      ),
+                    )
+                )
+              ],
+            ),
+            Container(
+              color: Colors.deepPurple,
+              child: VirtualKeyboard(
+                  height: 300,
+                  textColor: Colors.white,
+                  type: isNumericMode
+                      ? VirtualKeyboardType.Numeric
+                      : VirtualKeyboardType.Alphanumeric,
+                  onKeyPress: _onKeyPress),
+            )
+          ],
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.all(Radius.circular(2)),
+          border: Border.all(color: Colors.red),
+        )
       )
+
     );
   }
   /// Fired when the virtual keyboard key is pressed.
   _onKeyPress(VirtualKeyboardKey key) {
     if (key.keyType == VirtualKeyboardKeyType.String) {
       text = text + (shiftEnabled ? key.capsText : key.text);
+      scannerController.text = text;
     } else if (key.keyType == VirtualKeyboardKeyType.Action) {
       switch (key.action) {
         case VirtualKeyboardKeyAction.Backspace:
           if (text.length == 0) return;
           text = text.substring(0, text.length - 1);
+          scannerController.text = text;
           break;
         case VirtualKeyboardKeyAction.Return:
-          text = text + '\n';
+          /// RETURN === ENTER
+          /// this will fire a search event
+          // text = text + '\n';
+          // scannerController.text = text;
+          context.read<MainBloc>().add(MainParam.KeyboardOpenClose(eventStatus: MainEvent.Event_Keyboard_OpenClose, isKeyboard: !isKeyboard));
+
           break;
         case VirtualKeyboardKeyAction.Space:
           text = text + key.text;
+          scannerController.text = text;
           break;
         case VirtualKeyboardKeyAction.Shift:
           shiftEnabled = !shiftEnabled;
@@ -966,13 +1203,17 @@ class _MainClientBody extends State<MainClientBody> {
                     break;
                   case OPTION_ADVANCE:
                     break;
+                  case "KEY_BOARD":
+                    ConsolePrint("KEYBOARD", "CLICKED");
+                    context.read<MainBloc>().add(MainParam.KeyboardOpenClose(eventStatus: MainEvent.Event_Keyboard_OpenClose, isKeyboard: !isKeyboard));
+
+                    break;
                   default:
                     break;
                 }
-
-
               },
               child:  Container(
+                width: 200,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: const BorderRadius.all(Radius.circular(5)),
@@ -980,7 +1221,7 @@ class _MainClientBody extends State<MainClientBody> {
                   ),
                   padding: const EdgeInsets.all(8),
                   margin: const EdgeInsets.all(8),
-                  height: MediaQuery.of(context).size.height * 0.25,
+                  // height: MediaQuery.of(context).size.height * 0.25,
                   child: Center(
                       child: Text(
                         UIItem.clientOptionTop[index]["name"],
@@ -1023,10 +1264,9 @@ class _MainClientBody extends State<MainClientBody> {
   void solidButtonEvent(String event) {
     if (event == EVENT_CONFIRM) {
       ConsolePrint("AddITEM", "TEST");
-
       context.read<MainBloc>().add(MainParam.ItemCheckout(eventStatus: MainEvent.Event_Add_Item_Checkout, userData: widget.userData, productData: null, productOrder: this.productOrder));
-
     }
+
   }
 
 }
