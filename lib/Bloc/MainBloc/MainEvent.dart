@@ -260,6 +260,7 @@ class MainParam {
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
   MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});
+  MainParam.GetDepartments({this.eventStatus, this.userData});
 
   /// CATEGORY
   MainParam.GetCategoryByParam({this.eventStatus, this.categoryParameter, this.userData});

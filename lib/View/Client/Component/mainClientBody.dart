@@ -13,6 +13,7 @@ import 'package:npos/Constant/UIEvent/addProductEvent.dart';
 import 'package:npos/Constant/UIEvent/menuEvent.dart';
 import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
+import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
@@ -35,6 +36,7 @@ class _MainClientBody extends State<MainClientBody> {
   ProductOrderModel productOrder = ProductOrderModel();
   String loadEvent = EMPTY;
   List<DiscountModel> discounts = <DiscountModel>[];
+  List<DepartmentModel> departments = [];
 
   TextEditingController scannerController = TextEditingController();
   /// dummy list
@@ -50,6 +52,11 @@ class _MainClientBody extends State<MainClientBody> {
   void initState() {
     super.initState();
     initProductOrderTesting();
+    initBlocEvent();
+  }
+
+  void initBlocEvent() {
+    context.read<MainBloc>().add(MainParam.GetDepartments(eventStatus: MainEvent.Event_GetDepartments, userData: widget.userData));
   }
 
   void initProductOrderTesting() {
@@ -102,6 +109,7 @@ class _MainClientBody extends State<MainClientBody> {
             appItemEvent(state);
             appLookupEvent(state);
             appKeyboardEvent(state);
+            appDepartmentEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -142,6 +150,7 @@ class _MainClientBody extends State<MainClientBody> {
     ) ;
   }
 
+  /// GENERIC 1
   void appBaseEvent(MainState state) {
     // Executing Generic State
     if (state is GenericInitialState) {
@@ -154,10 +163,12 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// GENERIC 2
   void appSpecificEvent(MainState state) {
     // Executing Specific State
   }
 
+  /// CHECKOUT
   void appCheckoutItemEvent(MainState state) {
     if (state is CheckoutItemInit) {
 
@@ -170,6 +181,7 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// DISCOUNT
   void appDiscountEvent(MainState state) {
     if (state is DiscountPaginateLoadingState) {
 
@@ -180,6 +192,7 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// PAYMENT
   void appPaymentEvent(MainState state) {
     if (state is CheckoutPaymentsInit) {
 
@@ -192,6 +205,7 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// ITEM (PRODUCT)
   void appItemEvent(MainState state) {
     isProduct = false;
     if (state is CheckoutItemsInit) {
@@ -214,6 +228,7 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// LOOKUP
   void appLookupEvent(MainState state) {
     if (state is CheckoutLookupInit) {
 
@@ -226,6 +241,7 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// KEYBOARD
   void appKeyboardEvent(MainState state) {
     if (state is CheckoutKeyboardInit) {
 
@@ -237,6 +253,30 @@ class _MainClientBody extends State<MainClientBody> {
 
     }
   }
+
+  /// DEPARTMENT
+  void appDepartmentEvent(MainState state) {
+    /// SHARE INIT AND ERROR with GENERIC
+    /// context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetDepartmentPaginateCount, userData: widget.userData, productParameter: {"searchType": ""}));
+    if (state is DepartmentPaginateLoadingState) {
+
+    } else if (state is DepartmentPaginateLoadedState) {
+      departments = state.listDepartmentModel!;
+      ConsolePrint("DEPARTMENT", departments.length);
+      context.read<MainBloc>().add(MainParam.GetItems(eventStatus: MainEvent.Event_Items, userData: widget.userData));
+    }
+  }
+
+  /// CATEGORY
+  void appCategoryEvent(MainState state) {
+    /// GET CAT BY DEPT ID
+  }
+
+  /// SUB CATEGORY
+  void appSubCategoryEvent(MainState state) {
+    /// GET SUB CAT BY CAT ID
+  }
+
 
   void generateAssociateCategory(List<Map<dynamic, dynamic>> model, List<Map<dynamic, dynamic>> firstSubModel) {
     model.isEmpty ? categories = [] : categories = model;
@@ -665,24 +705,9 @@ class _MainClientBody extends State<MainClientBody> {
               child: Column(
                 children: [
                   Expanded(
-                    flex: 9,
+                    // flex: 9,
                     child:
                     showItemGrid()
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Container(
-                      child: Row(
-                        children: const [
-                          Text("TEST")
-                        ],
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: const BorderRadius.all(Radius.circular(2)),
-                        border: Border.all(color: Colors.blueAccent),
-                      )
-                    )
                   )
                 ],
               ),
@@ -779,16 +804,16 @@ class _MainClientBody extends State<MainClientBody> {
                 physics: ClampingScrollPhysics(),
                 shrinkWrap: false,
                 scrollDirection: Axis.horizontal,
-                itemCount: dummyDepartment.length,
+                itemCount: departments.length,
                 itemBuilder: (BuildContext context, int index) => Card(
                   child: InkWell(
                     child: Container(
-                      child: Text(dummyDepartment[index]["name"]),
+                      child: Text(departments[index].description.toString()),
                     ),
                     onTap: () {
                       /// The logic will populate Category associate with this Department
                       Map<String, String> param = {
-                        "id" : dummyDepartment[index]["id"].toString()
+                        "id" : dummyDepartment[0]["id"].toString()
                       };
                       context.read<MainBloc>().add(MainParam.ItemGenericSelection(eventStatus: MainEvent.Event_Department_POS, userData: widget.userData, optionalParameter: param));
 
@@ -1144,7 +1169,7 @@ class _MainClientBody extends State<MainClientBody> {
                       ///     associated category with the 1st department
                       ///     caching associated sub category with the category above
                       ///     display item associate with all attribute above + item must have UI view set to true
-                      context.read<MainBloc>().add(MainParam.GetItems(eventStatus: MainEvent.Event_Items, userData: widget.userData));
+                      context.read<MainBloc>().add(MainParam.GetDepartments(eventStatus: MainEvent.Event_GetDepartments, userData: widget.userData));
                       break;
                     case OPTION_LOOKUP:
                       context.read<MainBloc>().add(MainParam.GetLookup(eventStatus: MainEvent.Event_Lookup, userData: widget.userData));
