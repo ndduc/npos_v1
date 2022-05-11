@@ -518,5 +518,16 @@ class CheckoutLookupError extends MainState {
   CheckoutLookupError({this.error});
 }
 
+/// KEYBOARD
+class CheckoutKeyboardInit extends MainState {}
+class CheckoutKeyboardLoading extends MainState {}
+class CheckoutKeyboardLoaded extends MainState {
+  bool isKeyboard;
+  CheckoutKeyboardLoaded({required this.isKeyboard});
+}
+class CheckoutKeyboardError extends MainState {
+  final error;
+  CheckoutKeyboardError({this.error});
+}
 
 //endregion

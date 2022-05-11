@@ -165,11 +165,21 @@ enum MainEvent{
   Event_Payments,
   Event_Items,
   Event_Lookup,
+
+  /// LOGIC WITH POPUP DIALOG
+  Nav_Event_POS_VOID_Dialog,
+  Nav_Event_POS_REFUND_Dialog,
+  Nav_Event_POS_OVERRIDE_Dialog,
+  Nav_Event_POS_PRODUCT_EDIT_Dialog,
+
   /// DEPARTMENT -> CATEGORY -> SUB CATEGORY -> ITEM
   Event_Department_POS,
   Event_Category_POS,
   Event_SubCategory_POS,
   Event_Product_POS,
+
+  /// LOCAL EVENT
+  Event_Keyboard_OpenClose
   //endregion
 }
 
@@ -203,12 +213,18 @@ class MainParam {
   String? toWhere;
   bool? isAdded;
   ProductOrderModel? productOrder;
-
+  bool? isKeyboard;
   /// CHECKOUT
   MainParam.ItemCheckout({required this.eventStatus, required this.userData, required this.productData, required this.productOrder});
   MainParam.GetPayments({required this.eventStatus, required this.userData});
   MainParam.GetItems({required this.eventStatus, required this.userData});
   MainParam.GetLookup({required this.eventStatus, required this.userData});
+  /// CHECKOUT POS DIALOG
+  MainParam.NavDialogPOSClient({this.eventStatus, this.userData, this.context});
+  /// CHECKOUT KEYBOARD
+  MainParam.KeyboardOpenClose({this.eventStatus, this.isKeyboard});
+
+
 
   /// CHECKOUT DEPARTMENT -> CATEGORY -> SUB CATEGORY -> ITEM
   MainParam.ItemGenericSelection({required this.eventStatus, required this.userData, required this.optionalParameter});
@@ -244,6 +260,7 @@ class MainParam {
   /// DEPARTMENT
   MainParam.GetDepartmentByParam({this.eventStatus, this.departmentParameter, this.userData});
   MainParam.AddUpdateDepartment({this.eventStatus, this.userData, this.departmentParameter});
+  MainParam.GetDepartments({this.eventStatus, this.userData});
 
   /// CATEGORY
   MainParam.GetCategoryByParam({this.eventStatus, this.categoryParameter, this.userData});
