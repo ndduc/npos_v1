@@ -1186,7 +1186,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         }
         break;
       case MainEvent.Event_Department_POS:
-        dynamic dept =  event.optionalParameter as Map<String, String>;
+        Map<String, String> dept = event.optionalParameter as Map<String, String>;
         yield CheckoutItemsInit();
         try {
           yield CheckoutItemsLoading();
@@ -1194,7 +1194,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           List<Map<dynamic, dynamic>> firstSubAssociationModel = [];
           Enum checkoutOption = CheckoutEnum.CATEGORY;
           for(int i = 0; i < dummyCategory.length; i++) {
-            if (dummyCategory[i]["Department"] == int.parse(dept["id"])) {
+            if (dummyCategory[i]["Department"] == int.parse(dept["id"].toString())) {
               categoryAssociationModel.add(dummyCategory[i]);
             }
           }
@@ -1205,6 +1205,19 @@ class MainBloc extends Bloc<MainParam,MainState>
                 firstSubAssociationModel.add(dummySubCategory[i]);
               }
             }
+          }
+
+          /// Once fired, we will know the department's uid
+          /// Use it to fire off get category by department's uid
+          String departmentUid = dept["department_uid"].toString();
+          String locationUid = dept["location_uid"].toString();
+          String userUid = dept["user_uid"].toString();
+
+          ConsolePrint("DEPT ID", departmentUid);
+          List<CategoryModel> categories = await mainRepo.GetCategoryByDepartmentId(userUid, locationUid, departmentUid);
+
+          for(int i = 0; i < categories.length; i++) {
+            categories[i].print();
           }
 
           yield CheckoutItemsLoaded.Category(categoryAssociationModel: categoryAssociationModel, subCategoryAssociationModel: firstSubAssociationModel, option: checkoutOption);

@@ -32,6 +32,7 @@ import 'package:npos/Service/Http/VendorService.dart';
 
 class MainRepository{
 
+  /// ITEM CODE
   //region ITEM CODE
   Future<ItemCodeModel> GetByItemCode(String userId, String locId, String productId, String itemCode) {
     return ItemCodeService().GetByItemCode(userId, locId, productId, itemCode);
@@ -54,6 +55,7 @@ class MainRepository{
   }
   //endregion
 
+  /// UPC
   //region UPC
   Future<UpcModel> GetByUpc(String userId, String locId, String productId, String itemCode) {
     return UpcService().GetByUpc(userId, locId, productId, itemCode);
@@ -76,6 +78,7 @@ class MainRepository{
   }
   //endregion
 
+  /// USER
   //region USER
   Future<UserModel> AuthorizingUser(String name, String password) {
     return UserService().AuthorizingUser(name, password);
@@ -86,12 +89,14 @@ class MainRepository{
   }
   //endregion
 
+  /// LOCATION
   //region LOCATION
   Future<List<LocationModel>> GetLocationByUser(String uid) {
     return LocationService().GetLocationByUser(uid);
   }
   //endregion
 
+  /// PRODUCT
   //region PRODUCT
   Future<ProductModel> GetProductByParamMap(String userId, String locId, Map<String, dynamic> param) {
     return ProductService().GetProductByMap(userId, locId, param);
@@ -115,6 +120,7 @@ class MainRepository{
   }
   //endregion
 
+  /// DEPARTMENT
   //region DEPARTMENT
   Future<List<DepartmentModel>>GetDepartments(String userId, String locId) {
     return DepartmentService().GetDepartments(userId, locId);
@@ -145,6 +151,7 @@ class MainRepository{
   }
   //endregion
 
+  /// CATEGORY
   //region CATEGORY
   Future<List<CategoryModel>>GetCategory(String userId, String locId) {
     return CategoryService().GetCategory(userId, locId);
@@ -166,6 +173,11 @@ class MainRepository{
     return CategoryService().GetCategoryByDescription(userId, locId, description);
   }
 
+  Future<List<CategoryModel>>GetCategoryByDepartmentId(String userId, String locId, String departmentUid) {
+    return CategoryService().GetCategoryByDepartmentId(userId, locId, departmentUid);
+
+  }
+
   Future<bool>AddCategory(String userId, String locId, Map<String, String> param){
     return CategoryService().AddCategory(userId, locId, param);
   }
@@ -175,6 +187,7 @@ class MainRepository{
   }
   //endregion
 
+  /// VENDOR
   //region VENDOR
   Future<List<VendorModel>>GetVendors(String userId, String locId) {
     return VendorService().GetVendor(userId, locId);
@@ -205,6 +218,7 @@ class MainRepository{
   }
   //endregion
 
+  /// SECTION
   //region SECTION
   Future<List<SectionModel>>GetSections(String userId, String locId) {
     return SectionService().GetSection(userId, locId);
@@ -235,6 +249,7 @@ class MainRepository{
   }
   //endregion
 
+  /// DISCOUNT
   //region DISCOUNT
   Future<List<DiscountModel>>GetDiscounts(String userId, String locId) {
     return DiscountService().GetDiscount(userId, locId);
@@ -265,6 +280,7 @@ class MainRepository{
   }
   //endregion
 
+  /// TAX
   //region TAX
   Future<List<TaxModel>>GetTax(String userId, String locId) {
     return TaxService().GetTax(userId, locId);

@@ -13,6 +13,7 @@ class CategoryModel {
   String? updated_datetime;
   String? added_by;
   String? updated_by;
+  bool? applyToUI;
 
   CategoryModel.map(Map<String, dynamic> map) {
     uid = map["UId"];
@@ -22,6 +23,7 @@ class CategoryModel {
     added_datetime = map["AddedDateTime"];
     updated_by = map["UpdatedBy"];
     added_by = map["AddedBy"];
+    applyToUI = map["ApplyToUI"];
   }
 
   CategoryModel.mapLowerCase(Map<String, dynamic> map) {
@@ -32,6 +34,7 @@ class CategoryModel {
     added_datetime = map["addedDateTime"];
     updated_by = map["updatedBy"];
     added_by = map["addedBy"];
+    applyToUI = map["applyToUI"];
   }
 
 
@@ -43,6 +46,7 @@ class CategoryModel {
     ConsolePrint("added_datetime", added_datetime);
     ConsolePrint("updated_by", updated_by);
     ConsolePrint("added_by", added_by);
+    ConsolePrint("applyToUI", applyToUI);
   }
 
   CategoryModel() {

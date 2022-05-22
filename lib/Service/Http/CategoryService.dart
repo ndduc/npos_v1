@@ -21,6 +21,7 @@ abstract class Service{
   Future<List<CategoryModel>>GetCategoryByDescription(String userId, String locId, String description);
   Future<bool>AddCategory(String userId, String locId, Map<String, String> param);
   Future<bool>UpdateCategory(String userId, String locId, Map<String, String> param);
+  Future <List<CategoryModel>> GetCategoryByDepartmentId(String userId, String locId, String departmentId);
 }
 class CategoryService extends Service{
   @override
@@ -128,6 +129,34 @@ class CategoryService extends Service{
   }
 
   @override
+  Future <List<CategoryModel>> GetCategoryByDepartmentId(String userId, String locId, String departmentId) async {
+    List<CategoryModel> listModel = [];
+    try {
+      var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SLASH + departmentId + CATEGORY);
+      var res = await http.get(
+          url,
+          headers: HEADER
+      );
+
+      ConsolePrint("RES", res.body);
+
+      if(res.statusCode != STATUS_OK) {
+        throw Exception(res.body.toString());
+      } else {
+        var json = jsonDecode(res.body);
+        List<dynamic> lstRes = jsonDecode(json[BODY]);
+        for(int i = 0; i < lstRes.length; i++) {
+          CategoryModel _model =  CategoryModel.map(lstRes[i]);
+          listModel.add(_model);
+        }
+        return listModel;
+      }
+    } catch(e) {
+      throw Exception(e);
+    }
+  }
+
+  @override
   Future<List<CategoryModel>>GetCategoryByDescription(String userId, String locId, String description) async {
     List<CategoryModel> listModel = [];
     Map<String, String> param = {
@@ -156,6 +185,8 @@ class CategoryService extends Service{
       throw Exception(e);
     }
   }
+
+
 
   @override
   Future<bool>AddCategory(String userId, String locId, Map<String, String> param) async {
