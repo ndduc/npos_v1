@@ -811,9 +811,13 @@ class _MainClientBody extends State<MainClientBody> {
                       child: Text(departments[index].description.toString()),
                     ),
                     onTap: () {
+                      departments[index].print();
                       /// The logic will populate Category associate with this Department
                       Map<String, String> param = {
-                        "id" : dummyDepartment[0]["id"].toString()
+                        "id" : dummyDepartment[0]["id"].toString(),
+                        "department_uid" : departments[index].uid.toString(),
+                        "location_uid" : widget.userData!.defaultLocation!.uid.toString(),
+                        "user_uid" : widget.userData!.uid.toString(),
                       };
                       context.read<MainBloc>().add(MainParam.ItemGenericSelection(eventStatus: MainEvent.Event_Department_POS, userData: widget.userData, optionalParameter: param));
 
