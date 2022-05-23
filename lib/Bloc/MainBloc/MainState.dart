@@ -492,6 +492,7 @@ class CheckoutItemsLoading extends MainState {}
 class CheckoutItemsLoaded extends MainState {
   /// holding category associates with selected department
   List<Map<dynamic, dynamic>> categoryAssociationModel = [];
+  List<CategoryModel> categories = [];
   /// holding sub category associates with selected department
   List<Map<dynamic, dynamic>> subCategoryAssociationModel = [];
   /// holding item associates with selected dept, cat, sub cat
@@ -501,6 +502,8 @@ class CheckoutItemsLoaded extends MainState {
   Enum option = CheckoutEnum.NONE;
   CheckoutItemsLoaded.Department();
   CheckoutItemsLoaded.Category({required this.categoryAssociationModel, required this.subCategoryAssociationModel, required this.option});
+  CheckoutItemsLoaded.CategoryAsync({required this.categoryAssociationModel, required this.categories ,required this.subCategoryAssociationModel, required this.option});
+
   CheckoutItemsLoaded.SubCategory({required this.subCategoryAssociationModel, required this.option});
   CheckoutItemsLoaded.Product({required this.productAssociationModel, required this.option});
 }
