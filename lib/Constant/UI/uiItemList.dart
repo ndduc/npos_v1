@@ -3,11 +3,11 @@
 import 'package:npos/Constant/UIEvent/menuEvent.dart';
 
 List<Map<dynamic, dynamic>> menuItem = [
-  {"id" : 0, "name" : "Product/Service Management", "event" : "MENU_PRODUCT_MAN"},
-  {"id" : 1, "name" : "Department & Category", "event" : "MENU_DEPT/CATE_MAN"},
-  {"id" : 2, "name" : "Section/Aisle", "event" : "MENU_SEC_MAN"},
-  {"id" : 3, "name" : "Discount & Tax", "event" : "MENU_DIS/TAX_MAN"},
-  {"id" : 4, "name" : "Vendor/Supplier", "event" : "MENU_VEN_MAN"},
+  {"id" : 0, "name" : "Product Management", "event" : "MENU_PRODUCT_MAN"},
+  {"id" : 1, "name" : "Product Property Management", "event" : "MENU_DEPT/CATE_MAN"},
+  {"id" : 2, "name" : "Section and Aisle Management", "event" : "MENU_SEC_MAN"},
+  {"id" : 3, "name" : "Discount and Tax Management", "event" : "MENU_DIS/TAX_MAN"},
+  {"id" : 4, "name" : "Source and Supply Management", "event" : "MENU_VEN_MAN"},
   {"id" : 5, "name" : "Employee Management\n(Not Done)", "event" : "MENU_EMP_MAN"},
   {"id" : 6, "name" : "Store/Location Management\n(To Be Implemented)", "event" : "MENU_LOC_MAN"},
   {"id" : 7, "name" : "System Setup\n(To Be Implemented)", "event":"MENU_SETUP"},

@@ -54,6 +54,7 @@ enum MainEvent{
   Event_GetCategoryByDescription,
   Event_AddCategory,
   Event_UpdateCategory,
+  Event_GetCategoryDependency,
   //endregion
 
   //region VENDOR REQUEST
@@ -121,6 +122,7 @@ enum MainEvent{
   //region LOCAL EVENT
   Local_Event_Set_DefaultLocation,
   Local_Event_DropDown_SearchBy,
+  Local_Event_DropDown_SearchBy_Adv, /// Adv will replace the normal one
   Local_Event_Product_Mode,
   Local_Event_Switch_Screen,
   Local_Event_NewItem_Mode,     //use to toggle on and off the add button

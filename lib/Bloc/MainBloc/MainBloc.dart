@@ -529,6 +529,23 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield Generic2ndErrorState(error: e);
         }
         break;
+      case MainEvent.Event_GetCategoryDependency:
+        yield CategoryDependencyInitState();
+        try {
+          yield CategoryDependencyLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<DepartmentModel> dept = await mainRepo.GetDepartments(userId, locId.toString());
+
+          /// Dependency could be more than 1 object thus we use map as a container
+          Map<String, dynamic> res = {
+            "department" : dept.isNotEmpty ? dept : null,
+          };
+          yield CategoryDependencyLoadedState(genericData: res);
+        } catch (e) {
+          yield CategoryDependencyErrorState(error: e);
+        }
+        break;
       //endregion
 
       /// VENDOR HTTP EVENT
@@ -995,7 +1012,18 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield GenericErrorState(error: e);
         }
         break;
+      /// ADV BLOCK --- Non adv will be replaced by ADV in the future, any future development will be using ADV
+      //region ADV
       case MainEvent.Local_Event_DropDown_SearchBy:
+        yield DropDownInitState();
+        try {
+          yield DropDownLoadingState();
+          yield DropDownLoadedState(dropDownType: event.dropDownType as String, dropDownValue:  event.dropDownValue as dynamic);
+        } catch (e) {
+          yield DropDownErrorState(error: e);
+        }
+        break;
+      case MainEvent.Local_Event_DropDown_SearchBy_Adv:
         yield GenericInitialState();
         try {
           yield GenericLoadingState();
@@ -1004,6 +1032,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield GenericErrorState(error: e);
         }
         break;
+      //endregion
       case MainEvent.Local_Event_Set_DefaultLocation:
         yield GenericLoadingState();
         try {

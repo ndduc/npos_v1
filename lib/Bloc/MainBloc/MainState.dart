@@ -62,10 +62,17 @@ class Generic2ndErrorState extends MainState{
 
 //region GENERIC
 /// Description: Loaded Value On Dropdown -- this look like it loadding DEFAULT value
+
+class DropDownInitState extends MainState {}
+class DropDownLoadingState extends MainState {}
 class DropDownLoadedState extends MainState {
   dynamic dropDownValue;
   late String dropDownType;
   DropDownLoadedState({required this.dropDownValue, required this.dropDownType});
+}
+class DropDownErrorState extends MainState {
+  final error;
+  DropDownErrorState({this.error});
 }
 
 /// Description: Switching between multiple different layout on the same screen
@@ -321,6 +328,18 @@ class CategoryByDescriptionLoadedState extends MainState{
 class CategoryLoadedState extends MainState{
   CategoryModel? categoryModel;
   CategoryLoadedState({required this.categoryModel});
+}
+
+class CategoryDependencyInitState extends MainState{ }
+class CategoryDependencyLoadingState extends MainState{ }
+class CategoryDependencyLoadedState extends MainState{
+  dynamic genericData;
+  CategoryDependencyLoadedState.GenericData({this.genericData});
+  CategoryDependencyLoadedState({this.genericData});
+}
+class CategoryDependencyErrorState extends MainState{
+  final error;
+  CategoryDependencyErrorState({this.error});
 }
 
 /// Description: Response to the Add and Update Department request
