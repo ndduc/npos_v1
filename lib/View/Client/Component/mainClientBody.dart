@@ -39,6 +39,15 @@ class _MainClientBody extends State<MainClientBody> {
   List<DepartmentModel> departments = [];
 
   TextEditingController scannerController = TextEditingController();
+  TextEditingController etSubTotal = TextEditingController();
+  TextEditingController etNumberOfItem = TextEditingController();
+  TextEditingController etNumberOfRefund = TextEditingController();
+  TextEditingController etAmountOfRefund = TextEditingController();
+  TextEditingController etAmountOfDiscount = TextEditingController();
+  TextEditingController etAmountOfVoid = TextEditingController();
+  TextEditingController etAmountOfTax = TextEditingController();
+  TextEditingController etTotal = TextEditingController();
+
   /// dummy list
   List<Map<dynamic, dynamic>> categories = [];
   List<Map<dynamic, dynamic>> subCategories = [];
@@ -51,7 +60,9 @@ class _MainClientBody extends State<MainClientBody> {
   @override
   void initState() {
     super.initState();
-    initProductOrderTesting();
+    // initProductOrderTesting();
+    initController();
+    initNewOrder();
     initBlocEvent();
   }
 
@@ -59,6 +70,31 @@ class _MainClientBody extends State<MainClientBody> {
     context.read<MainBloc>().add(MainParam.GetDepartments(eventStatus: MainEvent.Event_GetDepartments, userData: widget.userData));
   }
 
+  void initController() {
+     etSubTotal.text = "0.00";
+     etNumberOfItem.text = "0";
+     etNumberOfRefund.text = "0";
+     etAmountOfRefund.text = "0.00";
+     etAmountOfDiscount.text = "0.00";
+     etAmountOfVoid.text = "0.00";
+     etAmountOfTax.text = "0.00";
+     etTotal.text = "0.00";
+  }
+
+  void initNewOrder() {
+    productOrder.orderUId = 1;
+    productOrder.orderId = 1;
+    productOrder.orderAddDateTime = DateTime.now();
+    productOrder.orderUpdateDateTime = DateTime.now();
+    productOrder.transaction = [];
+    productOrder.orderSubTotal = 0.00;
+    productOrder.orderQuantity = 0;
+    productOrder.orderTotalTax = 0.00;
+
+    productOrder.orderInvolveUser = [];
+    productOrder.orderLocation = [];
+  }
+  /// This method will init a dummy data to checkout
   void initProductOrderTesting() {
     productOrder.orderUId = 1;
     productOrder.orderId = 1;
@@ -110,6 +146,7 @@ class _MainClientBody extends State<MainClientBody> {
             appLookupEvent(state);
             appKeyboardEvent(state);
             appDepartmentEvent(state);
+            appProductEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -267,6 +304,52 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// PRODUCT
+  void appProductEvent(MainState state) {
+    if (state is ProductLoadInitState) {
+
+    } else if (state is ProductLoadingState) {
+
+    } else if (state is ProductLoadedState) {
+      isKeyboard = false;
+      scannerController.text = "";
+
+      if (state.productModel!.uid == null) {
+        /// this trigger when product not found.
+        /// I should setup a notification something like a dialog to notify user that the input return invalid data
+      } else {
+        state.productModel!.print();
+        ProductCheckOutModel toBeInsertedProduct = ProductCheckOutModel();
+        toBeInsertedProduct.uid = state.productModel!.uid;
+        toBeInsertedProduct.description = state.productModel!.description;
+        toBeInsertedProduct.cost = state.productModel!.cost;
+        toBeInsertedProduct.price = state.productModel!.price;
+        toBeInsertedProduct.subTotal = state.productModel!.price * 1;
+        toBeInsertedProduct.quantity = 1;
+        toBeInsertedProduct.transactionType = PURCHASE;
+        toBeInsertedProduct.productModelId = toBeInsertedProduct.transactionType + "_" + toBeInsertedProduct.uid!;
+
+
+        productOrder.orderSubTotal = productOrder.orderSubTotal + toBeInsertedProduct.subTotal;
+        productOrder.orderQuantity = productOrder.orderQuantity + toBeInsertedProduct.quantity;
+        productOrder.orderTotalTax = 0.00;
+        productOrder.transaction.add(toBeInsertedProduct);
+        productOrder.total = productOrder.total + productOrder.orderSubTotal;
+
+        etSubTotal.text = productOrder.orderSubTotal.toString();
+        etNumberOfItem.text = productOrder.orderQuantity.toString();
+        etNumberOfRefund.text = "0";
+        etAmountOfRefund.text = "0.00";
+        etAmountOfDiscount.text = "0.00";
+        etAmountOfVoid.text = "0.00";
+        etAmountOfTax.text = "0.00";
+        etTotal.text = productOrder.total.toString();
+      }
+    } else if (state is ProductLoadErrorState) {
+
+    }
+  }
+
   /// CATEGORY
   void appCategoryEvent(MainState state) {
     /// GET CAT BY DEPT ID
@@ -291,6 +374,16 @@ class _MainClientBody extends State<MainClientBody> {
     model.isEmpty ? products = [] : products = model;
   }
 
+
+  ///Product Checkout Event
+  void checkoutProduct() {
+    Map<String, String> map = <String, String>{};
+    map["upc"] = scannerController.text;
+    map["searchText"] = "";
+    map["isCheckout"] = "true";
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductByParamMapAdv, userData: widget.userData, productParameter: map));
+  }
+
   Widget bodyCheckOut() {
     return Column(
       children: [
@@ -305,6 +398,10 @@ class _MainClientBody extends State<MainClientBody> {
           /// example: grocery then it will be UPC
           ///          service model then it will be some kind of user defined code
           child: TextFormField(
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (value) {
+              checkoutProduct();
+            },
             onTap: () {
               /// fire keyboard on tap
               context.read<MainBloc>().add(MainParam.KeyboardOpenClose(eventStatus: MainEvent.Event_Keyboard_OpenClose, isKeyboard: !isKeyboard));
@@ -454,8 +551,8 @@ class _MainClientBody extends State<MainClientBody> {
                     child:  Column(
                       children: [
                         Row(
-                          children: const [
-                            Expanded(
+                          children: [
+                            const Expanded(
                                 flex: 5,
                                 child: Text(
                                     "Number of Item: ",
@@ -467,8 +564,8 @@ class _MainClientBody extends State<MainClientBody> {
                             Expanded(
                                 flex: 5,
                                 child: Text(
-                                    "5",
-                                    style: TextStyle(
+                                    etNumberOfItem.text,
+                                    style: const TextStyle(
                                         fontSize: 20
                                     )
                                 )
@@ -476,8 +573,8 @@ class _MainClientBody extends State<MainClientBody> {
                           ],
                         ),
                         Row(
-                          children: const [
-                            Expanded(
+                          children: [
+                            const Expanded(
                                 flex: 5,
                                 child: Text(
                                     "Number of Void: ",
@@ -489,8 +586,8 @@ class _MainClientBody extends State<MainClientBody> {
                             Expanded(
                                 flex: 5,
                                 child: Text(
-                                    "2",
-                                    style: TextStyle(
+                                    etAmountOfVoid.text,
+                                    style: const TextStyle(
                                         fontSize: 20
                                     )
                                 )
@@ -498,8 +595,8 @@ class _MainClientBody extends State<MainClientBody> {
                           ],
                         ),
                         Row(
-                          children: const [
-                            Expanded(
+                          children: [
+                            const Expanded(
                                 flex: 5,
                                 child: Text(
                                     "Amount of Refund: ",
@@ -511,8 +608,8 @@ class _MainClientBody extends State<MainClientBody> {
                             Expanded(
                                 flex: 5,
                                 child: Text(
-                                    "5",
-                                    style: TextStyle(
+                                    etAmountOfRefund.text,
+                                    style: const TextStyle(
                                         fontSize: 20
                                     )
                                 )
@@ -520,8 +617,8 @@ class _MainClientBody extends State<MainClientBody> {
                           ],
                         ),
                         Row(
-                          children: const [
-                            Expanded(
+                          children: [
+                            const Expanded(
                                 flex: 5,
                                 child: Text(
                                     "Sub Total: ",
@@ -534,8 +631,8 @@ class _MainClientBody extends State<MainClientBody> {
                             Expanded(
                                 flex: 5,
                                 child: Text(
-                                    "\$51.00",
-                                    style: TextStyle(
+                                    "\$" + etSubTotal.text,
+                                    style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold
                                     )
@@ -552,8 +649,8 @@ class _MainClientBody extends State<MainClientBody> {
                     child:  Column(
                       children: [
                         Row(
-                          children: const [
-                            Expanded(
+                          children: [
+                            const Expanded(
                                 flex: 5,
                                 child: Text(
                                     "Total Discount (\$): ",
@@ -565,8 +662,8 @@ class _MainClientBody extends State<MainClientBody> {
                             Expanded(
                                 flex: 5,
                                 child: Text(
-                                    "\$5.00",
-                                    style: TextStyle(
+                                    "\$" + etAmountOfDiscount.text,
+                                    style: const TextStyle(
                                         fontSize: 20
                                     )
                                 )
@@ -574,8 +671,8 @@ class _MainClientBody extends State<MainClientBody> {
                           ],
                         ),
                         Row(
-                          children: const [
-                            Expanded(
+                          children: [
+                            const Expanded(
                                 flex: 5,
                                 child: Text(
                                     "Total Void (\$): ",
@@ -587,8 +684,8 @@ class _MainClientBody extends State<MainClientBody> {
                             Expanded(
                                 flex: 5,
                                 child: Text(
-                                    "\$5.99",
-                                    style: TextStyle(
+                                    "\$" + etAmountOfVoid.text,
+                                    style: const TextStyle(
                                         fontSize: 20
                                     )
                                 )
@@ -596,8 +693,8 @@ class _MainClientBody extends State<MainClientBody> {
                           ],
                         ),
                         Row(
-                          children: const [
-                            Expanded(
+                          children: [
+                            const Expanded(
                                 flex: 5,
                                 child: Text(
                                     "Total Refunded (\$): ",
@@ -609,8 +706,8 @@ class _MainClientBody extends State<MainClientBody> {
                             Expanded(
                                 flex: 5,
                                 child: Text(
-                                    "\$15.99",
-                                    style: TextStyle(
+                                    "\$" + etAmountOfRefund.text,
+                                    style: const TextStyle(
                                         fontSize: 20
                                     )
                                 )
@@ -618,8 +715,8 @@ class _MainClientBody extends State<MainClientBody> {
                           ],
                         ),
                         Row(
-                          children: const [
-                            Expanded(
+                          children: [
+                            const Expanded(
                                 flex: 5,
                                 child: Text(
                                     "Total Tax (\$): ",
@@ -631,8 +728,8 @@ class _MainClientBody extends State<MainClientBody> {
                             Expanded(
                                 flex: 5,
                                 child: Text(
-                                    "\$5.87",
-                                    style: TextStyle(
+                                    "\$" + etAmountOfTax.text,
+                                    style: const TextStyle(
                                         fontSize: 20
                                     )
                                 )
@@ -650,9 +747,8 @@ class _MainClientBody extends State<MainClientBody> {
           height: 50,
           padding: EdgeInsets.only(left: 20),
           child: Row(
-            children: const [
-
-              Text(
+            children: [
+              const Text(
                   "Total (\$): ",
                   style: TextStyle(
                       fontSize: 25,
@@ -661,8 +757,8 @@ class _MainClientBody extends State<MainClientBody> {
               ),
               SizedBox(width: 30),
               Text(
-                  "\$100.00",
-                  style: TextStyle(
+                  "\$" + etTotal.text,
+                  style: const TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold
                   )
@@ -685,7 +781,7 @@ class _MainClientBody extends State<MainClientBody> {
         Expanded(
           flex: 1,
           child: Container(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(2)),
@@ -936,6 +1032,10 @@ class _MainClientBody extends State<MainClientBody> {
                       /// example: grocery then it will be UPC
                       ///          service model then it will be some kind of user defined code
                       child: TextFormField(
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (value) {
+                          ConsolePrint("ENTER", value);
+                        },
                         textCapitalization: TextCapitalization.sentences,
                         decoration: InputDecoration(
                           labelText: "Scan or Enter Item Upc",
@@ -964,9 +1064,8 @@ class _MainClientBody extends State<MainClientBody> {
       ],
     );
   }
-
-
   //endregion
+
 
   ///KEYBOARD STUFF
   //region KEYBOARD

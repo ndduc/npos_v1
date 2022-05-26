@@ -12,22 +12,22 @@ class ProductModel {
   int? upc;
   String? str_upc;
   int? itemCode;
-  double? cost;
-  double? price;
+  double cost = 0.0;
+  double price = 0.0;
   String? added_datetime;
   String? updated_datetime;
   String? added_by;
   String? updated_by;
   bool isEmpty = false;  // set to true once api return empty object
 
-  late List<String> itemCodeList;
-  late List<String> categoryList;
-  late List<String> departmentList;
-  late List<String> sectionList;
-  late List<String> vendorList;
-  late List<String> discountList;
-  late List<String> taxList;
-  late List<String> upcList;
+  List<String> itemCodeList = [];
+  List<String> categoryList = [];
+  List<String> departmentList = [];
+  List<String> sectionList = [];
+  List<String> vendorList = [];
+  List<String> discountList = [];
+  List<String> taxList = [];
+  List<String> upcList = [];
 
   ProductModel.map(Map<String, dynamic> map) {
     uid = map["UId"];

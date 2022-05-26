@@ -58,6 +58,7 @@ List<Map<dynamic, dynamic>> clientOptionTop = [
 List<Map<dynamic, dynamic>> departCateOptionList = [
   {"id" : 0, "name" : "Department", "event" : "DEPARTMENT"},
   {"id" : 1, "name" : "Category", "event" : "CATEGORY"},
+  {"id" : 2, "name" : "Sub Category", "event" : "SUB_CATEGORY"},
 ];
 
 List<Map<dynamic, dynamic>> sectionOptionList = [

@@ -37,6 +37,8 @@ class ProductOrderModel {
   double orderTotalRefund = 0.0;
   double orderTotalRefundQuantity = 0.0;
 
+  double total = 0.0;
+
   List<UserCheckOutModel> orderInvolveUser = [];
   List<LocationModel> orderLocation = [];
 }

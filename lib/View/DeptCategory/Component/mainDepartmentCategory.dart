@@ -11,6 +11,7 @@ import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/Constant/UIEvent/menuEvent.dart';
+import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Client/clientView.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
@@ -22,6 +23,7 @@ import 'package:npos/View/Home/homeMenu.dart';
 import '../../Client/Component/mainClientBody.dart';
 import 'Category.dart';
 import 'Department.dart';
+import 'SubCategory.dart';
 
 class MainDeptCateBody extends StatefulWidget {
   UserModel? userData;
@@ -63,6 +65,8 @@ class _MainDeptCateBody extends State<MainDeptCateBody> {
       if (state.toWhere == "DEPARTMENT") {
         currentScreen = state.toWhere;
       } else if (state.toWhere == "CATEGORY") {
+        currentScreen = state.toWhere;
+      } else if (state.toWhere == "SUB_CATEGORY") {
         currentScreen = state.toWhere;
       }
     }
@@ -166,14 +170,17 @@ class _MainDeptCateBody extends State<MainDeptCateBody> {
                                     String event = UIItem.departCateOptionList[index]["event"];   // POS Menu
                                     switch(event) {
                                       case OPTION_DEPARTMENT:
-                                        // Switch Main Container On Click
-                                        // Clear Data State of the current screen
+                                        /// Switch Main Container On Click
+                                        /// Clear Data State of the current screen
                                         context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "DEPARTMENT", userData: widget.userData));
                                         break;
-                                        // Switch Main Container On Click
-                                        // Clear Data State of the current screen
+                                        /// Switch Main Container On Click
+                                        /// Clear Data State of the current screen
                                       case OPTION_CATEGORY:
                                         context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "CATEGORY", userData: widget.userData));
+                                        break;
+                                      case OPTION_SUB_CATEGORY:
+                                        context.read<MainBloc>().add(MainParam.SwitchScreen(eventStatus: MainEvent.Local_Event_Switch_Screen, toWhere: "SUB_CATEGORY", userData: widget.userData));
                                         break;
                                       default:
                                         break;
@@ -220,8 +227,11 @@ class _MainDeptCateBody extends State<MainDeptCateBody> {
   Widget mainItem() {
     if (currentScreen == "CATEGORY") {
       return Category(userData: widget.userData);
-    } else {
+    } else if (currentScreen == "DEPARTMENT") {
       return Department(userData: widget.userData);
+    }  else {
+      /// Sub Cat need to be updated to display corect data
+      return SubCategory(userData: widget.userData);
     }
 
   }

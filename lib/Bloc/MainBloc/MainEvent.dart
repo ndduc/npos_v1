@@ -28,6 +28,7 @@ enum MainEvent{
 
   //region PRODUCT REQUEST
   Event_GetProductByParamMap,
+  Event_GetProductByParamMapAdv,  /// Going to replace the old Event
   Event_GetProductPaginateCount,
   Event_GetProductPaginate,
   Event_GetAllDependency,

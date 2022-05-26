@@ -29,6 +29,7 @@ const String MENU_POS_MENU = "POS_MENU";
 
 const String OPTION_DEPARTMENT = "DEPARTMENT";
 const String OPTION_CATEGORY = "CATEGORY";
+const String OPTION_SUB_CATEGORY = "SUB_CATEGORY";
 const String OPTION_DISCOUNT = "DISCOUNT";
 const String OPTION_TAX = "TAX";
 
