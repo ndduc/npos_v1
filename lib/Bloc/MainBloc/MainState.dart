@@ -229,11 +229,17 @@ class UserByIdLoadedErrorState extends MainState{
 //endregion USER
 
 //region PRODUCT
+class ProductLoadInitState extends MainState {}
 class ProductLoadingState extends MainState {}
 
 class ProductLoadedState extends MainState{
   ProductModel? productModel;
   ProductLoadedState({required this.productModel});
+}
+
+class ProductLoadErrorState extends MainState {
+  final error;
+  ProductLoadErrorState({this.error});
 }
 
 class ProductPaginateLoadingState extends MainState {}

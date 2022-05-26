@@ -233,6 +233,19 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield GenericErrorState(error: e);
         }
         break;
+      case MainEvent.Event_GetProductByParamMapAdv:
+        yield ProductLoadInitState();
+        try {
+          yield ProductLoadingState();
+          Map<String, dynamic> param = event.productParameter as Map<String, dynamic>;
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          ProductModel model = await mainRepo.GetProductByParamMap(userId, locId!, param);
+          yield ProductLoadedState(productModel: model);
+        } catch (e) {
+          yield ProductLoadErrorState(error: e);
+        }
+        break;
       case MainEvent.Event_GetProductPaginateCount:
         yield GenericInitialState();
         try {
@@ -1160,7 +1173,7 @@ class MainBloc extends Bloc<MainParam,MainState>
 
 
           newProductOrderModel.transaction.add(prod1);
-          newProductOrderModel.orderSubTotal = newProductOrderModel.orderSubTotal + prod1.price!.toDouble();
+          newProductOrderModel.orderSubTotal = newProductOrderModel.orderSubTotal + prod1.price.toDouble();
           newProductOrderModel.orderQuantity = newProductOrderModel.orderQuantity + prod1.quantity.toDouble();
           yield CheckoutItemLoaded(productOrderModel: newProductOrderModel);
         } catch (e) {

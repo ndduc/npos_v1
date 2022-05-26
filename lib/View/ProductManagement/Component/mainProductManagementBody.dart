@@ -433,13 +433,13 @@ class _MainProductManagementBody extends State<MainProductManagementBody> {
       etDescription2.text = productModel.second_description!;
       etDescription3.text = productModel.third_description!;
       etCost.text = productModel.cost.toString();
-      etPrice.text = productModel.price!.toString();
+      etPrice.text = productModel.price.toString();
       etCreatedBy.text = productModel.added_by! + " On " + productModel.added_datetime!;
       etUpdatedBy.text = productModel.updated_by == null ? NOT_AVAILABLe : productModel.updated_by! + " On " + productModel.updated_by!;
       etProductUid.text = productModel.uid!;
-      double? margin =  marginCalculation(productModel.price!, productModel.cost!);
+      double? margin =  marginCalculation(productModel.price, productModel.cost);
       etMargin.text = margin.toString();
-      double? markup = markupCalculation(productModel.price!, productModel.cost!);
+      double? markup = markupCalculation(productModel.price, productModel.cost);
       etMarkup.text = markup.toString();
 
       if ( productModel.itemCodeList.isNotEmpty) {
