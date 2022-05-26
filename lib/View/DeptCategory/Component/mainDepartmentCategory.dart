@@ -11,6 +11,7 @@ import 'package:npos/Constant/UI/uiImages.dart';
 import 'package:npos/Constant/UI/uiItemList.dart' as UIItem;
 import 'package:npos/Constant/UI/uiText.dart';
 import 'package:npos/Constant/UIEvent/menuEvent.dart';
+import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Client/clientView.dart';
@@ -20,6 +21,8 @@ import 'package:npos/View/Home/homeMenu.dart';
 
 
 
+import '../../../Constant/UI/Product/ProductShareUIValues.dart';
+import '../../../Constant/UIEvent/addProductEvent.dart';
 import '../../Client/Component/mainClientBody.dart';
 import 'Category.dart';
 import 'Department.dart';
@@ -235,6 +238,7 @@ class _MainDeptCateBody extends State<MainDeptCateBody> {
     }
 
   }
+
 
 
 

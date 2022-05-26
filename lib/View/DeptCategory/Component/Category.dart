@@ -7,6 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
+import 'package:npos/Constant/UIEvent/addProductEvent.dart';
+import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/CategoryModel.dart';
 import 'package:npos/Model/UserModel.dart';
@@ -252,6 +255,7 @@ class Component extends State<Category> {
             key: formKey,
             child: Column(
               children: [
+                departmentDropDown(),
                 Custom_ListTile_TextField(
                   read: true,
                   controller: eTCategoryId,
@@ -442,6 +446,42 @@ class Component extends State<Category> {
         }));
       }
     }
+  }
+
+
+  String? departmentDefault = STRING_NULL;
+  Map<String, String> departmentList = <String, String>{
+    STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
+  };
+
+  /// EACH CATEGORY MUSH HAVE AN ASSOCIATED DEPARTMENT
+  Widget departmentDropDown() {
+    return  ListTile(
+        leading: const Text(TXT_DEPARTMENT),
+        title:  DropdownButton<String>(
+          isExpanded: true,
+          value: departmentDefault,
+          style: const TextStyle(
+              color: Colors.deepPurple
+          ),
+          underline: Container(
+            height: 2,
+            color: Colors.deepPurpleAccent,
+          ),
+          onChanged: (String? newValue) {
+            context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: EVENT_DROPDOWN_DEPARTMENT));
+          },
+          items: departmentList
+              .map((key, value) {
+            return MapEntry(
+                key,
+                DropdownMenuItem<String>(
+                  value: key,
+                  child: Text(value),
+                ));
+          }).values.toList(),
+        )
+    );
   }
 
 
