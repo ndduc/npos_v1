@@ -57,6 +57,17 @@ enum MainEvent{
   Event_GetCategoryDependency,
   //endregion
 
+  //region CATEGORY REQUEST
+  Event_GetSubCategory,
+  Event_GetSubCategoryPaginateCount,
+  Event_GetSubCategoryPaginate,
+  Event_GetSubCategoryById,
+  Event_GetSubCategoryByDescription,
+  Event_AddSubCategory,
+  Event_UpdateSubCategory,
+  Event_GetSubCategoryDependency,
+  //endregion
+
   //region VENDOR REQUEST
   Event_GetVendors,
   Event_GetVendorPaginateCount,

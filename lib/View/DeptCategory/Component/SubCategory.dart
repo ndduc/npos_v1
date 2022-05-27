@@ -18,7 +18,7 @@ import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 class SubCategory extends StatefulWidget {
   UserModel? userData;
-  SubCategory({Key? key, required this.userData}) : super(key: key);
+SubCategory({Key? key, required this.userData}) : super(key: key);
 
   @override
   Component createState() => Component();
@@ -43,7 +43,11 @@ class Component extends State<SubCategory> {
   List<CategoryModel> listCategoryPaginate = [];
   int dataCount = 0;
   CategoryModel? currentModel;
-  bool isAdded = false;
+  bool isAdded = true;
+
+
+  String? departmentDefault = STRING_NULL;
+  Map<String, String> departmentList = {};
 
   @override
   void initState() {
@@ -53,6 +57,10 @@ class Component extends State<SubCategory> {
 
   /// this one will load existing categories to the view
   loadOnInit() {
+    // String deptVal = isAdded ? "" : STRING_NOT_FOUND;
+    departmentList = <String, String>{
+      STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
+    };
     context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
   }
 
@@ -163,11 +171,13 @@ class Component extends State<SubCategory> {
     departmentList = {};
     for(int i = 0; i < deptList.length; i++) {
       if (i == 0) {
-        departmentDefault = deptList[i].uid;
+        departmentDefault = "-1";
+        String deptVal = isAdded ? "Select Category Department" :  STRING_NOT_HAVE + WHITE_SPACE + DEPARTMENT;
+        departmentList[STRING_NULL] = deptVal;
       }
       departmentList[deptList[i].uid!] = deptList[i].description!;
     }
-    departmentList[STRING_NULL] = STRING_NOT_HAVE + WHITE_SPACE + DEPARTMENT;
+
   }
 
   void clearEditText() {
@@ -187,6 +197,7 @@ class Component extends State<SubCategory> {
     eTCreated.text = model.added_by! + " On " + model.added_datetime!;
     eTUpdated.text = model.updated_by == null ? "Not Available" : model.updated_by! + " On " + model.updated_by!;
     eTCategoryId.text = model.uid!;
+    departmentDefault = model.departmentUid;
   }
   @override
   Widget build(BuildContext context) {
@@ -496,27 +507,24 @@ class Component extends State<SubCategory> {
         context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_UpdateCategory, userData: widget.userData, categoryParameter: {
           "desc": eTCategoryName.text,
           "note": eTCategoryNote.text,
-          "id": eTCategoryId.text
+          "id": eTCategoryId.text,
+          "dept_uid": departmentDefault,
         }));
       }
 
     } else if (event == "ADD") {
       bool val = formKey.currentState!.validate();
-      ConsolePrint("Validate", val);
       if (val) {
         context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_AddCategory, userData: widget.userData, categoryParameter: {
           "desc": eTCategoryName.text,
           "note": eTCategoryNote.text,
+          "dept_uid": departmentDefault,
         }));
       }
     }
   }
 
 
-  String? departmentDefault = STRING_NULL;
-  Map<String, String> departmentList = <String, String>{
-    STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
-  };
 
   /// EACH CATEGORY MUSH HAVE AN ASSOCIATED DEPARTMENT
   Widget departmentDropDown() {

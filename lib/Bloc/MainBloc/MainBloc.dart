@@ -427,6 +427,10 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
         //endregion
 
+      /// SUB CATEGORY HTTP EVENT
+      //region CATEGORY HTTP EVENT
+      //endregion
+
       /// CATEGORY HTTP EVENT
       //region CATEGORY HTTP EVENT
       case MainEvent.Event_GetCategoryPaginateCount:
