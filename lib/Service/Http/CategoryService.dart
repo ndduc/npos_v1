@@ -224,6 +224,7 @@ class CategoryService extends Service{
           encoding: Encoding.getByName(UTF_8),
           body: param
       );
+      ConsolePrint("RES", res.body);
       if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {

@@ -14,6 +14,7 @@ class CategoryModel {
   String? added_by;
   String? updated_by;
   bool? applyToUI;
+  String departmentUid = "";
 
   CategoryModel.map(Map<String, dynamic> map) {
     uid = map["UId"];
@@ -24,6 +25,7 @@ class CategoryModel {
     updated_by = map["UpdatedBy"];
     added_by = map["AddedBy"];
     applyToUI = map["ApplyToUI"];
+    departmentUid = map["DepartmentUId"];
   }
 
   CategoryModel.mapLowerCase(Map<String, dynamic> map) {
@@ -35,6 +37,7 @@ class CategoryModel {
     updated_by = map["updatedBy"];
     added_by = map["addedBy"];
     applyToUI = map["applyToUI"];
+    departmentUid = map["departmentUId"];
   }
 
 
@@ -47,6 +50,7 @@ class CategoryModel {
     ConsolePrint("updated_by", updated_by);
     ConsolePrint("added_by", added_by);
     ConsolePrint("applyToUI", applyToUI);
+    ConsolePrint("departmentUid", departmentUid);
   }
 
   CategoryModel() {

@@ -504,7 +504,8 @@ class MainBloc extends Bloc<MainParam,MainState>
           String? locId = event.userData!.defaultLocation!.uid;
           Map<String, String> param = {
             "desc": event.categoryParameter!["desc"],
-            "note":event.categoryParameter!["note"]
+            "note":event.categoryParameter!["note"],
+            "dept_uid":event.categoryParameter!["dept_uid"]
           };
           bool res = await mainRepo.AddCategory(userId, locId!, param);
           yield AddUpdateCategoryLoaded(isSuccess: res);
@@ -521,7 +522,8 @@ class MainBloc extends Bloc<MainParam,MainState>
           Map<String, String> param = {
             "desc": event.categoryParameter!["desc"],
             "note":event.categoryParameter!["note"],
-            "id":event.categoryParameter!["id"]
+            "id":event.categoryParameter!["id"],
+            "dept_uid":event.categoryParameter!["dept_uid"]
           };
           bool res = await mainRepo.UpdateCategory(userId, locId!, param);
           yield AddUpdateCategoryLoaded(isSuccess: res);

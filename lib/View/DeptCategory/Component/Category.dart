@@ -187,6 +187,7 @@ class Component extends State<Category> {
     eTCreated.text = model.added_by! + " On " + model.added_datetime!;
     eTUpdated.text = model.updated_by == null ? "Not Available" : model.updated_by! + " On " + model.updated_by!;
     eTCategoryId.text = model.uid!;
+    departmentDefault = model.departmentUid;
   }
   @override
   Widget build(BuildContext context) {
@@ -496,17 +497,18 @@ class Component extends State<Category> {
         context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_UpdateCategory, userData: widget.userData, categoryParameter: {
           "desc": eTCategoryName.text,
           "note": eTCategoryNote.text,
-          "id": eTCategoryId.text
+          "id": eTCategoryId.text,
+          "dept_uid": departmentDefault,
         }));
       }
 
     } else if (event == "ADD") {
       bool val = formKey.currentState!.validate();
-      ConsolePrint("Validate", val);
       if (val) {
         context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_AddCategory, userData: widget.userData, categoryParameter: {
           "desc": eTCategoryName.text,
           "note": eTCategoryNote.text,
+          "dept_uid": departmentDefault,
         }));
       }
     }
