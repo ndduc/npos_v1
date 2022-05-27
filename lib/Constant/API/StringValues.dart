@@ -21,7 +21,7 @@ const String CATEGORY = "/category/";
 const String CATEGORY_GET = "/category/get";
 const String CATEGORY_GET_COUNT = "/category/get-count";
 const String CATEGORY_GET_PAGINATE = "/category/get-category-paginate";
-const String CATEGORY_GET_BY_CATEGORY = "/category/get-by-category";
+const String CATEGORY_GET_BY_CATEGORY = "/category/get-by-description";
 const String CATEGORY_ADD = "/category/add";
 const String CATEGORY_UPDATE = "/category/update";
 //endregion

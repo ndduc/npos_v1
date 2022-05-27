@@ -43,7 +43,11 @@ class Component extends State<Category> {
   List<CategoryModel> listCategoryPaginate = [];
   int dataCount = 0;
   CategoryModel? currentModel;
-  bool isAdded = false;
+  bool isAdded = true;
+
+
+  String? departmentDefault = STRING_NULL;
+  Map<String, String> departmentList = {};
 
   @override
   void initState() {
@@ -53,6 +57,10 @@ class Component extends State<Category> {
 
   /// this one will load existing categories to the view
   loadOnInit() {
+    // String deptVal = isAdded ? "" : STRING_NOT_FOUND;
+    departmentList = <String, String>{
+      STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
+    };
     context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
   }
 
@@ -163,11 +171,13 @@ class Component extends State<Category> {
     departmentList = {};
     for(int i = 0; i < deptList.length; i++) {
       if (i == 0) {
-        departmentDefault = deptList[i].uid;
+        departmentDefault = "-1";
+        String deptVal = isAdded ? "Select Category Department" :  STRING_NOT_HAVE + WHITE_SPACE + DEPARTMENT;
+        departmentList[STRING_NULL] = deptVal;
       }
       departmentList[deptList[i].uid!] = deptList[i].description!;
     }
-    departmentList[STRING_NULL] = STRING_NOT_HAVE + WHITE_SPACE + DEPARTMENT;
+
   }
 
   void clearEditText() {
@@ -515,10 +525,6 @@ class Component extends State<Category> {
   }
 
 
-  String? departmentDefault = STRING_NULL;
-  Map<String, String> departmentList = <String, String>{
-    STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
-  };
 
   /// EACH CATEGORY MUSH HAVE AN ASSOCIATED DEPARTMENT
   Widget departmentDropDown() {
