@@ -7,14 +7,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
+import 'package:npos/Constant/UIEvent/addProductEvent.dart';
+import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/CategoryModel.dart';
+import 'package:npos/Model/DepartmentModel.dart';
+import 'package:npos/Model/SubCategoryModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
 class SubCategory extends StatefulWidget {
   UserModel? userData;
-  SubCategory({Key? key, required this.userData}) : super(key: key);
+SubCategory({Key? key, required this.userData}) : super(key: key);
 
   @override
   Component createState() => Component();
@@ -36,6 +41,37 @@ class Component extends State<SubCategory> {
   int defaultProductMode = 0;
   bool isLoading = false;
   var formKey = GlobalKey<FormState>();
+  List<SubCategoryModel> listSubCategoryPaginate = [];
+  int dataCount = 0;
+  SubCategoryModel? currentModel;
+  bool isAdded = true;
+  bool isLoadingTable = false;
+
+  String? categoryDefault = STRING_NULL;
+  Map<String, String> categoryList = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadOnInit();
+  }
+
+  /// this one will load existing categories to the view
+  loadOnInit() {
+    // String deptVal = isAdded ? "" : STRING_NOT_FOUND;
+    categoryList = <String, String>{
+      STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
+    };
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetSubCategoryPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+  }
+
+  /// loading all category's dependency,
+  /// likely will trigger after loadOnInit
+  initDependency() {
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetSubCategoryDependency, userData: widget.userData, productParameter: { "searchText": "" }));
+  }
+
+
 
   void appBaseEvent(MainState state) {
     // Executing Generic State
@@ -56,55 +92,119 @@ class Component extends State<SubCategory> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadOnInit();
-  }
-
-  loadOnInit() {
-    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
-  }
-
-  List<CategoryModel> listCategoryPaginate = [];
-  int dataCount = 0;
-  CategoryModel? currentModel;
-  bool isAdded = false;
   void appSpecificEvent(MainState state) {
-    // Executing Specific State
-    if (state is CategoryPaginateLoadingState) {
-      isLoadingTable = true;
-    } else if (state is CategoryPaginateLoadedState) {
-      isLoadingTable = false;
-      listCategoryPaginate = state.listCategoryModel!;
-    } else if (state is CategoryPaginateCountLoadedState) {
-      isLoadingTable = false;
-      // Invoke Load Paginate Product After Count is Completed
-      dataCount = state.count!;
-      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginate, userData: widget.userData, productParameter: {
-        "searchType": "test",
-        "startIdx": 1,
-        "endIdx": 10
-      }));
-    } else if (state is CategoryLoadedState) {
-      currentModel = state.categoryModel;
-      parsingProductDataToUI(currentModel!);
-      context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: false));
-    } else if (state is CategoryByDescriptionLoadedState) {
-      parsingProductDateByDescription(state.listCategoryModel!);
-    } else if (state is AddItemModeLoaded) {
+    if (state is AddItemModeLoaded) {
       isAdded = state.isAdded!;
       if (isAdded) {
         eTSubCategoryId.text = "Sub Category Id Will Be Generated Once The Process Is Completed";
         clearEditText();
       }
-    } else if (state is AddUpdateCategoryLoaded) {
+    }
+  }
+
+  void appSubCategoryAddUpdate(MainState state) {
+    if (state is AddUpdateSubCategoryInitState) {}
+    else if (state is AddUpdateSubCategoryLoadingState) {}
+    else if (state is AddUpdateSubCategoryLoaded) {
       if(state.isSuccess!) {
         loadOnInit();
       } else {
         // Pop A snackbar or a dialog here
       }
     }
+    else if (state is AddUpdateSubCategoryErrorState) {}
+  }
+
+  void appSubCategoryByDescription(MainState state) {
+    if (state is SubCategoryByDescriptionInitState) {}
+    else if (state is SubCategoryByDescriptionLoadingState) {}
+    else if (state is SubCategoryByDescriptionLoadedState) {
+      parsingProductDateByDescription(state.listSubCategoryModel!);
+    }
+    else if (state is SubCategoryByDescriptionErrorState) {}
+  }
+
+  void appSubCategory(MainState state) {
+    if (state is SubCategoryInitState) {}
+    else if (state is SubCategoryLoadingState) {}
+    else if (state is SubCategoryLoadedState) {
+      currentModel = state.subCategoryModel;
+      parsingProductDataToUI(currentModel!);
+      context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: false));
+    }
+    else if (state is SubCategoryErrorState) {}
+  }
+
+  void appSubCategoryPaginateCount(MainState state) {
+    if (state is SubCategoryPaginateCountInitState) {}
+    else if (state is SubCategoryPaginateCountLoadingState) {}
+    else if (state is SubCategoryPaginateCountLoadedState) {
+      isLoadingTable = false;
+      /// Invoke Load Paginate Product After Count is Completed
+      dataCount = state.count!;
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetSubCategoryPaginate, userData: widget.userData, productParameter: {
+        "searchType": "test",
+        "startIdx": 1,
+        "endIdx": 10
+      }));
+    }
+    else if (state is SubCategoryPaginateCountErrorState) {}
+  }
+
+  void appSubCategoryPaginate(MainState state) {
+    if (state is SubCategoryPaginateInitState) {}
+    else if (state is SubCategoryPaginateLoadingState) {
+      isLoadingTable = true;
+    } else if (state is SubCategoryPaginateLoadedState) {
+      isLoadingTable = false;
+      listSubCategoryPaginate = state.listSubCategoryModel!;
+      initDependency();
+    }
+    else if (state is SubCategoryPaginateErrorState) {}
+  }
+
+  void appSubCategoryDependencyEvent(MainState state) {
+    if (state is SubCategoryDependencyInitState) {
+
+    } else if (state is SubCategoryDependencyLoadingState) {
+
+    } else if (state is SubCategoryDependencyLoadedState) {
+      if(state.genericData["category"] != null) {
+        List<CategoryModel> catList = state.genericData["category"];
+        setCategoryDropDownValue(catList);
+      }
+    } else if (state is CategoryDependencyErrorState) {
+
+    }
+  }
+
+  /// Trigger upon dropdown selection
+  void appDropDownEvent(MainState state) {
+    if (state is DropDownInitState) {
+
+    } else if (state is DropDownLoadingState) {
+
+    } else if (state is DropDownLoadedState) {
+      /// Update value of dept dropdown
+      if (state.dropDownType == EVENT_DROPDOWN_DEPARTMENT) {
+        categoryDefault = state.dropDownValue;
+      }
+    } else if (state is DropDownErrorState) {
+
+    }
+  }
+
+  void setCategoryDropDownValue(List<CategoryModel> cateList) {
+    categoryList = {};
+    for(int i = 0; i < cateList.length; i++) {
+      if (i == 0) {
+        categoryDefault = "-1";
+        String catVal = isAdded ? "Select Category Department" :  STRING_NOT_HAVE + WHITE_SPACE + DEPARTMENT;
+        categoryList[STRING_NULL] = catVal;
+      }
+      categoryList[cateList[i].uid!] = cateList[i].description!;
+    }
+
   }
 
   void clearEditText() {
@@ -113,17 +213,18 @@ class Component extends State<SubCategory> {
     eTCreated = TextEditingController();
     eTUpdated = TextEditingController();
   }
-  void parsingProductDateByDescription (List<CategoryModel> modelList) {
+  void parsingProductDateByDescription (List<SubCategoryModel> modelList) {
     dataCount = modelList.length;
-    listCategoryPaginate = modelList;
+    listSubCategoryPaginate = modelList;
     isLoadingTable = false;
   }
-  void parsingProductDataToUI(CategoryModel model) {
+  void parsingProductDataToUI(SubCategoryModel model) {
     eTSubCategoryName.text = model.description!;
     eTSubCategoryNote.text = model.second_description == null ? "" : model.second_description!;
     eTCreated.text = model.added_by! + " On " + model.added_datetime!;
     eTUpdated.text = model.updated_by == null ? "Not Available" : model.updated_by! + " On " + model.updated_by!;
     eTSubCategoryId.text = model.uid!;
+    categoryDefault = model.categoryUid;
   }
   @override
   Widget build(BuildContext context) {
@@ -136,6 +237,13 @@ class Component extends State<SubCategory> {
       appBaseEvent(state);
       appNestedEvent(state);
       appSpecificEvent(state);
+      appSubCategoryPaginateCount(state);
+      appSubCategoryPaginate(state);
+      appSubCategoryDependencyEvent(state);
+      appDropDownEvent(state);
+      appSubCategory(state);
+      appSubCategoryByDescription(state);
+      appSubCategoryAddUpdate(state);
       /**
        * Bloc Action Note
        * END
@@ -191,7 +299,7 @@ class Component extends State<SubCategory> {
       children: [
         Expanded(
             flex: 2,
-            child: solidButton("New Sub Category", "NEW-CATEGORY")
+            child: solidButton("New Category", "NEW-CATEGORY")
         ),
 
         Expanded(
@@ -252,6 +360,7 @@ class Component extends State<SubCategory> {
             key: formKey,
             child: Column(
               children: [
+                departmentDropDown(),
                 Custom_ListTile_TextField(
                   read: true,
                   controller: eTSubCategoryId,
@@ -359,13 +468,13 @@ class Component extends State<SubCategory> {
     );
   }
 
-  bool isLoadingTable = false;
+
   Widget prodManRightPanel() {
     return isLoadingTable ?  ShareSpinner() : paginateTable();
   }
 
   Widget paginateTable() {
-    DataTableSource _data = TableData(listCategoryPaginate, dataCount, context, widget.userData);
+    DataTableSource _data = TableData(listSubCategoryPaginate, dataCount, context, widget.userData);
     return PaginatedDataTable2(
       columns: const [
         DataColumn(label: Text('Product Id')),
@@ -418,30 +527,64 @@ class Component extends State<SubCategory> {
 
   void solidButtonEvent(String event) {
     if (event == "SEARCH") {
-      context.read<MainBloc>().add(MainParam.GetCategoryByParam(eventStatus: MainEvent.Event_GetCategoryByDescription, userData: widget.userData, categoryParameter: {"description" : eTSearchTopBy.text}));
+      context.read<MainBloc>().add(MainParam.GetSubCategoryByParam(eventStatus: MainEvent.Event_GetSubCategoryByDescription, userData: widget.userData, subCategoryParameter: {"description" : eTSearchTopBy.text}));
     } else if (event == "NEW-CATEGORY") {
       context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: true));
     } else if (event == "UPDATE") {
       bool val = formKey.currentState!.validate();
       ConsolePrint("Validate", val);
       if (val) {
-        context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_UpdateCategory, userData: widget.userData, categoryParameter: {
+        context.read<MainBloc>().add(MainParam.AddUpdateSubCategory(eventStatus: MainEvent.Event_UpdateSubCategory, userData: widget.userData, subCategoryParameter: {
           "desc": eTSubCategoryName.text,
           "note": eTSubCategoryNote.text,
-          "id": eTSubCategoryId.text
+          "id": eTSubCategoryId.text,
+          "cat_uid": categoryDefault,
         }));
       }
 
     } else if (event == "ADD") {
       bool val = formKey.currentState!.validate();
-      ConsolePrint("Validate", val);
       if (val) {
-        context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_AddCategory, userData: widget.userData, categoryParameter: {
+        context.read<MainBloc>().add(MainParam.AddUpdateSubCategory(eventStatus: MainEvent.Event_AddSubCategory, userData: widget.userData, subCategoryParameter: {
           "desc": eTSubCategoryName.text,
           "note": eTSubCategoryNote.text,
+          "cat_uid": categoryDefault,
         }));
       }
     }
+  }
+
+
+
+  /// EACH CATEGORY MUSH HAVE AN ASSOCIATED DEPARTMENT
+  Widget departmentDropDown() {
+    return  ListTile(
+        leading: const Text(TXT_DEPARTMENT),
+        title:  DropdownButton<String>(
+          isExpanded: true,
+          value: categoryDefault,
+          style: const TextStyle(
+              color: Colors.deepPurple
+          ),
+          underline: Container(
+            height: 2,
+            color: Colors.deepPurpleAccent,
+          ),
+          onChanged: (String? newValue) {
+            ConsolePrint("DROP EVENT", newValue);
+            context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: EVENT_DROPDOWN_DEPARTMENT));
+          },
+          items: categoryList
+              .map((key, value) {
+            return MapEntry(
+                key,
+                DropdownMenuItem<String>(
+                  value: key,
+                  child: Text(value),
+                ));
+          }).values.toList(),
+        )
+    );
   }
 
 
@@ -451,7 +594,7 @@ class TableData extends DataTableSource {
   BuildContext context;
   dynamic userData;
   int dataCount = 0;
-  List<CategoryModel> lstModel = [];
+  List<SubCategoryModel> lstModel = [];
   TableData(this.lstModel, this.dataCount, this.context, this.userData);
 
   @override
@@ -464,10 +607,10 @@ class TableData extends DataTableSource {
   DataRow getRow(int index) {
     return DataRow2(
         onLongPress: () {
-          CategoryModel selectedModel = lstModel[index];
+          SubCategoryModel selectedModel = lstModel[index];
           Map<String, String> map = <String, String>{};
           map["categoryId"] = selectedModel.uid!;
-          context.read<MainBloc>().add(MainParam.GetCategoryByParam(eventStatus: MainEvent.Event_GetCategoryById, userData: userData, categoryParameter: map));
+          context.read<MainBloc>().add(MainParam.GetSubCategoryByParam(eventStatus: MainEvent.Event_GetSubCategoryById, userData: userData, subCategoryParameter: map));
         },
         cells: [
           DataCell(Text(lstModel[index].uid.toString())),

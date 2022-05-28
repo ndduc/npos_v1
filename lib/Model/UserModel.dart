@@ -61,7 +61,7 @@ class UserModel {
   late String? addedBy;
   late String? updatedBy;
   late bool isAuthorized = false;
-  List<LocationModel>? locationList;
+  List<LocationModel> locationList = [];
   LocationModel? defaultLocation;
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel.required(

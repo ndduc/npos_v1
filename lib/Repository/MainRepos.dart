@@ -14,6 +14,7 @@ import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/LocationModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
+import 'package:npos/Model/SubCategoryModel.dart';
 import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
@@ -24,6 +25,7 @@ import 'package:npos/Service/Http/DiscountService.dart';
 import 'package:npos/Service/Http/ItemCodeService.dart';
 import 'package:npos/Service/Http/ProductService.dart';
 import 'package:npos/Service/Http/SectionService.dart';
+import 'package:npos/Service/Http/SubCategoryService.dart';
 import 'package:npos/Service/Http/TaxService.dart';
 import 'package:npos/Service/Http/UpcService.dart';
 import 'package:npos/Service/Http/UserService.dart' ;
@@ -186,6 +188,43 @@ class MainRepository{
     return CategoryService().UpdateCategory(userId, locId, param);
   }
   //endregion
+
+  /// SUB CATEGORY
+  //region Sub CATEGORY
+  Future<List<SubCategoryModel>>GetSubCategory(String userId, String locId) {
+    return SubCategoryService().GetSubCategory(userId, locId);
+  }
+
+  Future<int> GetSubCategoryPaginateCount(String userId, String locId, String searchType) {
+    return SubCategoryService().GetSubCategoryPaginateCount(userId, locId, searchType);
+  }
+
+  Future<List<SubCategoryModel>>GetSubCategoryPaginateByIndex(String userId, String locId, String searchType, int startIdx, int endIdx) {
+    return SubCategoryService().GetSubCategoryPaginateByIndex(userId, locId, searchType, startIdx, endIdx);
+  }
+
+  Future<SubCategoryModel> GetSubCategoryById (String userId, String locId, String subCategoryId) {
+    return SubCategoryService().GetSubCategoryById(userId, locId, subCategoryId);
+  }
+
+  Future<List<SubCategoryModel>>GetSubCategoryByDescription(String userId, String locId, String description) {
+    return SubCategoryService().GetSubCategoryByDescription(userId, locId, description);
+  }
+
+  Future<List<SubCategoryModel>>GetSubCategoryByCategoryId(String userId, String locId, String categoryUid) {
+    return SubCategoryService().GetSubCategoryByCategoryId(userId, locId, categoryUid);
+
+  }
+
+  Future<bool>AddSubCategory(String userId, String locId, Map<String, String> param){
+    return SubCategoryService().AddSubCategory(userId, locId, param);
+  }
+
+  Future<bool>UpdateSubCategory(String userId, String locId, Map<String, String> param){
+    return SubCategoryService().UpdateSubCategory(userId, locId, param);
+  }
+  //endregion
+
 
   /// VENDOR
   //region VENDOR

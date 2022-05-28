@@ -54,6 +54,18 @@ enum MainEvent{
   Event_GetCategoryByDescription,
   Event_AddCategory,
   Event_UpdateCategory,
+  Event_GetCategoryDependency,
+  //endregion
+
+  //region CATEGORY REQUEST
+  Event_GetSubCategory,
+  Event_GetSubCategoryPaginateCount,
+  Event_GetSubCategoryPaginate,
+  Event_GetSubCategoryById,
+  Event_GetSubCategoryByDescription,
+  Event_AddSubCategory,
+  Event_UpdateSubCategory,
+  Event_GetSubCategoryDependency,
   //endregion
 
   //region VENDOR REQUEST
@@ -121,6 +133,7 @@ enum MainEvent{
   //region LOCAL EVENT
   Local_Event_Set_DefaultLocation,
   Local_Event_DropDown_SearchBy,
+  Local_Event_DropDown_SearchBy_Adv, /// Adv will replace the normal one
   Local_Event_Product_Mode,
   Local_Event_Switch_Screen,
   Local_Event_NewItem_Mode,     //use to toggle on and off the add button
@@ -201,6 +214,7 @@ class MainParam {
   Map<String, dynamic>? productParameter;
   Map<String, dynamic>? departmentParameter;
   Map<String, dynamic>? categoryParameter;
+  Map<String, dynamic>? subCategoryParameter;
   Map<String, dynamic>? vendorParameter;
   Map<String, dynamic>? sectionParameter;
   Map<String, dynamic>? discountParameter;
@@ -266,6 +280,10 @@ class MainParam {
   /// CATEGORY
   MainParam.GetCategoryByParam({this.eventStatus, this.categoryParameter, this.userData});
   MainParam.AddUpdateCategory({this.eventStatus, this.userData, this.categoryParameter});
+
+  /// SUB CATEGORY
+  MainParam.GetSubCategoryByParam({this.eventStatus, this.subCategoryParameter, this.userData});
+  MainParam.AddUpdateSubCategory({this.eventStatus, this.userData, this.subCategoryParameter});
 
   /// VENDOR
   MainParam.GetVendorByParam({this.eventStatus, this.vendorParameter, this.userData});

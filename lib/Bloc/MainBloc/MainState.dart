@@ -17,6 +17,7 @@ import 'package:npos/Model/ItemCodeModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
+import 'package:npos/Model/SubCategoryModel.dart';
 import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
@@ -62,10 +63,17 @@ class Generic2ndErrorState extends MainState{
 
 //region GENERIC
 /// Description: Loaded Value On Dropdown -- this look like it loadding DEFAULT value
+
+class DropDownInitState extends MainState {}
+class DropDownLoadingState extends MainState {}
 class DropDownLoadedState extends MainState {
   dynamic dropDownValue;
   late String dropDownType;
   DropDownLoadedState({required this.dropDownValue, required this.dropDownType});
+}
+class DropDownErrorState extends MainState {
+  final error;
+  DropDownErrorState({this.error});
 }
 
 /// Description: Switching between multiple different layout on the same screen
@@ -323,12 +331,101 @@ class CategoryLoadedState extends MainState{
   CategoryLoadedState({required this.categoryModel});
 }
 
+class CategoryDependencyInitState extends MainState{ }
+class CategoryDependencyLoadingState extends MainState{ }
+class CategoryDependencyLoadedState extends MainState{
+  dynamic genericData;
+  CategoryDependencyLoadedState.GenericData({this.genericData});
+  CategoryDependencyLoadedState({this.genericData});
+}
+class CategoryDependencyErrorState extends MainState{
+  final error;
+  CategoryDependencyErrorState({this.error});
+}
+
 /// Description: Response to the Add and Update Department request
 class AddUpdateCategoryLoaded extends MainState {
   bool? isSuccess;
   AddUpdateCategoryLoaded({required this.isSuccess});
 }
 //endregion
+
+/// SUB CATEGORY
+//region SUB CATEGORY
+/// SUB CAT PAGINATE
+class SubCategoryPaginateInitState extends MainState {}
+class SubCategoryPaginateLoadingState extends MainState {}
+class SubCategoryPaginateLoadedState extends MainState{
+  List<SubCategoryModel>? listSubCategoryModel;
+  SubCategoryPaginateLoadedState({required this.listSubCategoryModel});
+}
+class SubCategoryPaginateErrorState extends MainState {
+  final error;
+  SubCategoryPaginateErrorState({this.error});
+}
+
+/// SUB CAT PAGINATE COUNT
+class SubCategoryPaginateCountInitState extends MainState {}
+class SubCategoryPaginateCountLoadingState extends MainState {}
+class SubCategoryPaginateCountLoadedState extends MainState{
+  int? count;
+  SubCategoryPaginateCountLoadedState({required this.count});
+}
+class SubCategoryPaginateCountErrorState extends MainState {
+  final error;
+  SubCategoryPaginateCountErrorState({this.error});
+}
+
+/// SUB CAT
+class SubCategoryInitState extends MainState {}
+class SubCategoryLoadingState extends MainState {}
+class SubCategoryLoadedState extends MainState{
+  SubCategoryModel? subCategoryModel;
+  SubCategoryLoadedState({required this.subCategoryModel});
+}
+class SubCategoryErrorState extends MainState {
+  final error;
+  SubCategoryErrorState({this.error});
+}
+
+/// SUB CAT BY DESCRIPTION
+class SubCategoryByDescriptionInitState extends MainState {}
+class SubCategoryByDescriptionLoadingState extends MainState {}
+class SubCategoryByDescriptionLoadedState extends MainState{
+  List<SubCategoryModel>? listSubCategoryModel;
+  SubCategoryByDescriptionLoadedState({required this.listSubCategoryModel});
+}
+class SubCategoryByDescriptionErrorState extends MainState {
+  final error;
+  SubCategoryByDescriptionErrorState({this.error});
+}
+
+/// SUB CAT DEPENDENCY
+class SubCategoryDependencyInitState extends MainState{ }
+class SubCategoryDependencyLoadingState extends MainState{ }
+class SubCategoryDependencyLoadedState extends MainState{
+  dynamic genericData;
+  SubCategoryDependencyLoadedState.GenericData({this.genericData});
+  SubCategoryDependencyLoadedState({this.genericData});
+}
+class SubCategoryDependencyErrorState extends MainState{
+  final error;
+  SubCategoryDependencyErrorState({this.error});
+}
+
+/// SU CAT ADD/UPDATE
+class AddUpdateSubCategoryInitState extends MainState{ }
+class AddUpdateSubCategoryLoadingState extends MainState{ }
+class AddUpdateSubCategoryLoaded extends MainState {
+  bool? isSuccess;
+  AddUpdateSubCategoryLoaded({required this.isSuccess});
+}
+class AddUpdateSubCategoryErrorState extends MainState{
+  final error;
+  AddUpdateSubCategoryErrorState({this.error});
+}
+//endregion
+
 
 //region VENDOR
 class VendorPaginateLoadingState extends MainState {}

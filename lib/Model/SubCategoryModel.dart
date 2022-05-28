@@ -4,7 +4,7 @@
 
 import 'package:npos/Debug/Debug.dart';
 
-class CategoryModel {
+class SubCategoryModel {
   String? uid;
   String? description;
   String? second_description;
@@ -14,9 +14,9 @@ class CategoryModel {
   String? added_by;
   String? updated_by;
   bool? applyToUI;
-  String departmentUid = "";
+  String categoryUid = "";
 
-  CategoryModel.map(Map<String, dynamic> map) {
+  SubCategoryModel.map(Map<String, dynamic> map) {
     uid = map["UId"];
     description = map["Description"];
     second_description = map["SecondDescription"];
@@ -25,10 +25,10 @@ class CategoryModel {
     updated_by = map["UpdatedBy"];
     added_by = map["AddedBy"];
     applyToUI = map["ApplyToUI"];
-    departmentUid = map["DepartmentUId"];
+    categoryUid = map["CategoryUId"];
   }
 
-  CategoryModel.mapLowerCase(Map<String, dynamic> map) {
+  SubCategoryModel.mapLowerCase(Map<String, dynamic> map) {
     uid = map["uId"];
     description = map["description"];
     second_description = map["secondDescription"];
@@ -37,7 +37,7 @@ class CategoryModel {
     updated_by = map["updatedBy"];
     added_by = map["addedBy"];
     applyToUI = map["applyToUI"];
-    departmentUid = map["departmentUId"];
+    categoryUid = map["categoryUId"];
   }
 
 
@@ -50,7 +50,7 @@ class CategoryModel {
     ConsolePrint("updated_by", updated_by);
     ConsolePrint("added_by", added_by);
     ConsolePrint("applyToUI", applyToUI);
-    ConsolePrint("departmentUid", departmentUid);
+    ConsolePrint("categoryUid", categoryUid);
   }
 
   CategoryModel() {

@@ -25,6 +25,7 @@ import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/SectionModel.dart';
+import 'package:npos/Model/SubCategoryModel.dart';
 import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UpcModel.dart';
 import 'package:npos/Model/UserModel.dart';
@@ -427,6 +428,129 @@ class MainBloc extends Bloc<MainParam,MainState>
         break;
         //endregion
 
+      /// SUB CATEGORY HTTP EVENT
+      //region CATEGORY HTTP EVENT
+      case MainEvent.Event_GetSubCategoryPaginateCount:
+        yield SubCategoryPaginateCountInitState();
+        try {
+          yield SubCategoryPaginateCountLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int count = await mainRepo.GetSubCategoryPaginateCount(userId, locId!, searchType);
+          yield SubCategoryPaginateCountLoadedState(count: count);
+        } catch (e) {
+          yield SubCategoryPaginateCountErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSubCategoryPaginate:
+        yield SubCategoryPaginateInitState();
+        try {
+          yield SubCategoryPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int startIdx = event.productParameter!["startIdx"];
+          int endIdx = event.productParameter!["endIdx"];
+          List<SubCategoryModel> listModel = await mainRepo.GetSubCategoryPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          yield SubCategoryPaginateLoadedState(listSubCategoryModel: listModel);
+        } catch (e) {
+          yield SubCategoryPaginateErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSubCategoryByDescription:
+        yield SubCategoryByDescriptionInitState();
+        try {
+          yield SubCategoryByDescriptionLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String description = event.categoryParameter!["description"];
+          List<SubCategoryModel> listModel = await mainRepo.GetSubCategoryByDescription(userId, locId!, description);
+          yield SubCategoryByDescriptionLoadedState(listSubCategoryModel: listModel);
+        } catch (e) {
+          yield SubCategoryByDescriptionErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSubCategoryById:
+        yield SubCategoryInitState();
+        try {
+          yield SubCategoryLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String subCategoryId = event.categoryParameter!["subCategoryId"];
+          SubCategoryModel res = await mainRepo.GetSubCategoryById(userId, locId!, subCategoryId);
+          yield SubCategoryLoadedState(subCategoryModel: res);
+        } catch (e) {
+          yield SubCategoryErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSubCategory:
+      // This will be replaced with paginate endpoint - not valid at the moment
+        yield SubCategoryPaginateInitState();
+        try {
+          yield SubCategoryPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<SubCategoryModel> res = await mainRepo.GetSubCategory(userId, locId!);
+          yield SubCategoryPaginateLoadedState(listSubCategoryModel: res);
+        } catch (e) {
+          yield SubCategoryPaginateErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_AddCategory:
+        yield AddUpdateSubCategoryInitState();
+        try {
+          yield AddUpdateSubCategoryLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.subCategoryParameter!["desc"],
+            "note":event.subCategoryParameter!["note"],
+            "cat_uid":event.subCategoryParameter!["cat_uid"]
+          };
+          bool res = await mainRepo.AddSubCategory(userId, locId!, param);
+          yield AddUpdateSubCategoryLoaded(isSuccess: res);
+        } catch (e) {
+          yield AddUpdateSubCategoryErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_UpdateSubCategory:
+        yield AddUpdateSubCategoryInitState();
+        try {
+          yield AddUpdateSubCategoryLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          Map<String, String> param = {
+            "desc": event.subCategoryParameter!["desc"],
+            "note":event.subCategoryParameter!["note"],
+            "id":event.subCategoryParameter!["id"],
+            "cat_uid":event.subCategoryParameter!["cat_uid"]
+          };
+          bool res = await mainRepo.UpdateSubCategory(userId, locId!, param);
+          yield AddUpdateCategoryLoaded(isSuccess: res);
+        } catch (e) {
+          yield AddUpdateSubCategoryErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetSubCategoryDependency:
+        yield SubCategoryDependencyInitState();
+        try {
+          yield SubCategoryDependencyLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<CategoryModel> dept = await mainRepo.GetCategory(userId, locId.toString());
+
+          /// Dependency could be more than 1 object thus we use map as a container
+          Map<String, dynamic> res = {
+            "category" : dept.isNotEmpty ? dept : null,
+          };
+          yield SubCategoryDependencyLoadedState(genericData: res);
+        } catch (e) {
+          yield SubCategoryDependencyErrorState(error: e);
+        }
+        break;
+    //endregion
+
       /// CATEGORY HTTP EVENT
       //region CATEGORY HTTP EVENT
       case MainEvent.Event_GetCategoryPaginateCount:
@@ -504,7 +628,8 @@ class MainBloc extends Bloc<MainParam,MainState>
           String? locId = event.userData!.defaultLocation!.uid;
           Map<String, String> param = {
             "desc": event.categoryParameter!["desc"],
-            "note":event.categoryParameter!["note"]
+            "note":event.categoryParameter!["note"],
+            "dept_uid":event.categoryParameter!["dept_uid"]
           };
           bool res = await mainRepo.AddCategory(userId, locId!, param);
           yield AddUpdateCategoryLoaded(isSuccess: res);
@@ -521,12 +646,30 @@ class MainBloc extends Bloc<MainParam,MainState>
           Map<String, String> param = {
             "desc": event.categoryParameter!["desc"],
             "note":event.categoryParameter!["note"],
-            "id":event.categoryParameter!["id"]
+            "id":event.categoryParameter!["id"],
+            "dept_uid":event.categoryParameter!["dept_uid"]
           };
           bool res = await mainRepo.UpdateCategory(userId, locId!, param);
           yield AddUpdateCategoryLoaded(isSuccess: res);
         } catch (e) {
           yield Generic2ndErrorState(error: e);
+        }
+        break;
+      case MainEvent.Event_GetCategoryDependency:
+        yield CategoryDependencyInitState();
+        try {
+          yield CategoryDependencyLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          List<DepartmentModel> dept = await mainRepo.GetDepartments(userId, locId.toString());
+
+          /// Dependency could be more than 1 object thus we use map as a container
+          Map<String, dynamic> res = {
+            "department" : dept.isNotEmpty ? dept : null,
+          };
+          yield CategoryDependencyLoadedState(genericData: res);
+        } catch (e) {
+          yield CategoryDependencyErrorState(error: e);
         }
         break;
       //endregion
@@ -995,7 +1138,18 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield GenericErrorState(error: e);
         }
         break;
+      /// ADV BLOCK --- Non adv will be replaced by ADV in the future, any future development will be using ADV
+      //region ADV
       case MainEvent.Local_Event_DropDown_SearchBy:
+        yield DropDownInitState();
+        try {
+          yield DropDownLoadingState();
+          yield DropDownLoadedState(dropDownType: event.dropDownType as String, dropDownValue:  event.dropDownValue as dynamic);
+        } catch (e) {
+          yield DropDownErrorState(error: e);
+        }
+        break;
+      case MainEvent.Local_Event_DropDown_SearchBy_Adv:
         yield GenericInitialState();
         try {
           yield GenericLoadingState();
@@ -1004,11 +1158,12 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield GenericErrorState(error: e);
         }
         break;
+      //endregion
       case MainEvent.Local_Event_Set_DefaultLocation:
         yield GenericLoadingState();
         try {
           userModel = event.userData as UserModel;
-          userModel!.defaultLocation = userModel!.locationList![event.index as int];
+          userModel!.defaultLocation = userModel!.locationList[event.index as int];
           yield GenericLoadedState.GenericData(genericData: userModel);
         } catch (e) {
           yield GenericErrorState(error: e);

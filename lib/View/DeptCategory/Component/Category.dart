@@ -7,8 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:npos/Bloc/MainBloc/MainBloc.dart';
 import 'package:npos/Bloc/MainBloc/MainEvent.dart';
 import 'package:npos/Bloc/MainBloc/MainState.dart';
+import 'package:npos/Constant/UI/Product/ProductShareUIValues.dart';
+import 'package:npos/Constant/UIEvent/addProductEvent.dart';
+import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/CategoryModel.dart';
+import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
 import 'package:npos/View/Component/Stateful/GenericComponents/listTileTextField.dart';
@@ -36,6 +40,37 @@ class Component extends State<Category> {
   int defaultProductMode = 0;
   bool isLoading = false;
   var formKey = GlobalKey<FormState>();
+  List<CategoryModel> listCategoryPaginate = [];
+  int dataCount = 0;
+  CategoryModel? currentModel;
+  bool isAdded = true;
+
+
+  String? departmentDefault = STRING_NULL;
+  Map<String, String> departmentList = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadOnInit();
+  }
+
+  /// this one will load existing categories to the view
+  loadOnInit() {
+    // String deptVal = isAdded ? "" : STRING_NOT_FOUND;
+    departmentList = <String, String>{
+      STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
+    };
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
+  }
+
+  /// loading all category's dependency,
+  /// likely will trigger after loadOnInit
+  initDependency() {
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryDependency, userData: widget.userData, productParameter: { "searchText": "" }));
+  }
+
+
 
   void appBaseEvent(MainState state) {
     // Executing Generic State
@@ -56,37 +91,8 @@ class Component extends State<Category> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadOnInit();
-  }
-
-  loadOnInit() {
-    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
-  }
-
-  List<CategoryModel> listCategoryPaginate = [];
-  int dataCount = 0;
-  CategoryModel? currentModel;
-  bool isAdded = false;
   void appSpecificEvent(MainState state) {
-    // Executing Specific State
-    if (state is CategoryPaginateLoadingState) {
-      isLoadingTable = true;
-    } else if (state is CategoryPaginateLoadedState) {
-      isLoadingTable = false;
-      listCategoryPaginate = state.listCategoryModel!;
-    } else if (state is CategoryPaginateCountLoadedState) {
-      isLoadingTable = false;
-      // Invoke Load Paginate Product After Count is Completed
-      dataCount = state.count!;
-      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginate, userData: widget.userData, productParameter: {
-        "searchType": "test",
-        "startIdx": 1,
-        "endIdx": 10
-      }));
-    } else if (state is CategoryLoadedState) {
+    if (state is CategoryLoadedState) {
       currentModel = state.categoryModel;
       parsingProductDataToUI(currentModel!);
       context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: false));
@@ -107,6 +113,73 @@ class Component extends State<Category> {
     }
   }
 
+  void appCategoryPaginateCount(MainState state) {
+    if (state is CategoryPaginateCountLoadedState) {
+      isLoadingTable = false;
+      /// Invoke Load Paginate Product After Count is Completed
+      dataCount = state.count!;
+      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetCategoryPaginate, userData: widget.userData, productParameter: {
+        "searchType": "test",
+        "startIdx": 1,
+        "endIdx": 10
+      }));
+    }
+  }
+
+  void appCategoryPaginate(MainState state) {
+    if (state is CategoryPaginateLoadingState) {
+      isLoadingTable = true;
+    } else if (state is CategoryPaginateLoadedState) {
+      isLoadingTable = false;
+      listCategoryPaginate = state.listCategoryModel!;
+      initDependency();
+    }
+  }
+
+  void appCategoryDependencyEvent(MainState state) {
+    if (state is CategoryDependencyInitState) {
+
+    } else if (state is CategoryDependencyLoadingState) {
+
+    } else if (state is CategoryDependencyLoadedState) {
+      if(state.genericData["department"] != null) {
+        List<DepartmentModel> deptList = state.genericData["department"];
+        setDepartmentDropDownValue(deptList);
+      }
+    } else if (state is CategoryDependencyErrorState) {
+
+    }
+  }
+
+  /// Trigger upon dropdown selection
+  void appDropDownEvent(MainState state) {
+    if (state is DropDownInitState) {
+
+    } else if (state is DropDownLoadingState) {
+
+    } else if (state is DropDownLoadedState) {
+      /// Update value of dept dropdown
+      if (state.dropDownType == EVENT_DROPDOWN_DEPARTMENT) {
+        departmentDefault = state.dropDownValue;
+      }
+    } else if (state is DropDownErrorState) {
+
+    }
+  }
+
+  void setDepartmentDropDownValue(List<DepartmentModel> deptList) {
+    departmentList = {};
+    for(int i = 0; i < deptList.length; i++) {
+      if (i == 0) {
+        departmentDefault = "-1";
+        String deptVal = isAdded ? "Select Category Department" :  STRING_NOT_HAVE + WHITE_SPACE + DEPARTMENT;
+        departmentList[STRING_NULL] = deptVal;
+      }
+      departmentList[deptList[i].uid!] = deptList[i].description!;
+    }
+
+  }
+
   void clearEditText() {
     eTCategoryNote = TextEditingController();
     eTCategoryName = TextEditingController();
@@ -124,6 +197,7 @@ class Component extends State<Category> {
     eTCreated.text = model.added_by! + " On " + model.added_datetime!;
     eTUpdated.text = model.updated_by == null ? "Not Available" : model.updated_by! + " On " + model.updated_by!;
     eTCategoryId.text = model.uid!;
+    departmentDefault = model.departmentUid;
   }
   @override
   Widget build(BuildContext context) {
@@ -136,6 +210,10 @@ class Component extends State<Category> {
       appBaseEvent(state);
       appNestedEvent(state);
       appSpecificEvent(state);
+      appCategoryPaginateCount(state);
+      appCategoryPaginate(state);
+      appCategoryDependencyEvent(state);
+      appDropDownEvent(state);
       /**
        * Bloc Action Note
        * END
@@ -252,6 +330,7 @@ class Component extends State<Category> {
             key: formKey,
             child: Column(
               children: [
+                departmentDropDown(),
                 Custom_ListTile_TextField(
                   read: true,
                   controller: eTCategoryId,
@@ -428,20 +507,54 @@ class Component extends State<Category> {
         context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_UpdateCategory, userData: widget.userData, categoryParameter: {
           "desc": eTCategoryName.text,
           "note": eTCategoryNote.text,
-          "id": eTCategoryId.text
+          "id": eTCategoryId.text,
+          "dept_uid": departmentDefault,
         }));
       }
 
     } else if (event == "ADD") {
       bool val = formKey.currentState!.validate();
-      ConsolePrint("Validate", val);
       if (val) {
         context.read<MainBloc>().add(MainParam.AddUpdateCategory(eventStatus: MainEvent.Event_AddCategory, userData: widget.userData, categoryParameter: {
           "desc": eTCategoryName.text,
           "note": eTCategoryNote.text,
+          "dept_uid": departmentDefault,
         }));
       }
     }
+  }
+
+
+
+  /// EACH CATEGORY MUSH HAVE AN ASSOCIATED DEPARTMENT
+  Widget departmentDropDown() {
+    return  ListTile(
+        leading: const Text(TXT_DEPARTMENT),
+        title:  DropdownButton<String>(
+          isExpanded: true,
+          value: departmentDefault,
+          style: const TextStyle(
+              color: Colors.deepPurple
+          ),
+          underline: Container(
+            height: 2,
+            color: Colors.deepPurpleAccent,
+          ),
+          onChanged: (String? newValue) {
+            ConsolePrint("DROP EVENT", newValue);
+            context.read<MainBloc>().add(MainParam.DropDown(eventStatus: MainEvent.Local_Event_DropDown_SearchBy, dropDownValue: newValue, dropDownType: EVENT_DROPDOWN_DEPARTMENT));
+          },
+          items: departmentList
+              .map((key, value) {
+            return MapEntry(
+                key,
+                DropdownMenuItem<String>(
+                  value: key,
+                  child: Text(value),
+                ));
+          }).values.toList(),
+        )
+    );
   }
 
 
