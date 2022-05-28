@@ -281,6 +281,10 @@ class MainParam {
   MainParam.GetCategoryByParam({this.eventStatus, this.categoryParameter, this.userData});
   MainParam.AddUpdateCategory({this.eventStatus, this.userData, this.categoryParameter});
 
+  /// SUB CATEGORY
+  MainParam.GetSubCategoryByParam({this.eventStatus, this.subCategoryParameter, this.userData});
+  MainParam.AddUpdateSubCategory({this.eventStatus, this.userData, this.subCategoryParameter});
+
   /// VENDOR
   MainParam.GetVendorByParam({this.eventStatus, this.vendorParameter, this.userData});
   MainParam.AddUpdateVendor({this.eventStatus, this.userData, this.vendorParameter});

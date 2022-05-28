@@ -31,11 +31,11 @@ class _MainMenuBody extends State<MainMenuBody> {
   void initState() {
     super.initState();
 
-    LocationModel locationModelTmp = widget.userData.locationList![0];
+    LocationModel locationModelTmp = widget.userData.locationList[0];
     if(locationModelTmp.isError) {
       // Error Mean, the user does not have any specific location. If this is a case then prevent user from moving further
     } else {
-      if( widget.userData.locationList!.length > 1) {
+      if( widget.userData.locationList.length > 1) {
         // LocationList > 1, meaning the user have multiple location
         // Setup a dialog, and allow user to choose location for this session.
       } else {

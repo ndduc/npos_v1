@@ -1163,7 +1163,7 @@ class MainBloc extends Bloc<MainParam,MainState>
         yield GenericLoadingState();
         try {
           userModel = event.userData as UserModel;
-          userModel!.defaultLocation = userModel!.locationList![event.index as int];
+          userModel!.defaultLocation = userModel!.locationList[event.index as int];
           yield GenericLoadedState.GenericData(genericData: userModel);
         } catch (e) {
           yield GenericErrorState(error: e);
