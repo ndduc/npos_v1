@@ -214,6 +214,7 @@ class MainParam {
   Map<String, dynamic>? productParameter;
   Map<String, dynamic>? departmentParameter;
   Map<String, dynamic>? categoryParameter;
+  Map<String, dynamic>? subCategoryParameter;
   Map<String, dynamic>? vendorParameter;
   Map<String, dynamic>? sectionParameter;
   Map<String, dynamic>? discountParameter;

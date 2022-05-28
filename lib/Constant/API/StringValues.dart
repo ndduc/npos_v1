@@ -26,6 +26,16 @@ const String CATEGORY_ADD = "/category/add";
 const String CATEGORY_UPDATE = "/category/update";
 //endregion
 
+//region CATEGORY
+const String SUBCATEGORY = "/subcategory/";
+const String SUBCATEGORY_GET = "/subcategory/get";
+const String SUBCATEGORY_GET_COUNT = "/subcategory/get-count";
+const String SUBCATEGORY_GET_PAGINATE = "/subcategory/get-subcategory-paginate";
+const String SUBCATEGORY_GET_BY_SUBCATEGORY = "/subcategory/get-by-description";
+const String SUBCATEGORY_ADD = "/subcategory/add";
+const String SUBCATEGORY_UPDATE = "/subcategory/update";
+//endregion
+
 //region DEPARTMENT
 const String DEPARTMENT = "/department/";
 const String DEPARTMENT_GET = "/department/get";
