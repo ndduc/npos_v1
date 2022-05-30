@@ -344,6 +344,9 @@ class _MainClientBody extends State<MainClientBody> {
         etAmountOfVoid.text = "0.00";
         etAmountOfTax.text = "0.00";
         etTotal.text = productOrder.total.toString();
+
+        /// Reversed transaction list
+        productOrder.transaction = productOrder.transaction.reversed.toList();
       }
     } else if (state is ProductLoadErrorState) {
 
@@ -440,6 +443,7 @@ class _MainClientBody extends State<MainClientBody> {
           Container(
             child: ListView.builder(
               itemCount: productOrder.transaction.length,
+
               itemBuilder: (context, index) {
                 return Card(
                     child: ListTile(
