@@ -102,6 +102,7 @@ enum MainEvent{
   Event_GetTax,
   Event_GetTaxPaginateCount,
   Event_GetTaxPaginate,
+  Event_GetTaxPaginate_Adv,
   Event_GetTaxById,
   Event_GetTaxByDescription,
   Event_AddTax,

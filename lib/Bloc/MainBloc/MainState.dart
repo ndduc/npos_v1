@@ -520,7 +520,17 @@ class AddUpdateDiscountLoaded extends MainState {
 //endregion
 
 //region TAX
+class TaxPaginateInitState extends MainState {}
 class TaxPaginateLoadingState extends MainState {}
+class TaxPaginateLoadedState extends MainState{
+  List<TaxModel>? listTaxModel;
+  TaxPaginateLoadedState({required this.listTaxModel});
+}
+class TaxPaginateErrorState extends MainState {
+  dynamic error;
+  TaxPaginateErrorState({required this.error});
+}
+
 
 class TaxLoadingState extends MainState {}
 
@@ -529,10 +539,6 @@ class TaxPaginateCountLoadedState extends MainState{
   TaxPaginateCountLoadedState({required this.count});
 }
 
-class TaxPaginateLoadedState extends MainState{
-  List<TaxModel>? listTaxModel;
-  TaxPaginateLoadedState({required this.listTaxModel});
-}
 
 class TaxByDescriptionLoadedState extends MainState{
   List<TaxModel>? listTaxModel;

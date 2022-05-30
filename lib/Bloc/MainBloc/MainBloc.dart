@@ -1015,6 +1015,21 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield GenericErrorState(error: e);
         }
         break;
+      case MainEvent.Event_GetTaxPaginate_Adv:  /// Will Replace non adv
+        yield TaxPaginateInitState();
+        try {
+          yield TaxPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int startIdx = event.productParameter!["startIdx"];
+          int endIdx = event.productParameter!["endIdx"];
+          List<TaxModel> listModel = await mainRepo.GetTaxPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          yield TaxPaginateLoadedState(listTaxModel: listModel);
+        } catch (e) {
+          yield TaxPaginateErrorState(error: e);
+        }
+        break;
       case MainEvent.Event_GetTaxByDescription:
         yield GenericInitialState();
         try {

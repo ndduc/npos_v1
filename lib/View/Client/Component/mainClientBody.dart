@@ -17,6 +17,7 @@ import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
+import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -53,6 +54,9 @@ class _MainClientBody extends State<MainClientBody> {
   List<Map<dynamic, dynamic>> subCategories = [];
   List<Map<dynamic, dynamic>> products = [];
 
+  /// Bloc Data
+  Map<String, TaxModel> taxMap = {};
+
   /// logic here is to switch between sub cat and product
   bool isProduct = false;
   bool isKeyboard = false;
@@ -63,11 +67,16 @@ class _MainClientBody extends State<MainClientBody> {
     // initProductOrderTesting();
     initController();
     initNewOrder();
-    initBlocEvent();
+    initBlocDependency();
   }
 
-  void initBlocEvent() {
-    context.read<MainBloc>().add(MainParam.GetDepartments(eventStatus: MainEvent.Event_GetDepartments, userData: widget.userData));
+
+  void initBlocDependency() {
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetTaxPaginate_Adv, userData: widget.userData, productParameter: {
+      "searchType": "test",
+      "startIdx": 1,
+      "endIdx": 10
+    }));
   }
 
   void initController() {
@@ -147,6 +156,7 @@ class _MainClientBody extends State<MainClientBody> {
             appKeyboardEvent(state);
             appDepartmentEvent(state);
             appProductEvent(state);
+            appTaxEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -265,6 +275,22 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// TAX
+  void appTaxEvent(MainState state) {
+    if (state is TaxPaginateInitState) {
+
+    } else if (state is TaxPaginateLoadingState) {
+
+    } else if (state is TaxPaginateLoadedState) {
+      for(var item in state.listTaxModel!) {
+        taxMap[item.uid!] = item;
+      }
+      context.read<MainBloc>().add(MainParam.GetDepartments(eventStatus: MainEvent.Event_GetDepartments, userData: widget.userData));
+    } else if (state is TaxPaginateErrorState) {
+
+    }
+  }
+
   /// LOOKUP
   void appLookupEvent(MainState state) {
     if (state is CheckoutLookupInit) {
@@ -335,17 +361,14 @@ class _MainClientBody extends State<MainClientBody> {
 
         /// TAX calculation
         /// We need to get tax info here, what product return is just simply tax id
-        // double taxRate = double.parse(toBeInsertedProduct.taxList[0]);
-        // double tax = (toBeInsertedProduct.price / 100) * taxRate;
-        // toBeInsertedProduct.taxBySingle = tax;
-        // toBeInsertedProduct.taxByQty = tax * toBeInsertedProduct.quantity;
+        String taxId = toBeInsertedProduct.taxList[0];
+        double taxRate = taxMap[taxId]!.rate;
+        double tax = (toBeInsertedProduct.price / 100) * taxRate;
+        toBeInsertedProduct.taxBySingle = tax;
+        toBeInsertedProduct.taxByQty = tax * toBeInsertedProduct.quantity;
+        toBeInsertedProduct.totalTax += toBeInsertedProduct.taxByQty;
 
-        productOrder.orderSubTotal = productOrder.orderSubTotal + toBeInsertedProduct.subTotal;
-        productOrder.orderQuantity = productOrder.orderQuantity + toBeInsertedProduct.quantity;
-        /// This is going to be sum of tax by $ on each product
-        productOrder.orderTotalTax = 0.00;
-        /// Total shall be sum of (sub total and tax) - minus discount, etc...
-        productOrder.total = productOrder.total + productOrder.orderSubTotal;
+
 
         /// ADD ITEM TO TRANSACTION
         /// This loop and logic here is to check whether the same product is being scaned to the receipt
@@ -370,6 +393,13 @@ class _MainClientBody extends State<MainClientBody> {
           productOrder.transaction.add(toBeInsertedProduct);
         }
 
+        productOrder.orderSubTotal += toBeInsertedProduct.subTotal;
+        productOrder.orderQuantity += toBeInsertedProduct.quantity;
+        /// This is going to be sum of tax by $ on each product
+        productOrder.orderTotalTax += toBeInsertedProduct.totalTax;
+        /// Total shall be sum of (sub total and tax) - minus discount, etc...
+        productOrder.total =  productOrder.orderSubTotal + productOrder.orderTotalTax;
+
 
         etSubTotal.text = productOrder.orderSubTotal.toString();
         etNumberOfItem.text = productOrder.orderQuantity.toString();
@@ -377,7 +407,7 @@ class _MainClientBody extends State<MainClientBody> {
         etAmountOfRefund.text = "0.00";
         etAmountOfDiscount.text = "0.00";
         etAmountOfVoid.text = "0.00";
-        etAmountOfTax.text = "0.00";
+        etAmountOfTax.text = productOrder.orderTotalTax.toString();
         etTotal.text = productOrder.total.toString();
 
         /// Reversed transaction list

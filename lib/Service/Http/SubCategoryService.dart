@@ -116,7 +116,6 @@ class SubCategoryService extends Service{
           url,
           headers: HEADER
       );
-      ConsolePrint("RES", res.body);
       if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
@@ -197,7 +196,6 @@ class SubCategoryService extends Service{
           encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      ConsolePrint("RES", res.body);
       if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
@@ -216,7 +214,6 @@ class SubCategoryService extends Service{
 
   @override
   Future<bool>UpdateSubCategory(String userId, String locId, Map<String, String> param) async {
-    ConsolePrint("PARAM", param);
     try {
       var url = Uri.parse(HOST + MAIN_ENDPOINT + userId + SLASH + locId + SUBCATEGORY_UPDATE);
       var res = await http.post(
@@ -225,7 +222,6 @@ class SubCategoryService extends Service{
           encoding: Encoding.getByName(UTF_8),
           body: param
       );
-      ConsolePrint("RES", res.body);
       if(res.statusCode != STATUS_OK) {
         throw Exception(res.body.toString());
       } else {
