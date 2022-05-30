@@ -404,9 +404,8 @@ class SubCategoryByDescriptionErrorState extends MainState {
 class SubCategoryDependencyInitState extends MainState{ }
 class SubCategoryDependencyLoadingState extends MainState{ }
 class SubCategoryDependencyLoadedState extends MainState{
-  dynamic genericData;
-  SubCategoryDependencyLoadedState.GenericData({this.genericData});
-  SubCategoryDependencyLoadedState({this.genericData});
+  List<CategoryModel> catList = [];
+  SubCategoryDependencyLoadedState({required this.catList});
 }
 class SubCategoryDependencyErrorState extends MainState{
   final error;

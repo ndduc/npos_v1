@@ -53,15 +53,20 @@ class Component extends State<SubCategory> {
   @override
   void initState() {
     super.initState();
-    loadOnInit();
+    loadOnInitLocal();
+    initDependency();
+  }
+
+  loadOnInitLocal() {
+    categoryList = <String, String>{
+      STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
+    };
   }
 
   /// this one will load existing categories to the view
   loadOnInit() {
     // String deptVal = isAdded ? "" : STRING_NOT_FOUND;
-    categoryList = <String, String>{
-      STRING_NULL: DEPARTMENT + WHITE_SPACE + STRING_NOT_FOUND
-    };
+
     context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetSubCategoryPaginateCount, userData: widget.userData, productParameter: {"searchType": "test"}));
   }
 
@@ -112,7 +117,9 @@ class Component extends State<SubCategory> {
         // Pop A snackbar or a dialog here
       }
     }
-    else if (state is AddUpdateSubCategoryErrorState) {}
+    else if (state is AddUpdateSubCategoryErrorState) {
+      ConsolePrint("ERRROR", state.error);
+    }
   }
 
   void appSubCategoryByDescription(MainState state) {
@@ -132,7 +139,9 @@ class Component extends State<SubCategory> {
       parsingProductDataToUI(currentModel!);
       context.read<MainBloc>().add(MainParam.AddItemMode(eventStatus: MainEvent.Local_Event_NewItem_Mode, isAdded: false));
     }
-    else if (state is SubCategoryErrorState) {}
+    else if (state is SubCategoryErrorState) {
+      ConsolePrint("ERROR", state.error);
+    }
   }
 
   void appSubCategoryPaginateCount(MainState state) {
@@ -142,11 +151,13 @@ class Component extends State<SubCategory> {
       isLoadingTable = false;
       /// Invoke Load Paginate Product After Count is Completed
       dataCount = state.count!;
-      context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetSubCategoryPaginate, userData: widget.userData, productParameter: {
-        "searchType": "test",
-        "startIdx": 1,
-        "endIdx": 10
-      }));
+      if (dataCount > 0) {
+        context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetSubCategoryPaginate, userData: widget.userData, productParameter: {
+          "searchType": "test",
+          "startIdx": 1,
+          "endIdx": 10
+        }));
+      }
     }
     else if (state is SubCategoryPaginateCountErrorState) {}
   }
@@ -158,24 +169,27 @@ class Component extends State<SubCategory> {
     } else if (state is SubCategoryPaginateLoadedState) {
       isLoadingTable = false;
       listSubCategoryPaginate = state.listSubCategoryModel!;
-      initDependency();
     }
     else if (state is SubCategoryPaginateErrorState) {}
   }
 
   void appSubCategoryDependencyEvent(MainState state) {
     if (state is SubCategoryDependencyInitState) {
+      ConsolePrint("TEST", "INIT");
 
     } else if (state is SubCategoryDependencyLoadingState) {
+      ConsolePrint("TEST", "LOADING");
 
     } else if (state is SubCategoryDependencyLoadedState) {
-      if(state.genericData["category"] != null) {
-        List<CategoryModel> catList = state.genericData["category"];
-        setCategoryDropDownValue(catList);
-      }
+      ConsolePrint("TEST", "TEST");
+      List<CategoryModel> catList = state.catList;
+      setCategoryDropDownValue(catList);
+      loadOnInit();
     } else if (state is CategoryDependencyErrorState) {
+      ConsolePrint("TEST", "ERROR");
 
     }
+
   }
 
   /// Trigger upon dropdown selection
@@ -202,6 +216,7 @@ class Component extends State<SubCategory> {
         String catVal = isAdded ? "Select Category Department" :  STRING_NOT_HAVE + WHITE_SPACE + DEPARTMENT;
         categoryList[STRING_NULL] = catVal;
       }
+      ConsolePrint("TEST", cateList[i].description!);
       categoryList[cateList[i].uid!] = cateList[i].description!;
     }
 
@@ -360,7 +375,7 @@ class Component extends State<SubCategory> {
             key: formKey,
             child: Column(
               children: [
-                departmentDropDown(),
+                categoryDropDown(),
                 Custom_ListTile_TextField(
                   read: true,
                   controller: eTSubCategoryId,
@@ -545,6 +560,7 @@ class Component extends State<SubCategory> {
     } else if (event == "ADD") {
       bool val = formKey.currentState!.validate();
       if (val) {
+        ConsolePrint("ADD", "SUB");
         context.read<MainBloc>().add(MainParam.AddUpdateSubCategory(eventStatus: MainEvent.Event_AddSubCategory, userData: widget.userData, subCategoryParameter: {
           "desc": eTSubCategoryName.text,
           "note": eTSubCategoryNote.text,
@@ -556,10 +572,10 @@ class Component extends State<SubCategory> {
 
 
 
-  /// EACH CATEGORY MUSH HAVE AN ASSOCIATED DEPARTMENT
-  Widget departmentDropDown() {
+  /// EACH SUB CAT MUSH HAVE AN ASSOCIATED CAT
+  Widget categoryDropDown() {
     return  ListTile(
-        leading: const Text(TXT_DEPARTMENT),
+        leading: const Text(TXT_CATEGORY),
         title:  DropdownButton<String>(
           isExpanded: true,
           value: categoryDefault,
@@ -607,9 +623,12 @@ class TableData extends DataTableSource {
   DataRow getRow(int index) {
     return DataRow2(
         onLongPress: () {
+          ConsolePrint("LONG", "PRESS");
           SubCategoryModel selectedModel = lstModel[index];
           Map<String, String> map = <String, String>{};
-          map["categoryId"] = selectedModel.uid!;
+          map["subCategoryId"] = selectedModel.uid!;
+
+          ConsolePrint("MAP PARAM", map);
           context.read<MainBloc>().add(MainParam.GetSubCategoryByParam(eventStatus: MainEvent.Event_GetSubCategoryById, userData: userData, subCategoryParameter: map));
         },
         cells: [

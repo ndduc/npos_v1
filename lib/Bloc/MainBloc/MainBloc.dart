@@ -477,7 +477,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield SubCategoryLoadingState();
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          String subCategoryId = event.categoryParameter!["subCategoryId"];
+          String subCategoryId = event.subCategoryParameter!["subCategoryId"];
           SubCategoryModel res = await mainRepo.GetSubCategoryById(userId, locId!, subCategoryId);
           yield SubCategoryLoadedState(subCategoryModel: res);
         } catch (e) {
@@ -497,7 +497,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield SubCategoryPaginateErrorState(error: e);
         }
         break;
-      case MainEvent.Event_AddCategory:
+      case MainEvent.Event_AddSubCategory:
         yield AddUpdateSubCategoryInitState();
         try {
           yield AddUpdateSubCategoryLoadingState();
@@ -526,8 +526,10 @@ class MainBloc extends Bloc<MainParam,MainState>
             "id":event.subCategoryParameter!["id"],
             "cat_uid":event.subCategoryParameter!["cat_uid"]
           };
+
+          ConsolePrint("UPDATE", "SUB");
           bool res = await mainRepo.UpdateSubCategory(userId, locId!, param);
-          yield AddUpdateCategoryLoaded(isSuccess: res);
+          yield AddUpdateSubCategoryLoaded(isSuccess: res);
         } catch (e) {
           yield AddUpdateSubCategoryErrorState(error: e);
         }
@@ -538,13 +540,10 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield SubCategoryDependencyLoadingState();
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          List<CategoryModel> dept = await mainRepo.GetCategory(userId, locId.toString());
+          List<CategoryModel> cat = await mainRepo.GetCategory(userId, locId.toString());
 
           /// Dependency could be more than 1 object thus we use map as a container
-          Map<String, dynamic> res = {
-            "category" : dept.isNotEmpty ? dept : null,
-          };
-          yield SubCategoryDependencyLoadedState(genericData: res);
+          yield SubCategoryDependencyLoadedState(catList: cat);
         } catch (e) {
           yield SubCategoryDependencyErrorState(error: e);
         }
