@@ -324,17 +324,52 @@ class _MainClientBody extends State<MainClientBody> {
         toBeInsertedProduct.description = state.productModel!.description;
         toBeInsertedProduct.cost = state.productModel!.cost;
         toBeInsertedProduct.price = state.productModel!.price;
-        toBeInsertedProduct.subTotal = state.productModel!.price * 1;
-        toBeInsertedProduct.quantity = 1;
-        toBeInsertedProduct.transactionType = PURCHASE;
+        toBeInsertedProduct.taxList = state.productModel!.taxList;
+
+        /// value from UI
+        toBeInsertedProduct.quantity = 1; /// We need to have a logic to handle this on UI
+        toBeInsertedProduct.subTotal = state.productModel!.price * toBeInsertedProduct.quantity;
+        toBeInsertedProduct.transactionType = PURCHASE; /// We need to have a logic to handle this on UI
         toBeInsertedProduct.productModelId = toBeInsertedProduct.transactionType + "_" + toBeInsertedProduct.uid!;
 
 
+        /// TAX calculation
+        /// We need to get tax info here, what product return is just simply tax id
+        // double taxRate = double.parse(toBeInsertedProduct.taxList[0]);
+        // double tax = (toBeInsertedProduct.price / 100) * taxRate;
+        // toBeInsertedProduct.taxBySingle = tax;
+        // toBeInsertedProduct.taxByQty = tax * toBeInsertedProduct.quantity;
+
         productOrder.orderSubTotal = productOrder.orderSubTotal + toBeInsertedProduct.subTotal;
         productOrder.orderQuantity = productOrder.orderQuantity + toBeInsertedProduct.quantity;
+        /// This is going to be sum of tax by $ on each product
         productOrder.orderTotalTax = 0.00;
-        productOrder.transaction.add(toBeInsertedProduct);
+        /// Total shall be sum of (sub total and tax) - minus discount, etc...
         productOrder.total = productOrder.total + productOrder.orderSubTotal;
+
+        /// ADD ITEM TO TRANSACTION
+        /// This loop and logic here is to check whether the same product is being scaned to the receipt
+        /// if so, then simply update the quantity and sub product and any related attribute
+        /// then push the product back to the top of the list
+        bool isItemAlreadyExisted = false;
+        ProductCheckOutModel tempProduct = ProductCheckOutModel();
+        for(int i = 0; i < productOrder.transaction.length; i++) {
+          if (productOrder.transaction[i].uid == toBeInsertedProduct.uid && toBeInsertedProduct.transactionType == PURCHASE) {
+            isItemAlreadyExisted = true;
+            tempProduct = productOrder.transaction[i];
+            productOrder.transaction.removeAt(i);
+            break;
+          }
+        }
+
+        if (!isItemAlreadyExisted) {
+          productOrder.transaction.add(toBeInsertedProduct);
+        } else {
+          toBeInsertedProduct.quantity += tempProduct.quantity;
+          toBeInsertedProduct.subTotal += tempProduct.subTotal;
+          productOrder.transaction.add(toBeInsertedProduct);
+        }
+
 
         etSubTotal.text = productOrder.orderSubTotal.toString();
         etNumberOfItem.text = productOrder.orderQuantity.toString();
