@@ -241,8 +241,27 @@ class MainBloc extends Bloc<MainParam,MainState>
           Map<String, dynamic> param = event.productParameter as Map<String, dynamic>;
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          ProductModel model = await mainRepo.GetProductByParamMap(userId, locId!, param);
-          yield ProductLoadedState(productModel: model);
+
+          Map<String, dynamic> eventParam = {
+            "upc" : param["upc"],
+            "searchText": "",
+            "isCheckout": param["isCheckout"]
+          };
+
+          ProductModel model = await mainRepo.GetProductByParamMap(userId, locId!, eventParam);
+
+          /// isFunc, mostly use in checkout, it indicates the input contain function symbol such as multiple (*), etc..
+          /// additional logic will be performed after bloc
+          if (param["isFunc"]) {
+            Map<String, dynamic> funcParam = param;
+            yield ProductLoadedState.checkout(productModel: model, checkoutResult: funcParam);
+          }
+          /// Else meaning the input is normal
+          else {
+            yield ProductLoadedState(productModel: model);
+          }
+
+
         } catch (e) {
           yield ProductLoadErrorState(error: e);
         }
