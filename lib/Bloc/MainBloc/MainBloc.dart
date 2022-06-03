@@ -1646,7 +1646,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           transitionDuration: Duration(milliseconds: 500),
           context: event.context as BuildContext,
           pageBuilder: (_, __, ___) {
-            return CheckoutVoidDialog(userModel: event.userData);
+            return CheckoutVoidDialog(userModel: event.userData, checkoutModel: event.checkoutModel);
           },
           transitionBuilder: (_, anim, __, child) {
             return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),

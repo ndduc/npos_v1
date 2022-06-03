@@ -620,9 +620,9 @@ class _MainClientBody extends State<MainClientBody> {
                                         /// Logic Overview
                                         /// If Quantity is greater than 1, then pop option for user to void a specific number of item
                                         /// If Quantity By Weight then simply void the entire item
-                                        ConsolePrint("PRODUCT", "VOID");
+                                        ProductCheckOutModel toBeDeletedTransaction = productOrder.transaction[index];
                                         context.read<MainBloc>().add(MainParam.NavDialogPOSClient(eventStatus: MainEvent.Nav_Event_POS_VOID_Dialog
-                                            , context: context, userData: widget.userData));
+                                            , context: context, userData: widget.userData, checkoutModel: toBeDeletedTransaction));
                                       },
                                     ),
                                   ),
@@ -633,8 +633,9 @@ class _MainClientBody extends State<MainClientBody> {
                                       color: Colors.blueAccent,
                                       onPressed: () {
                                         /// Allow user to add discount to specific item
+                                        ProductCheckOutModel toBeEdittedTransaction = productOrder.transaction[index];
                                         context.read<MainBloc>().add(MainParam.NavDialogPOSClient(eventStatus: MainEvent.Nav_Event_POS_OVERRIDE_Dialog
-                                            , context: context, userData: widget.userData));
+                                            , context: context, userData: widget.userData, checkoutModel: toBeEdittedTransaction));
                                       },
                                     ),
                                   )

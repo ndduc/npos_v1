@@ -17,6 +17,7 @@ import 'package:npos/Constant/Values/StringValues.dart';
 import 'package:npos/Debug/Debug.dart';
 import 'package:npos/Model/ApiModel/ItemCodePaginationModel.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
+import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/Share/Component/Spinner/ShareSpinner.dart';
@@ -25,7 +26,8 @@ import 'package:provider/src/provider.dart';
 
 class CheckoutVoidDialog extends StatefulWidget {
   UserModel? userModel;
-  CheckoutVoidDialog({Key? key, required this.userModel}) : super(key: key);
+  ProductCheckOutModel? checkoutModel;
+  CheckoutVoidDialog({Key? key, required this.userModel, required this.checkoutModel}) : super(key: key);
   @override
   Component createState() => Component();
 }
@@ -36,14 +38,26 @@ class Component extends State<CheckoutVoidDialog> {
   bool readOnly = true;
   bool isByWeight = false;
 
+  TextEditingController etDescription = TextEditingController();
+  TextEditingController etPrice = TextEditingController();
+  TextEditingController etQty = TextEditingController();
+  TextEditingController etTotal = TextEditingController();
+  TextEditingController etVoid = TextEditingController();
+  TextEditingController etTotalAfterVoided = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-
+    widget.checkoutModel!.print();
     initialLoad();
   }
 
   void initialLoad() {
+    etDescription.text = widget.checkoutModel!.description!;
+    etPrice.text = widget.checkoutModel!.price.toStringAsFixed(2);
+    etQty.text = widget.checkoutModel!.quantity.toStringAsFixed(2);
+    etTotal.text = widget.checkoutModel!.subTotal.toStringAsFixed(2);
+    etVoid.text = "0";
   }
 
 
@@ -189,7 +203,7 @@ class Component extends State<CheckoutVoidDialog> {
                     ),
                     const SizedBox(height: 10),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etDescription,
                         read: readOnly,
                         labelText: "Product Description",
                         isMask: false,
@@ -197,7 +211,7 @@ class Component extends State<CheckoutVoidDialog> {
                         mask: false
                     ),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etPrice,
                         read: readOnly,
                         labelText: "Price By Weight",
                         isMask: false,
@@ -205,7 +219,7 @@ class Component extends State<CheckoutVoidDialog> {
                         mask: false
                     ),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etQty,
                         read: readOnly,
                         labelText: "Weight",
                         isMask: false,
@@ -213,7 +227,7 @@ class Component extends State<CheckoutVoidDialog> {
                         mask: false
                     ),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etTotal,
                         read: readOnly,
                         labelText: "Total Charge",
                         isMask: false,
@@ -267,6 +281,7 @@ class Component extends State<CheckoutVoidDialog> {
     return Container(
       margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 45),
       child: Form(
+        autovalidateMode: AutovalidateMode.always,
         key: formKey,
         child: Row(
           children: [
@@ -293,7 +308,7 @@ class Component extends State<CheckoutVoidDialog> {
                     ),
                     const SizedBox(height: 10),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etDescription,
                         read: readOnly,
                         labelText: "Product Description",
                         isMask: false,
@@ -301,7 +316,7 @@ class Component extends State<CheckoutVoidDialog> {
                         mask: false
                     ),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etPrice,
                         read: readOnly,
                         labelText: "Price Per Unit",
                         isMask: false,
@@ -309,7 +324,7 @@ class Component extends State<CheckoutVoidDialog> {
                         mask: false
                     ),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etQty,
                         read: readOnly,
                         labelText: "Number of Item Or Number of Weight (If By Weight)",
                         isMask: false,
@@ -317,7 +332,7 @@ class Component extends State<CheckoutVoidDialog> {
                         mask: false
                     ),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etTotal,
                         read: readOnly,
                         labelText: "Total Charge",
                         isMask: false,
@@ -344,16 +359,41 @@ class Component extends State<CheckoutVoidDialog> {
                       ],
                     ),
                     const SizedBox(height: 10),
+                    /// We will need some sort of validation here
+                    /// such as that `number of void` can not be greater than the initial qty
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etVoid,
                         read: false,
                         labelText: "Number of Void",
                         isMask: false,
                         isNumber:false,
-                        mask: false
+                        mask: false,
+                        onChange:(value) {
+                          try {
+                            if (double.parse(value) > double.parse(etQty.text) ||  double.parse(value) < 0) {
+                              etTotalAfterVoided.text = "";
+                            } else {
+                              etTotalAfterVoided.text = (widget.checkoutModel!.price * (widget.checkoutModel!.quantity - double.parse(value))).toStringAsFixed(2);
+                            }
+                          } catch (err) {
+                            etTotalAfterVoided.text = "";
+                          }
+                        },
+                        validations: (value) {
+                          try {
+                            if (double.parse(value) > double.parse(etQty.text)) {
+                              return "Number of Void can't be greater than the initial Quantity";
+                            } else if (double.parse(value) < 0) {
+                              return "Number of Void can't be less than zero";
+                            }
+                          } catch (err) {
+                            return "Number of void must be numeric character";
+                          }
+
+                        },
                     ),
                     Custom_ListTile_TextField(
-                        controller: null,
+                        controller: etTotalAfterVoided,
                         read: true,
                         labelText: "Final Charge After Voided Displays Here",
                         isMask: false,
@@ -416,7 +456,11 @@ class Component extends State<CheckoutVoidDialog> {
 
   /// Actual Event Goes In This Method
   void solidButtonEvent(String event) {
-
+    if (event == "VOID_SPECIFIC") {
+      ConsolePrint("VOID", "SPEC");
+      /// DO a bloc async where to return to the parent page
+      /// Send updated data back to parent and have parent perform the logic
+    }
 
   }
 
