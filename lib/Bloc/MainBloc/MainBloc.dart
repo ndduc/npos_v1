@@ -241,8 +241,27 @@ class MainBloc extends Bloc<MainParam,MainState>
           Map<String, dynamic> param = event.productParameter as Map<String, dynamic>;
           String userId = event.userData!.uid;
           String? locId = event.userData!.defaultLocation!.uid;
-          ProductModel model = await mainRepo.GetProductByParamMap(userId, locId!, param);
-          yield ProductLoadedState(productModel: model);
+
+          Map<String, dynamic> eventParam = {
+            "upc" : param["upc"],
+            "searchText": "",
+            "isCheckout": param["isCheckout"]
+          };
+
+          ProductModel model = await mainRepo.GetProductByParamMap(userId, locId!, eventParam);
+
+          /// isFunc, mostly use in checkout, it indicates the input contain function symbol such as multiple (*), etc..
+          /// additional logic will be performed after bloc
+          if (param["isFunc"]) {
+            Map<String, dynamic> funcParam = param;
+            yield ProductLoadedState.checkout(productModel: model, checkoutResult: funcParam);
+          }
+          /// Else meaning the input is normal
+          else {
+            yield ProductLoadedState(productModel: model);
+          }
+
+
         } catch (e) {
           yield ProductLoadErrorState(error: e);
         }
@@ -1015,6 +1034,21 @@ class MainBloc extends Bloc<MainParam,MainState>
           yield GenericErrorState(error: e);
         }
         break;
+      case MainEvent.Event_GetTaxPaginate_Adv:  /// Will Replace non adv
+        yield TaxPaginateInitState();
+        try {
+          yield TaxPaginateLoadingState();
+          String userId = event.userData!.uid;
+          String? locId = event.userData!.defaultLocation!.uid;
+          String searchType = event.productParameter!["searchType"];
+          int startIdx = event.productParameter!["startIdx"];
+          int endIdx = event.productParameter!["endIdx"];
+          List<TaxModel> listModel = await mainRepo.GetTaxPaginateByIndex(userId, locId!, searchType, startIdx, endIdx);
+          yield TaxPaginateLoadedState(listTaxModel: listModel);
+        } catch (e) {
+          yield TaxPaginateErrorState(error: e);
+        }
+        break;
       case MainEvent.Event_GetTaxByDescription:
         yield GenericInitialState();
         try {
@@ -1612,7 +1646,7 @@ class MainBloc extends Bloc<MainParam,MainState>
           transitionDuration: Duration(milliseconds: 500),
           context: event.context as BuildContext,
           pageBuilder: (_, __, ___) {
-            return CheckoutVoidDialog(userModel: event.userData);
+            return CheckoutVoidDialog(userModel: event.userData, checkoutModel: event.checkoutModel);
           },
           transitionBuilder: (_, anim, __, child) {
             return  BlocProvider(create: (context)=>MainBloc(mainRepo: MainRepository()),

@@ -17,6 +17,7 @@ import 'package:npos/Model/DepartmentModel.dart';
 import 'package:npos/Model/DiscountModel.dart';
 import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
+import 'package:npos/Model/TaxModel.dart';
 import 'package:npos/Model/UserModel.dart';
 import 'package:npos/View/Component/Stateful/User/userCard.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -53,6 +54,9 @@ class _MainClientBody extends State<MainClientBody> {
   List<Map<dynamic, dynamic>> subCategories = [];
   List<Map<dynamic, dynamic>> products = [];
 
+  /// Bloc Data
+  Map<String, TaxModel> taxMap = {};
+
   /// logic here is to switch between sub cat and product
   bool isProduct = false;
   bool isKeyboard = false;
@@ -63,11 +67,16 @@ class _MainClientBody extends State<MainClientBody> {
     // initProductOrderTesting();
     initController();
     initNewOrder();
-    initBlocEvent();
+    initBlocDependency();
   }
 
-  void initBlocEvent() {
-    context.read<MainBloc>().add(MainParam.GetDepartments(eventStatus: MainEvent.Event_GetDepartments, userData: widget.userData));
+
+  void initBlocDependency() {
+    context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetTaxPaginate_Adv, userData: widget.userData, productParameter: {
+      "searchType": "test",
+      "startIdx": 1,
+      "endIdx": 10
+    }));
   }
 
   void initController() {
@@ -147,6 +156,7 @@ class _MainClientBody extends State<MainClientBody> {
             appKeyboardEvent(state);
             appDepartmentEvent(state);
             appProductEvent(state);
+            appTaxEvent(state);
             /**
              * Bloc Action Note
              * END
@@ -265,6 +275,22 @@ class _MainClientBody extends State<MainClientBody> {
     }
   }
 
+  /// TAX
+  void appTaxEvent(MainState state) {
+    if (state is TaxPaginateInitState) {
+
+    } else if (state is TaxPaginateLoadingState) {
+
+    } else if (state is TaxPaginateLoadedState) {
+      for(var item in state.listTaxModel!) {
+        taxMap[item.uid!] = item;
+      }
+      context.read<MainBloc>().add(MainParam.GetDepartments(eventStatus: MainEvent.Event_GetDepartments, userData: widget.userData));
+    } else if (state is TaxPaginateErrorState) {
+
+    }
+  }
+
   /// LOOKUP
   void appLookupEvent(MainState state) {
     if (state is CheckoutLookupInit) {
@@ -318,32 +344,83 @@ class _MainClientBody extends State<MainClientBody> {
         /// this trigger when product not found.
         /// I should setup a notification something like a dialog to notify user that the input return invalid data
       } else {
+        double inputQty = 1;
+        if(state.checkoutResult.isNotEmpty) {
+          if (state.checkoutResult["isMultiple"] != null && state.checkoutResult["isMultiple"]) {
+            inputQty = double.parse(state.checkoutResult["multiple_qty"]);
+          }
+        }
         state.productModel!.print();
         ProductCheckOutModel toBeInsertedProduct = ProductCheckOutModel();
         toBeInsertedProduct.uid = state.productModel!.uid;
         toBeInsertedProduct.description = state.productModel!.description;
         toBeInsertedProduct.cost = state.productModel!.cost;
         toBeInsertedProduct.price = state.productModel!.price;
-        toBeInsertedProduct.subTotal = state.productModel!.price * 1;
-        toBeInsertedProduct.quantity = 1;
-        toBeInsertedProduct.transactionType = PURCHASE;
+        toBeInsertedProduct.taxList = state.productModel!.taxList;
+
+        /// value from UI
+        /// Quantity greater than 0 meaning, the product has the additional input from ui
+        if (toBeInsertedProduct.quantity > 0) {
+          toBeInsertedProduct.quantity = double.parse((toBeInsertedProduct.quantity + inputQty).toStringAsPrecision(2));
+        } else {
+          toBeInsertedProduct.quantity = double.parse(inputQty.toStringAsFixed(2)); /// We need to have a logic to handle this on UI
+        }
+        toBeInsertedProduct.subTotal = double.parse((state.productModel!.price * toBeInsertedProduct.quantity).toStringAsFixed(2));
+        toBeInsertedProduct.transactionType = PURCHASE; /// We need to have a logic to handle this on UI
         toBeInsertedProduct.productModelId = toBeInsertedProduct.transactionType + "_" + toBeInsertedProduct.uid!;
 
 
-        productOrder.orderSubTotal = productOrder.orderSubTotal + toBeInsertedProduct.subTotal;
-        productOrder.orderQuantity = productOrder.orderQuantity + toBeInsertedProduct.quantity;
-        productOrder.orderTotalTax = 0.00;
-        productOrder.transaction.add(toBeInsertedProduct);
-        productOrder.total = productOrder.total + productOrder.orderSubTotal;
+        /// TAX calculation
+        /// We need to get tax info here, what product return is just simply tax id
+        String taxId = toBeInsertedProduct.taxList[0];
+        double taxRate = taxMap[taxId]!.rate;
+        double tax =  double.parse(((toBeInsertedProduct.price / 100) * taxRate).toStringAsFixed(2));
+        toBeInsertedProduct.taxBySingle = tax;
+        toBeInsertedProduct.taxByQty = double.parse((tax * toBeInsertedProduct.quantity).toStringAsFixed(2));
+        toBeInsertedProduct.totalTax = double.parse((toBeInsertedProduct.totalTax +  toBeInsertedProduct.taxByQty).toStringAsFixed(2));
 
-        etSubTotal.text = productOrder.orderSubTotal.toString();
-        etNumberOfItem.text = productOrder.orderQuantity.toString();
+        ConsolePrint("taxByQty", toBeInsertedProduct.taxByQty);
+        ConsolePrint("totalTax", toBeInsertedProduct.totalTax);
+
+        /// ADD ITEM TO TRANSACTION
+        /// This loop and logic here is to check whether the same product is being scaned to the receipt
+        /// if so, then simply update the quantity and sub product and any related attribute
+        /// then push the product back to the top of the list
+        bool isItemAlreadyExisted = false;
+        ProductCheckOutModel tempProduct = ProductCheckOutModel();
+        for(int i = 0; i < productOrder.transaction.length; i++) {
+          if (productOrder.transaction[i].uid == toBeInsertedProduct.uid && toBeInsertedProduct.transactionType == PURCHASE) {
+            isItemAlreadyExisted = true;
+            tempProduct = productOrder.transaction[i];
+            productOrder.transaction.removeAt(i);
+            break;
+          }
+        }
+
+        if (!isItemAlreadyExisted) {
+          productOrder.transaction.add(toBeInsertedProduct);
+        } else {
+          toBeInsertedProduct.quantity = double.parse((toBeInsertedProduct.quantity + tempProduct.quantity).toStringAsFixed(2));
+          toBeInsertedProduct.subTotal = double.parse((toBeInsertedProduct.subTotal + tempProduct.subTotal).toStringAsFixed(2));
+          productOrder.transaction.add(toBeInsertedProduct);
+        }
+
+        productOrder.orderSubTotal = double.parse((productOrder.orderSubTotal + toBeInsertedProduct.subTotal).toStringAsFixed(2));
+        productOrder.orderQuantity =  double.parse((productOrder.orderQuantity + toBeInsertedProduct.quantity).toStringAsFixed(2));
+        /// This is going to be sum of tax by $ on each product
+        productOrder.orderTotalTax = double.parse((productOrder.orderTotalTax + toBeInsertedProduct.totalTax).toStringAsFixed(2));
+        /// Total shall be sum of (sub total and tax) - minus discount, etc...
+        productOrder.total =  double.parse((productOrder.orderSubTotal + productOrder.orderTotalTax).toStringAsFixed(2));
+
+
+        etSubTotal.text = productOrder.orderSubTotal.toStringAsFixed(2);
+        etNumberOfItem.text = productOrder.orderQuantity.toStringAsFixed(2);
         etNumberOfRefund.text = "0";
         etAmountOfRefund.text = "0.00";
         etAmountOfDiscount.text = "0.00";
         etAmountOfVoid.text = "0.00";
-        etAmountOfTax.text = "0.00";
-        etTotal.text = productOrder.total.toString();
+        etAmountOfTax.text = productOrder.orderTotalTax.toStringAsFixed(2);
+        etTotal.text = productOrder.total.toStringAsFixed(2);
 
         /// Reversed transaction list
         productOrder.transaction = productOrder.transaction.reversed.toList();
@@ -380,11 +457,55 @@ class _MainClientBody extends State<MainClientBody> {
 
   ///Product Checkout Event
   void checkoutProduct() {
-    Map<String, String> map = <String, String>{};
+    Map<String, dynamic> handledData = handleUpc(scannerController.text);
+    Map<String, dynamic> map = <String, dynamic>{};
+    bool isFunc = false;
     map["upc"] = scannerController.text;
     map["searchText"] = "";
-    map["isCheckout"] = "true";
+    map["isCheckout"] = "true"; /// for this to work as normal bool, need to update back end
+    if (handledData["isMultiple"] != null && handledData["isMultiple"]) {
+      map["isMultiple"] = handledData["isMultiple"];
+      map["multiple_qty"] = handledData["multiple_qty"];
+      map["upc"] = handledData["multiple_upc"];
+      isFunc = true;
+    }
+    map["isFunc"] = isFunc;
     context.read<MainBloc>().add(MainParam.GetProductByParam(eventStatus: MainEvent.Event_GetProductByParamMapAdv, userData: widget.userData, productParameter: map));
+  }
+
+  Map<String, dynamic> handleUpc(String val) {
+    Map<String, int> processedData = processUpc(val);
+    Map<String, dynamic> result = {};
+    String leftStr = "";
+    String rightStr = "";
+    int indexOfSymbol = 0;
+    if (processedData["multiple"] == 1) {
+      indexOfSymbol = val.indexOf("*");
+      leftStr = val.substring(0, indexOfSymbol);
+      rightStr = val.substring(indexOfSymbol + 1, val.length);
+      ConsolePrint("LEFT STR", leftStr);
+      ConsolePrint("RIGHT STR", rightStr);
+      result["isMultiple"] = true;
+      result["multiple_qty"] = leftStr;
+      result["multiple_upc"] = rightStr;
+    }
+
+    ConsolePrint("RES", result);
+    return result;
+  }
+
+  Map<String, int> processUpc(String val) {
+
+    int multiple = 0;
+    for(int i =0; i < val.length; i++) {
+      if (val[i] == "*") {
+        multiple += 1;
+      }
+    }
+
+    Map<String, int> result = {};
+    result["multiple"] = multiple;
+    return result;
   }
 
   Widget bodyCheckOut() {
@@ -499,9 +620,9 @@ class _MainClientBody extends State<MainClientBody> {
                                         /// Logic Overview
                                         /// If Quantity is greater than 1, then pop option for user to void a specific number of item
                                         /// If Quantity By Weight then simply void the entire item
-                                        ConsolePrint("PRODUCT", "VOID");
+                                        ProductCheckOutModel toBeDeletedTransaction = productOrder.transaction[index];
                                         context.read<MainBloc>().add(MainParam.NavDialogPOSClient(eventStatus: MainEvent.Nav_Event_POS_VOID_Dialog
-                                            , context: context, userData: widget.userData));
+                                            , context: context, userData: widget.userData, checkoutModel: toBeDeletedTransaction));
                                       },
                                     ),
                                   ),
@@ -512,8 +633,9 @@ class _MainClientBody extends State<MainClientBody> {
                                       color: Colors.blueAccent,
                                       onPressed: () {
                                         /// Allow user to add discount to specific item
+                                        ProductCheckOutModel toBeEdittedTransaction = productOrder.transaction[index];
                                         context.read<MainBloc>().add(MainParam.NavDialogPOSClient(eventStatus: MainEvent.Nav_Event_POS_OVERRIDE_Dialog
-                                            , context: context, userData: widget.userData));
+                                            , context: context, userData: widget.userData, checkoutModel: toBeEdittedTransaction));
                                       },
                                     ),
                                   )

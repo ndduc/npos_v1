@@ -13,7 +13,7 @@ class TaxModel {
   String? updated_datetime;
   String? added_by;
   String? updated_by;
-  double? rate;
+  double rate = 0.0;
 
   TaxModel.map(Map<String, dynamic> map) {
     uid = map["UId"];

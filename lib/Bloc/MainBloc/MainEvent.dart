@@ -5,6 +5,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:npos/Model/ItemCodeModel.dart';
+import 'package:npos/Model/POSClientModel/ProductCheckOutModel.dart';
 import 'package:npos/Model/POSClientModel/ProductOrderModel.dart';
 import 'package:npos/Model/ProductModel.dart';
 import 'package:npos/Model/UpcModel.dart';
@@ -102,6 +103,7 @@ enum MainEvent{
   Event_GetTax,
   Event_GetTaxPaginateCount,
   Event_GetTaxPaginate,
+  Event_GetTaxPaginate_Adv,
   Event_GetTaxById,
   Event_GetTaxByDescription,
   Event_AddTax,
@@ -229,13 +231,14 @@ class MainParam {
   bool? isAdded;
   ProductOrderModel? productOrder;
   bool? isKeyboard;
+  ProductCheckOutModel? checkoutModel;
   /// CHECKOUT
   MainParam.ItemCheckout({required this.eventStatus, required this.userData, required this.productData, required this.productOrder});
   MainParam.GetPayments({required this.eventStatus, required this.userData});
   MainParam.GetItems({required this.eventStatus, required this.userData});
   MainParam.GetLookup({required this.eventStatus, required this.userData});
   /// CHECKOUT POS DIALOG
-  MainParam.NavDialogPOSClient({this.eventStatus, this.userData, this.context});
+  MainParam.NavDialogPOSClient({this.eventStatus, this.userData, this.context, this.checkoutModel});
   /// CHECKOUT KEYBOARD
   MainParam.KeyboardOpenClose({this.eventStatus, this.isKeyboard});
 

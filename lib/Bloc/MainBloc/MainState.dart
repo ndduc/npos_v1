@@ -242,7 +242,9 @@ class ProductLoadingState extends MainState {}
 
 class ProductLoadedState extends MainState{
   ProductModel? productModel;
+  Map<String, dynamic> checkoutResult = {};
   ProductLoadedState({required this.productModel});
+  ProductLoadedState.checkout({required this.productModel, required this.checkoutResult});
 }
 
 class ProductLoadErrorState extends MainState {
@@ -520,7 +522,17 @@ class AddUpdateDiscountLoaded extends MainState {
 //endregion
 
 //region TAX
+class TaxPaginateInitState extends MainState {}
 class TaxPaginateLoadingState extends MainState {}
+class TaxPaginateLoadedState extends MainState{
+  List<TaxModel>? listTaxModel;
+  TaxPaginateLoadedState({required this.listTaxModel});
+}
+class TaxPaginateErrorState extends MainState {
+  dynamic error;
+  TaxPaginateErrorState({required this.error});
+}
+
 
 class TaxLoadingState extends MainState {}
 
@@ -529,10 +541,6 @@ class TaxPaginateCountLoadedState extends MainState{
   TaxPaginateCountLoadedState({required this.count});
 }
 
-class TaxPaginateLoadedState extends MainState{
-  List<TaxModel>? listTaxModel;
-  TaxPaginateLoadedState({required this.listTaxModel});
-}
 
 class TaxByDescriptionLoadedState extends MainState{
   List<TaxModel>? listTaxModel;

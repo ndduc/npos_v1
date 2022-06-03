@@ -20,6 +20,8 @@ class ProductModel {
   String? updated_by;
   bool isEmpty = false;  // set to true once api return empty object
 
+  double taxBySingle = 0.00;
+  double taxByQty = 0.00;
   List<String> itemCodeList = [];
   List<String> categoryList = [];
   List<String> departmentList = [];
@@ -28,6 +30,8 @@ class ProductModel {
   List<String> discountList = [];
   List<String> taxList = [];
   List<String> upcList = [];
+
+
 
   ProductModel.map(Map<String, dynamic> map) {
     uid = map["UId"];
